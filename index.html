@@ -537,7 +537,8 @@ const SVG = {
     const breastSize = isF ? (0.5 + (1-mus)*14 - mus*5) : 0;
     const hairColor = c.hairColor || '#3a2a1a';
 
-    // ── 1. BACK HAIR ──
+    // ── FACE CONSTANTS (needed for head shape) ──
+    const eyeY = headY + 2, eyeSp = 20, eyeW = isF?15:13, eyeH = isF?9:7, irisR = isF?8:7;
     const bh = this._g('back-hair');
     if (c.hairBack !== 'none' && c.hairBack !== 'buzz') {
       const backLen = {short:30, medium:60, long:110, ponytail:70, pigtails:65, bun:25, afro:35, braids:80}[c.hairBack] || 40;
@@ -591,8 +592,9 @@ const SVG = {
 
     // ── 3. HEAD ──
     const head = this._g('head');
-    // Anime face shape
-    this._path(head, `M ${cx} ${headY-headR} C ${cx-headR+4} ${headY-headR*0.6}, ${cx-headR+8} ${headY+headR*0.2}, ${cx-headR*0.6} ${headY+headR-8} Q ${cx-headR*0.3} ${headY+headR+4} ${cx} ${headY+headR+6} Q ${cx+headR*0.3} ${headY+headR+4} ${cx+headR*0.6} ${headY+headR-8} C ${cx+headR-8} ${headY+headR*0.2}, ${cx+headR-4} ${headY-headR*0.6}, ${cx} ${headY-headR} Z`, skin);
+    // Anime face shape: broad rounded top, narrow chin
+    // Start at top center, wide sweep through temples, taper to chin
+    this._path(head, `M ${cx} ${headY-headR} C ${cx-headR*0.9} ${headY-headR*0.7}, ${cx-headR} ${headY-headR*0.1}, ${cx-headR*0.85} ${eyeY} Q ${cx-headR*0.5} ${headY+headR*0.7} ${cx} ${headY+headR*0.85} Q ${cx+headR*0.5} ${headY+headR*0.7} ${cx+headR*0.85} ${eyeY} C ${cx+headR} ${headY-headR*0.1}, ${cx+headR*0.9} ${headY-headR*0.7}, ${cx} ${headY-headR} Z`, skin);
     // Ears
     for (const sd of [-1,1]) {
       this._ellipse(head, cx+sd*(headR-4), headY+4, 5, 9, skin, skinDark, 0.8);
@@ -600,7 +602,6 @@ const SVG = {
 
     // ── 4. FACE ──
     const face = this._g('face');
-    const eyeY = headY + 2, eyeSp = 20, eyeW = isF?15:13, eyeH = isF?9:7, irisR = isF?8:7;
 
     // Blush
     if (isF) {
