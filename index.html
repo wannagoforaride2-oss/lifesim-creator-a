@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <title>LifeSim — Character Creator</title>
+  <style>
+    /* ── RESET ── */
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* ── ROOT LAYOUT ── */
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a1a; font-family: system-ui, -apple-system, sans-serif; }
+    .app {
+      display: grid;
+      /* Mobile: stacked. Desktop: side-by-side */
+      grid-template-rows: 42vh 1fr 72px;
+      grid-template-areas:
+        "preview"
+        "sliders"
+        "nav";
+      height: 100dvh;
+      height: 100vh; /* fallback */
+    }
+    @media (min-width: 768px) {
+      .app {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 72px;
+        grid-template-areas:
+          "preview sliders"
+          "nav     nav";
+      }
+    }
+
+    /* ── PREVIEW ZONE ── */
+    .preview-zone {
+      grid-area: preview;
+      display: grid;
+      /* Both SVG layers in the same cell → natural z-stack */
+      position: relative;
+      overflow: hidden;
+      background: #0a0a1a;
+    }
+    .preview-zone > * {
+      grid-area: 1 / 1;
+      width: 100%;
+      height: 100%;
+    }
+    /* Character SVG above background */
+    .preview-character { z-index: 1; }
+
+    /* ── SLIDERS ZONE ── */
+    .sliders-zone {
+      grid-area: sliders;
+      min-height: 0; /* CRITICAL: allow flex/grid child to shrink below content */
+      overflow-y: auto;
+      -webkit-overflow-scrolling: touch;
+      overscroll-behavior: contain;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 4px;
+      padding: 8px 12px;
+      background: #0f0f23;
+    }
+    .step { display: flex; flex-direction: column; gap: 4px; }
+    .step[hidden] { display: none !important; }
+
+    .step-title {
+      color: #FFD700;
+      font-size: 18px;
+      font-weight: 800;
+      padding: 4px 4px 0;
+    }
+    .step-subtitle {
+      color: #aaaacc;
+      font-size: 12px;
+      padding: 0 4px 4px;
+    }
+
+    /* ── SLIDER ROW ── */
+    .slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      padding: 4px 4px;
+      flex: 0 0 auto;
+    }
+    .slider-row > div:first-child {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .slider-label { color: #999; font-size: 10px; max-width: 60%; }
+    .slider-value { color: #0f3; font-size: 12px; font-weight: bold; }
+
+    /* ── NATIVE RANGE INPUT ── */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 44px;
+      background: transparent;
+      cursor: pointer;
+      touch-action: pan-y;
+    }
+    input[type="range"]:focus { outline: none; }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 5px;
+      border-radius: 3px;
+      background: #333;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      background: #FFD700;
+      border: 3px solid #fff;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+      margin-top: -20px; /* (44-5)/2 ≈ 20 */
+    }
+
+    input[type="range"]::-moz-range-track {
+      width: 100%;
+      height: 5px;
+      border-radius: 3px;
+      background: #333;
+    }
+    input[type="range"]::-moz-range-thumb {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background: #FFD700;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+    }
+
+    /* Gradient track for MBTI sliders */
+    input[type="range"].gradient::-webkit-slider-runnable-track {
+      /* background set inline per-slider */
+    }
+    input[type="range"].gradient::-moz-range-track {
+      /* background set inline per-slider */
+    }
+
+    /* ── PREVIEW ONLY (no slider) STEP ── */
+    .preview-full {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      padding: 20px;
+      min-height: 0;
+    }
+    .preview-full .step-title { font-size: 22px; text-align: center; }
+    .preview-full .step-subtitle { font-size: 14px; text-align: center; }
+
+    /* ── NAME INPUT ── */
+    .name-input-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 8px 4px;
+    }
+    .name-input-wrap input[type="text"] {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #1a1a2e;
+      color: #eee;
+      font-size: 16px;
+    }
+
+    /* ── NAV ZONE ── */
+    .nav-zone {
+      grid-area: nav;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 16px;
+      background: #0a0a1a;
+      border-top: 2px solid #e94560;
+    }
+    .nav-zone button {
+      padding: 10px 24px;
+      border-radius: 10px;
+      border: none;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      touch-action: manipulation;
+    }
+    .btn-back { background: #222; color: #aaa; }
+    .btn-continue { background: #e94560; color: #fff; }
+    .step-indicator { color: #555; font-size: 13px; font-weight: 600; }
+    .progress-bar { display: none; }
+
+    .step-indicator-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .progress-track { width: 80px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; }
+    .progress-fill { height: 100%; background: #FFD700; border-radius: 2px; transition: width 0.2s; }
+
+    /* ── SOCIOECONOMIC PREVIEW BOX ── */
+    .socio-preview {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 6px 8px;
+      background: rgba(255,255,255,0.04);
+      border-radius: 6px;
+      margin-top: 4px;
+      font-size: 10px;
+    }
+    .socio-preview .cash { color: #0f3; font-weight: bold; font-size: 11px; }
+    .socio-preview .detail { color: #888; }
+
+    /* ── CITY MAP ── */
+    .city-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 6px;
+      padding: 4px;
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .city-btn {
+      padding: 10px 8px;
+      border-radius: 8px;
+      border: 1px solid #333;
+      background: #1a1a2e;
+      color: #aaa;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      touch-action: manipulation;
+      text-align: center;
+    }
+    .city-btn.selected {
+      border-color: #FFD700;
+      background: rgba(255,215,0,0.1);
+      color: #FFD700;
+    }
+
+    /* ── CONFIRM SCREEN ── */
+    .confirm-list {
+      flex: 1;
+      overflow-y: auto;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+    .confirm-list .line { color: #ccc; font-size: 11px; line-height: 1.4; }
+    .confirm-list .line.sep { color: #555; }
+    .confirm-list .line.stats { color: #888; }
+
+    /* ── RANGE HINT LABELS ── */
+    .range-hints {
+      display: flex;
+      justify-content: space-between;
+      font-size: 8px;
+      color: #555;
+      padding: 0 2px;
+    }
+  </style>
+</head>
+<body>
+<div class="app">
+  <!-- ── PREVIEW ZONE ── -->
+  <div class="preview-zone">
+    <!-- Background SVG -->
+    <svg class="svg-background" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
+      <rect width="200" height="200" fill="#0a0a1a"/>
+      <rect x="0" y="180" width="200" height="20" fill="#111128"/>
+    </svg>
+    <!-- Character SVG -->
+    <svg class="preview-character" id="character-preview" viewBox="0 0 200 580" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <radialGradient id="irisGrad" cx="40%" cy="35%" r="60%">
+          <stop offset="0%" stop-color="#7B4FA0"/>
+          <stop offset="50%" stop-color="#4A2878"/>
+          <stop offset="100%" stop-color="#2a1040"/>
+        </radialGradient>
+        <radialGradient id="skinShade" cx="50%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="#fff" stop-opacity="0.15"/>
+          <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+        </radialGradient>
+      </defs>
+      <!-- Layers in z-order: back-hair → body → clothing → head → face → genitals → front-hair -->
+      <g id="layer-back-hair"></g>
+      <g id="layer-body"></g>
+      <g id="layer-clothing"></g>
+      <g id="layer-head"></g>
+      <g id="layer-face"></g>
+      <g id="layer-genitals"></g>
+      <g id="layer-front-hair"></g>
+    </svg>
+  </div>
+
+  <!-- ── SLIDERS ZONE ── -->
+  <div class="sliders-zone" id="sliders-zone">
+    <!-- Step 0: Name -->
+    <div class="step" id="step-0">
+      <div class="preview-full">
+        <div class="step-title" style="font-size:22px;text-align:center;">What is your name?</div>
+        <div class="name-input-wrap">
+          <input type="text" id="name-input" placeholder="Enter a name..." maxlength="30">
+        </div>
+        <div class="step-subtitle" style="text-align:center;font-size:13px;">or just press Continue to use "Alex"</div>
+      </div>
+    </div>
+
+    <!-- Step 1: Background -->
+    <div class="step" id="step-1" hidden>
+      <div class="step-title">Step 2: Background</div>
+      <div class="step-subtitle">Sex, age & ethnicity</div>
+    </div>
+
+    <!-- Step 2: Body -->
+    <div class="step" id="step-2" hidden>
+      <div class="step-title" id="step2-title">Step 3: Body</div>
+      <div class="step-subtitle">Proportions & skin tone</div>
+    </div>
+
+    <!-- Step 3: Hair -->
+    <div class="step" id="step-3" hidden>
+      <div class="step-title">Step 4: Hair</div>
+      <div class="step-subtitle">Bangs, style & color</div>
+    </div>
+
+    <!-- Step 4: Sexuality -->
+    <div class="step" id="step-4" hidden>
+      <div class="step-title">Step 5: Sexuality & Gender</div>
+      <div class="step-subtitle">Gender is separate from birth sex</div>
+    </div>
+
+    <!-- Step 5: Personality -->
+    <div class="step" id="step-5" hidden>
+      <div class="step-title" id="step5-title">Step 6: Personality</div>
+      <div class="step-subtitle">How do you tend to be?</div>
+    </div>
+
+    <!-- Step 6: SocioEconomics -->
+    <div class="step" id="step-6" hidden>
+      <div class="step-title">Step 7: Background</div>
+      <div class="step-subtitle">Finances, connections & neighborhood</div>
+    </div>
+
+    <!-- Step 7: City -->
+    <div class="step" id="step-7" hidden>
+      <div class="step-title">Step 8: Starting City</div>
+      <div class="step-subtitle">Where will you begin?</div>
+    </div>
+  </div>
+
+  <!-- ── NAV ZONE ── -->
+  <nav class="nav-zone">
+    <button class="btn-back" id="btn-back">← Back</button>
+    <div class="step-indicator-wrap">
+      <span class="step-indicator" id="step-indicator">1 / 8</span>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:12.5%"></div></div>
+    </div>
+    <button class="btn-continue" id="btn-continue">Continue →</button>
+  </nav>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════════
+// STATE — single source of truth
+// ══════════════════════════════════════════════════════════════
+const S = {
+  step: 0,
+  totalSteps: 8,
+  character: {
+    name: 'Alex',
+    sex: 'male',       // male, female, intersex
+    age: 25,
+    ethnicity: 'White / Caucasian',
+    weight: 150,
+    height: 68,
+    muscle: 50,
+    skinTone: '#e0b898',
+    hairFront: 'none',
+    hairBack: 'none',
+    hairColor: '#3a2a1a',
+    gender: 50,        // 0=full masc, 100=full fem
+    romantic: 50,
+    homo: 50,
+    sexual: 50,
+    mbti: { ei: 50, sn: 50, tf: 50, jp: 50 },
+    finances: 50,
+    socialCapital: 50,
+    neighborhood: 50,
+    city: '',
+  }
+};
+
+// ══════════════════════════════════════════════════════════════
+// CONSTANTS
+// ══════════════════════════════════════════════════════════════
+const SEX_TYPES = ['male','female','intersex'];
+const ETHNICITIES = ['White / Caucasian','Black / African American','Hispanic / Latino','East Asian','South Asian','Southeast Asian','Middle Eastern / Arab','Native American / Indigenous','Pacific Islander','Mixed / Multiracial','Other'];
+const SKIN_TONES = {
+  fair:'#fce0d3', light:'#f0d0b8', medium:'#e0b898',
+  olive:'#c8a070', tan:'#b08858', brown:'#8a6040', dark:'#5a3a20',
+};
+const ETHNICITY_SKIN = {
+  'White / Caucasian':['fair','light','olive'], 'Black / African American':['tan','brown','dark'],
+  'Hispanic / Latino':['light','olive','tan','medium'], 'East Asian':['fair','light','medium'],
+  'South Asian':['olive','tan','brown','medium'], 'Southeast Asian':['light','medium','olive','tan'],
+  'Middle Eastern / Arab':['olive','tan','medium','brown'], 'Native American / Indigenous':['tan','olive','brown','medium'],
+  'Pacific Islander':['tan','brown','medium','olive'], 'Mixed / Multiracial': Object.keys(SKIN_TONES),
+  'Other': Object.keys(SKIN_TONES),
+};
+const HAIR_COLORS = {
+  'black':'#1a1a2e','dark-brown':'#3a2a1a','brown':'#6b4226','light-brown':'#a0785a',
+  'blonde':'#d4a843','platinum':'#e8dcc8','red':'#a33020',
+};
+const ETHNICITY_HAIR = {
+  'White / Caucasian':['black','dark-brown','brown','light-brown','blonde','platinum','red'],
+  'Black / African American':['black','dark-brown'],
+  'Hispanic / Latino':['black','dark-brown','brown','light-brown'],
+  'East Asian':['black','dark-brown','brown'],
+  'South Asian':['black','dark-brown','brown'],
+  'Southeast Asian':['black','dark-brown','brown'],
+  'Middle Eastern / Arab':['black','dark-brown','brown'],
+  'Native American / Indigenous':['black','dark-brown','brown'],
+  'Pacific Islander':['dark-brown','brown','light-brown'],
+  'Mixed / Multiracial':['black','dark-brown','brown','light-brown','blonde','red'],
+  'Other': Object.keys(HAIR_COLORS),
+};
+const HAIR_FRONT = ['none','buzz','blunt','parted','swept-left','swept-right','feathered','icicle','over-eye','curtain'];
+const HAIR_BACK = ['none','buzz','short','medium','long','ponytail','pigtails','bun','afro','braids'];
+const CITIES = ['Portland','Los Angeles','Las Vegas','Dallas','Atlanta','Miami','New York'];
+const AGE_BRACKETS = [
+  {label:'Young Adult',min:18,max:22},{label:'Twentysomething',min:23,max:29},
+  {label:'Thirties',min:30,max:39},{label:'Forties',min:40,max:49},
+  {label:'Fifties',min:50,max:59},{label:'Sixties',min:60,max:69},
+];
+const MBTI = [
+  {key:'ei', left:'Outgoing[E]', right:'Reserved[I]', cL:'#F59E0B', cR:'#6366F1'},
+  {key:'sn', left:'Practical[S]', right:'Imaginative[N]', cL:'#10B981', cR:'#8B5CF6'},
+  {key:'tf', left:'Logical[T]', right:'Empathetic[F]', cL:'#0EA5E9', cR:'#F43F5E'},
+  {key:'jp', left:'Planned[J]', right:'Spontaneous[P]', cL:'#14B8A6', cR:'#F97316'},
+];
+const HEIGHT_LIMITS = {male:{min:59,max:80}, female:{min:55,max:74}, intersex:{min:55,max:78}};
+
+function ageLabel(v){ const b=AGE_BRACKETS.find(x=>v>=x.min&&v<=x.max); return v+(b?' ('+b.label+')':''); }
+function mbtiType(){ const m=S.character.mbti; return (m.ei>=50?'E':'I')+(m.sn>=50?'S':'N')+(m.tf>=50?'T':'F')+(m.jp>=50?'P':'J'); }
+function formatHeight(inches){ return Math.floor(inches/12)+"'"+inches%12+'"'; }
+function hairColorForEthnicity(){ const e=S.character.ethnicity; const opts=ETHNICITY_HAIR[e]||Object.keys(HAIR_COLORS); return opts; }
+function skinTonesForEthnicity(){ const e=S.character.ethnicity; const opts=ETHNICITY_SKIN[e]||Object.keys(SKIN_TONES); return opts; }
+
+// ══════════════════════════════════════════════════════════════
+// SVG CHARACTER RENDERER
+// ══════════════════════════════════════════════════════════════
+const SVG = {
+  el: document.getElementById('character-preview'),
+  layers: {},
+  _init() {
+    ['back-hair','body','clothing','head','face','genitals','front-hair'].forEach(id => {
+      this.layers[id] = document.getElementById('layer-'+id);
+    });
+  },
+  _g(id) { return this.layers[id]; },
+  _clear(id) { const g = this._g(id); if(g) g.innerHTML = ''; },
+  _path(parent, d, fill, stroke, sw) {
+    const p = document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d', d); p.setAttribute('fill', fill||'none');
+    if(stroke) { p.setAttribute('stroke', stroke); p.setAttribute('stroke-width', sw||'1'); }
+    parent.appendChild(p); return p;
+  },
+  _ellipse(parent, cx, cy, rx, ry, fill, stroke, sw) {
+    const e = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    e.setAttribute('cx',cx); e.setAttribute('cy',cy); e.setAttribute('rx',rx); e.setAttribute('ry',ry);
+    e.setAttribute('fill', fill||'none');
+    if(stroke) { e.setAttribute('stroke', stroke); e.setAttribute('stroke-width', sw||'1'); }
+    parent.appendChild(e); return e;
+  },
+  _circle(parent, cx, cy, r, fill) {
+    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); c.setAttribute('fill',fill||'none');
+    parent.appendChild(c);
+  },
+  _lighten(hex, amt) {
+    const n = parseInt(hex.replace('#',''),16);
+    const r = Math.min(255,(n>>16)+Math.floor(255*amt));
+    const g = Math.min(255,((n>>8)&0xff)+Math.floor(255*amt));
+    const b = Math.min(255,(n&0xff)+Math.floor(255*amt));
+    return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+  },
+  _darken(hex, amt) {
+    const n = parseInt(hex.replace('#',''),16);
+    const r = Math.max(0,(n>>16)-Math.floor(255*amt));
+    const g = Math.max(0,((n>>8)&0xff)-Math.floor(255*amt));
+    const b = Math.max(0,(n&0xff)-Math.floor(255*amt));
+    return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+  },
+
+  render() {
+    const c = S.character;
+    const isF = c.sex === 'female' || c.sex === 'intersex';
+    const mus = c.muscle / 100;
+    const skin = c.skinTone;
+    const skinDark = this._darken(skin, 0.2);
+    const skinDeep = this._darken(skin, 0.35);
+    const lipColor = isF ? '#C8607A' : '#B87070';
+    const lipLight = isF ? '#E890A0' : '#C88080';
+    const cx = 100;
+
+    // Clear all layers
+    Object.keys(this.layers).forEach(id => this._clear(id));
+
+    // ── PROPORTIONS ──
+    const headR = 48, headY = 75, neckY = headR + headY - 2, shoulderY = neckY + 14;
+    const hf = (c.height - 55) / 25, wf = (c.weight - 80) / 320;
+    const shW = (isF ? 26 : 32) + wf * (isF ? 5 : 7) + mus * (isF ? 3 : 9);
+    const waistW = (isF ? 12 : 17) + wf * (isF ? 5 : 6) - mus * (isF ? 4 : 5);
+    const hipW = (isF ? 18 : 12) + (isF ? 10 + (1-mus)*18 : 3 + wf*4) + wf * 2;
+    const legW = (isF ? 5 : 6) + wf * 3 + mus * 4;
+    const waistY = shoulderY + (isF ? 100 : 88) + hf * 8;
+    const hipY = shoulderY + (isF ? 160 : 145) + hf * 10;
+    const footY = shoulderY + 280 + hf * 18;
+    const legSpread = hipW * 0.3, legGap = 2 + legW * 0.25;
+    const breastSize = isF ? (0.5 + (1-mus)*14 - mus*5) : 0;
+    const hairColor = c.hairColor || '#3a2a1a';
+
+    // ── 1. BACK HAIR ──
+    const bh = this._g('back-hair');
+    if (c.hairBack !== 'none' && c.hairBack !== 'buzz') {
+      const backLen = {short:30, medium:60, long:110, ponytail:70, pigtails:65, bun:25, afro:35, braids:80}[c.hairBack] || 40;
+      const by = headY - headR + 10;
+      if (c.hairBack === 'afro') {
+        this._ellipse(bh, cx, headY-5, headR+18, headR+15, hairColor);
+      } else if (c.hairBack === 'bun') {
+        this._circle(bh, cx, by-8, 14, hairColor);
+      } else {
+        // Flowing hair down back
+        const hw = headR * 0.85;
+        this._path(bh, `M ${cx-hw} ${by} C ${cx-hw-5} ${by+backLen*0.5}, ${cx-hw-3} ${by+backLen}, ${cx-hw+5} ${by+backLen+5} L ${cx+hw-5} ${by+backLen+5} C ${cx+hw+3} ${by+backLen}, ${cx+hw+5} ${by+backLen*0.5}, ${cx+hw} ${by} Z`, hairColor);
+        // Highlight
+        this._path(bh, `M ${cx-hw*0.4} ${by+5} C ${cx-hw*0.3} ${by+backLen*0.4}, ${cx-hw*0.2} ${by+backLen*0.7}, ${cx} ${by+backLen*0.8}`, 'none', this._lighten(hairColor, 0.4), 3);
+      }
+    }
+
+    // ── 2. BODY ──
+    const body = this._g('body');
+    // Neck
+    this._path(body, `M ${cx-7} ${neckY-2} C ${cx-9} ${neckY+6}, ${cx-9} ${neckY+10}, ${cx-6} ${shoulderY} L ${cx+6} ${shoulderY} C ${cx+9} ${neckY+10}, ${cx+9} ${neckY+6}, ${cx+7} ${neckY-2} Z`, skin);
+    this._ellipse(body, cx, neckY+6, 5, 3, this._darken(skin, 0.15));
+
+    // Torso S-curve
+    const torso = isF
+      ? `M ${cx} ${shoulderY} C ${cx+shW*0.3} ${shoulderY+6}, ${cx+shW} ${shoulderY+18}, ${cx+shW*0.92} ${shoulderY+35} C ${cx+shW*0.82} ${shoulderY+55}, ${cx+waistW+3} ${waistY-12}, ${cx+waistW} ${waistY} C ${cx+waistW-1} ${waistY+18}, ${cx+hipW-2} ${hipY-6}, ${cx+hipW} ${hipY} C ${cx+hipW-1} ${hipY+5}, ${cx+legGap*0.5} ${hipY+7}, ${cx+legGap*0.6} ${hipY+9} L ${cx-legGap*0.6} ${hipY+9} C ${cx-legGap*0.5} ${hipY+7}, ${cx-hipW+1} ${hipY+5}, ${cx-hipW} ${hipY} C ${cx-hipW+2} ${hipY-6}, ${cx-waistW+1} ${waistY+18}, ${cx-waistW} ${waistY} C ${cx-waistW-3} ${waistY-12}, ${cx-shW*0.82} ${shoulderY+55}, ${cx-shW*0.92} ${shoulderY+35} C ${cx-shW} ${shoulderY+18}, ${cx-shW*0.3} ${shoulderY+6}, ${cx} ${shoulderY} Z`
+      : `M ${cx} ${shoulderY} C ${cx+shW*0.4} ${shoulderY+6}, ${cx+shW} ${shoulderY+14}, ${cx+shW*0.88} ${shoulderY+38} C ${cx+shW*0.78} ${shoulderY+62}, ${cx+waistW+1} ${waistY-10}, ${cx+waistW} ${waistY} C ${cx+waistW} ${waistY+16}, ${cx+hipW-1} ${hipY-5}, ${cx+hipW} ${hipY} C ${cx+hipW-1} ${hipY+5}, ${cx+legGap*0.5} ${hipY+7}, ${cx+legGap*0.6} ${hipY+9} L ${cx-legGap*0.6} ${hipY+9} C ${cx-legGap*0.5} ${hipY+7}, ${cx-hipW+1} ${hipY+5}, ${cx-hipW} ${hipY} C ${cx-hipW+1} ${hipY-5}, ${cx-waistW} ${waistY+16}, ${cx-waistW} ${waistY} C ${cx-waistW-1} ${waistY-10}, ${cx-shW*0.78} ${shoulderY+62}, ${cx-shW*0.88} ${shoulderY+38} C ${cx-shW} ${shoulderY+14}, ${cx-shW*0.4} ${shoulderY+6}, ${cx} ${shoulderY} Z`;
+    this._path(body, torso, skin);
+
+    // Legs
+    for (const sd of [-1, 1]) {
+      const lx = cx + sd * legSpread;
+      this._path(body, `M ${lx-legW} ${hipY+7} C ${lx-legW-1} ${hipY+35}, ${lx-legW*0.65} ${(hipY+footY)*0.45}, ${lx-legW*0.55} ${(hipY+footY)*0.55} L ${lx+legW*0.55} ${(hipY+footY)*0.55} C ${lx+legW*0.65} ${(hipY+footY)*0.45}, ${lx+legW+1} ${hipY+35}, ${lx+legW} ${hipY+7} Z`, skin);
+      this._ellipse(body, lx, footY+2, legW+2, 4, this._darken(skin, 0.1));
+    }
+    // Inner thigh shadow
+    this._ellipse(body, cx, hipY+(footY-hipY)*0.2, legGap*0.25, (footY-hipY)*0.08, this._darken(skin, 0.08));
+
+    // Breasts
+    if (isF && breastSize > 0.3) {
+      const bY = shoulderY + (waistY-shoulderY)*0.3;
+      const bX = 7 + breastSize*0.3;
+      for (const sd of [-1, 1]) {
+        this._ellipse(body, cx+sd*bX, bY, breastSize*0.55, breastSize*0.7, skin);
+        this._ellipse(body, cx+sd*bX, bY, breastSize*0.55, breastSize*0.7, 'none', skinDark, 1);
+        this._ellipse(body, cx+sd*(bX-2), bY-3, breastSize*0.2, breastSize*0.15, this._lighten(skin, 0.18));
+        this._circle(body, cx+sd*bX, bY+1, Math.max(1.2, breastSize*0.18), skinDark);
+        this._circle(body, cx+sd*bX, bY+1, Math.max(0.6, breastSize*0.07), skinDeep);
+      }
+    }
+
+    // ── 3. HEAD ──
+    const head = this._g('head');
+    // Anime face shape
+    this._path(head, `M ${cx} ${headY-headR} C ${cx-headR+4} ${headY-headR*0.6}, ${cx-headR+8} ${headY+headR*0.2}, ${cx-headR*0.6} ${headY+headR-8} Q ${cx-headR*0.3} ${headY+headR+4} ${cx} ${headY+headR+6} Q ${cx+headR*0.3} ${headY+headR+4} ${cx+headR*0.6} ${headY+headR-8} C ${cx+headR-8} ${headY+headR*0.2}, ${cx+headR-4} ${headY-headR*0.6}, ${cx} ${headY-headR} Z`, skin);
+    // Ears
+    for (const sd of [-1,1]) {
+      this._ellipse(head, cx+sd*(headR-4), headY+4, 5, 9, skin, skinDark, 0.8);
+    }
+
+    // ── 4. FACE ──
+    const face = this._g('face');
+    const eyeY = headY + 2, eyeSp = 20, eyeW = isF?15:13, eyeH = isF?9:7, irisR = isF?8:7;
+
+    // Blush
+    if (isF) {
+      for (const sd of [-1,1]) this._ellipse(face, cx+sd*30, eyeY+14, 12, 6, '#FFB3C688');
+    }
+
+    // Eyes
+    for (const sd of [-1,1]) {
+      const ex = cx + sd*eyeSp;
+      // Sclera
+      this._path(face, `M ${ex-eyeW} ${eyeY} Q ${ex} ${eyeY-eyeH} ${ex+eyeW} ${eyeY} Q ${ex} ${eyeY+eyeH*0.7} ${ex-eyeW} ${eyeY} Z`, '#F8F4FF', '#AAAACC', 0.6);
+      // Iris
+      this._ellipse(face, ex, eyeY+1, irisR, irisR*0.9, 'url(#irisGrad)');
+      this._ellipse(face, ex-1, eyeY, irisR*0.55, irisR*0.45, '#7B4FA0');
+      // Pupil
+      this._ellipse(face, ex, eyeY+1, irisR*0.3, irisR*0.35, '#0A0015');
+      // Upper shadow
+      this._path(face, `M ${ex-irisR} ${eyeY+1} A ${irisR} ${irisR*0.85} 0 0 0 ${ex+irisR} ${eyeY+1} L ${ex+irisR} ${eyeY-irisR*0.15} A ${irisR*0.5} ${irisR*0.35} 0 0 1 ${ex-irisR} ${eyeY-irisR*0.15} Z`, '#00000055');
+      // Highlights
+      this._ellipse(face, ex-3, eyeY-3, irisR*0.25, irisR*0.18, '#FFFFFF99');
+      this._circle(face, ex+2, eyeY+3, irisR*0.08, '#FFFFFF');
+      // Lash line
+      this._path(face, `M ${ex-eyeW+1} ${eyeY-1} Q ${ex} ${eyeY-eyeH-2} ${ex+eyeW-1} ${eyeY-1}`, 'none', '#0D0020', isF?2.5:1.8);
+      if (isF) {
+        this._path(face, `M ${ex+eyeW-2} ${eyeY-1} L ${ex+eyeW+4} ${eyeY-4}`, '#0D0020', '#0D0020', 1.2);
+      }
+      // Lower lash
+      this._path(face, `M ${ex-eyeW+3} ${eyeY+3} Q ${ex} ${eyeY+eyeH*0.5} ${ex+eyeW-3} ${eyeY+3}`, 'none', '#2A1040', 0.6);
+    }
+
+    // Eyebrows
+    for (const sd of [-1,1]) {
+      const ex = cx+sd*eyeSp, bY = eyeY-eyeH-6;
+      if (isF) this._path(face, `M ${ex-14} ${bY+3} Q ${ex} ${bY-5} ${ex+14} ${bY+3}`, 'none', '#2A103E', 1.5);
+      else this._path(face, `M ${ex-16} ${bY+4} Q ${ex} ${bY} ${ex+16} ${bY+4}`, 'none', '#2A103E', 2.5);
+    }
+
+    // Nose
+    this._path(face, `M ${cx-2} ${eyeY+14} Q ${cx} ${eyeY+18} ${cx+2} ${eyeY+14}`, 'none', skinDark, 0.7);
+
+    // Mouth
+    const mY = eyeY+28;
+    this._path(face, `M ${cx-7} ${mY} Q ${cx-3} ${mY-3} ${cx} ${mY-1.5} Q ${cx+3} ${mY-3} ${cx+7} ${mY}`, 'none', lipColor, 1.3);
+    this._path(face, `M ${cx-6} ${mY+1} Q ${cx} ${mY+5} ${cx+6} ${mY+1} Q ${cx} ${mY+2.5} ${cx-6} ${mY+1} Z`, lipLight);
+    this._ellipse(face, cx+1, mY+2.5, 2, 1, '#FFFFFF66');
+
+    // ── 5. FRONT HAIR ──
+    const fh = this._g('front-hair');
+    if (c.hairFront !== 'none') {
+      const hc = hairColor, hi = this._lighten(hc, 0.35);
+      const sY = headY - headR + 12, bY = headY - 10;
+      // Clip to not go below brow
+      const clipId = 'fhclip';
+      let clip = fh.querySelector('#'+clipId);
+      if (!clip) {
+        clip = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
+        clip.id = clipId;
+        clip.innerHTML = `<rect x="${cx-headR-15}" y="${headY-headR-15}" width="${(headR+15)*2}" height="${headR+20}"/>`;
+        fh.appendChild(clip);
+      }
+      fh.setAttribute('clip-path', 'url(#'+clipId+')');
+
+      if (c.hairFront === 'buzz') {
+        for (let i=-5;i<=5;i++) this._path(fh, `M ${cx+i*5} ${sY+Math.abs(i)} L ${cx+i*5+(i<0?2:-2)} ${sY+Math.abs(i)+3}`, 'none', hc, 1.5);
+      } else if (c.hairFront === 'blunt') {
+        for (let i=0;i<8;i++) { const t=i/7, sx=cx-headR*0.6+t*headR*1.2, wave=Math.sin(t*Math.PI*1.5)*3, eY=bY-2+wave, w=4-Math.abs(t-0.5)*1.2; this._path(fh, `M ${sx-w} ${sY+1} Q ${sx-w*0.7} ${(sY+eY)/2} ${sx} ${eY} Q ${sx+w*0.7} ${(sY+eY)/2} ${sx+w} ${sY+1} Z`, hc); }
+      } else if (c.hairFront === 'parted') {
+        for (let i=0;i<5;i++) { const sx=cx-5-i*7, eY=bY-2+i*2; this._path(fh, `M ${sx+1} ${sY+(4-i)*1.2} Q ${sx-4} ${(sY+eY)/2+2} ${sx-1} ${eY} Q ${sx+3} ${(sY+eY)/2} ${sx+4} ${sY+(4-i)*1.2} Z`, hc); }
+        for (let i=0;i<5;i++) { const sx=cx+5+i*7, eY=bY-2+i*2; this._path(fh, `M ${sx-1} ${sY+(4-i)*1.2} Q ${sx+4} ${(sY+eY)/2+2} ${sx+1} ${eY} Q ${sx-3} ${(sY+eY)/2} ${sx-4} ${sY+(4-i)*1.2} Z`, hc); }
+      } else if (c.hairFront === 'swept-left') {
+        for (let i=0;i<7;i++) { const sx=cx+6+i*5, eX=cx-22+i*3, eY=bY+i*2; this._path(fh, `M ${sx} ${sY+i*1.5} Q ${sx-12} ${(sY+eY)/2+6} ${eX} ${eY} Q ${eX+4} ${eY-2} ${sx-2} ${sY+i*1.5+2} Z`, hc); }
+      } else if (c.hairFront === 'swept-right') {
+        for (let i=0;i<7;i++) { const sx=cx-6-i*5, eX=cx+22-i*3, eY=bY+i*2; this._path(fh, `M ${sx} ${sY+i*1.5} Q ${sx+12} ${(sY+eY)/2+6} ${eX} ${eY} Q ${eX-4} ${eY-2} ${sx+2} ${sY+i*1.5+2} Z`, hc); }
+      } else if (c.hairFront === 'feathered') {
+        const origins=[-22,-15,-8,-2,4,10,17,24];
+        for (let i=0;i<origins.length;i++) { const sx=cx+origins[i], eY=bY-4+Math.sin(i)*3, cp=i<4?-4:4; this._path(fh, `M ${sx-2} ${sY+2+Math.abs(origins[i])*0.06} C ${sx+cp} ${(sY+eY)/2}, ${sx+cp*0.5} ${(sY+eY)/2+3}, ${sx+(i<4?-1:1)} ${eY} C ${sx+2} ${eY-1}, ${sx+3} ${(sY+eY)/2}, ${sx+1} ${sY+2+Math.abs(origins[i])*0.06} Z`, hc); }
+      } else if (c.hairFront === 'icicle') {
+        const pts=[[-20,-8],[-14,-2],[-7,-6],[0,0],[7,-4],[14,-7],[20,-3]];
+        pts.forEach(([ox,dy]) => { const sx=cx+ox; this._path(fh, `M ${sx-2} ${sY+2} Q ${sx} ${(sY+bY+dy)/2} ${sx} ${bY+dy} Q ${sx+2} ${(sY+bY+dy)/2} ${sx+2} ${sY+2} Z`, hc); });
+      } else if (c.hairFront === 'over-eye') {
+        for (let i=0;i<9;i++) { const t=i/8, sx=cx-headR*0.7+t*headR*1.4, eY=bY+3+Math.sin(t*Math.PI)*5; this._path(fh, `M ${sx-3} ${sY+1} Q ${sx-5} ${(sY+eY)/2} ${sx-1} ${eY} Q ${sx+2} ${(sY+eY)/2} ${sx+3} ${sY+1} Z`, hc); }
+      } else if (c.hairFront === 'curtain') {
+        for (let i=0;i<4;i++) { const sx=cx-headR+5+i*6, eY=bY+8+i*3; this._path(fh, `M ${sx} ${sY+2} Q ${sx-3} ${(sY+eY)/2} ${sx-2} ${eY} Q ${sx+2} ${(sY+eY)/2} ${sx+3} ${sY+2} Z`, hc); }
+        for (let i=0;i<4;i++) { const sx=cx+headR-5-i*6, eY=bY+8+i*3; this._path(fh, `M ${sx} ${sY+2} Q ${sx+3} ${(sY+eY)/2} ${sx+2} ${eY} Q ${sx-2} ${(sY+eY)/2} ${sx-3} ${sY+2} Z`, hc); }
+      }
+      // Ahoge (hair tuft) for all styles except none/buzz
+      if (c.hairFront !== 'buzz') {
+        this._path(fh, `M ${cx-2} ${sY-2} Q ${cx} ${sY-14} ${cx+3} ${sY-4} Q ${cx+1} ${sY} ${cx-2} ${sY-2} Z`, hc);
+      }
+    }
+  }
+};
+
+SVG._init();
+
+// ══════════════════════════════════════════════════════════════
+// SLIDER BUILDER
+// ══════════════════════════════════════════════════════════════
+function makeSlider(label, min, max, step, value, fmt, onChange, gradient) {
+  const wrap = document.createElement('div');
+  wrap.className = 'slider-row';
+
+  const top = document.createElement('div');
+  const lbl = document.createElement('span');
+  lbl.className = 'slider-label';
+  lbl.textContent = label;
+  const val = document.createElement('span');
+  val.className = 'slider-value';
+  val.textContent = fmt(value);
+  top.appendChild(lbl); top.appendChild(val);
+
+  const inp = document.createElement('input');
+  inp.type = 'range';
+  inp.min = min; inp.max = max; inp.step = step; inp.value = value;
+  if (gradient) {
+    inp.classList.add('gradient');
+    inp.style.background = `linear-gradient(to right, ${gradient[0]}, ${gradient[1]})`;
+  }
+
+  const hints = document.createElement('div');
+  hints.className = 'range-hints';
+  hints.innerHTML = `<span>${fmt(min)}</span><span>${fmt(max)}</span>`;
+
+  const handler = () => { val.textContent = fmt(parseFloat(inp.value)); onChange(parseFloat(inp.value)); };
+  inp.addEventListener('input', handler);
+  inp.addEventListener('change', handler);
+
+  wrap.appendChild(top); wrap.appendChild(inp); wrap.appendChild(hints);
+  return wrap;
+}
+
+// ══════════════════════════════════════════════════════════════
+// STEP BUILDERS
+// ══════════════════════════════════════════════════════════════
+function buildStep1_Background() {
+  const step = document.getElementById('step-1');
+  if (step.children.length > 2) return; // already built
+
+  const c = S.character;
+  const sexOpts = ['Male','Female','Intersex'];
+  const sexIdx = SEX_TYPES.indexOf(c.sex);
+  step.appendChild(makeSlider('Sex Assigned at Birth', 0, 2, 1, sexIdx>=0?sexIdx:0,
+    v => sexOpts[v],
+    v => { S.character.sex = SEX_TYPES[v]; SVG.render(); }
+  ));
+  step.appendChild(makeSlider('Starting Age', 18, 69, 1, c.age,
+    v => ageLabel(v),
+    v => { S.character.age = v; }
+  ));
+  step.appendChild(makeSlider('Ethnicity', 0, ETHNICITIES.length-1, 1, ETHNICITIES.indexOf(c.ethnicity),
+    v => ETHNICITIES[v],
+    v => { S.character.ethnicity = ETHNICITIES[v]; const opts=skinTonesForEthnicity(); if(!opts.includes(Object.keys(SKIN_TONES).find(k=>SKIN_TONES[k]===c.skinTone))) S.character.skinTone=SKIN_TONES[opts[Math.floor(opts.length/2)]]; SVG.render(); }
+  ));
+}
+
+function buildStep2_Body() {
+  const step = document.getElementById('step-2');
+  if (step.children.length > 2) return;
+  const c = S.character;
+  const lim = HEIGHT_LIMITS[c.sex]||HEIGHT_LIMITS.male;
+  document.getElementById('step2-title').textContent = 'Step 3: Body — '+(c.sex?c.sex[0].toUpperCase()+c.sex.slice(1):'Male');
+
+  step.appendChild(makeSlider('Weight (lbs)', 80, 350, 5, c.weight, v=>v+' lbs', v=>{S.character.weight=v;SVG.render();}));
+  step.appendChild(makeSlider('Musculature', 0, 100, 5, c.muscle, v=>(v<30?'Soft':v<70?'Average':'Defined')+' ('+v+')', v=>{S.character.muscle=v;SVG.render();}));
+  step.appendChild(makeSlider('Height (inches)', lim.min, lim.max, 1, c.height, v=>formatHeight(v), v=>{S.character.height=v;SVG.render();}));
+
+  const skinOpts = skinTonesForEthnicity();
+  const skinIdx = skinOpts.indexOf(Object.keys(SKIN_TONES).find(k=>SKIN_TONES[k]===c.skinTone));
+  step.appendChild(makeSlider('Skin Tone', 0, skinOpts.length-1, 1, skinIdx>=0?skinIdx:Math.floor(skinOpts.length/2),
+    v => skinOpts[v].charAt(0).toUpperCase()+skinOpts[v].slice(1),
+    v => { S.character.skinTone = SKIN_TONES[skinOpts[v]]; SVG.render(); }
+  ));
+}
+
+function buildStep3_Hair() {
+  const step = document.getElementById('step-3');
+  if (step.children.length > 2) return;
+  const c = S.character;
+  step.appendChild(makeSlider('Front (bangs)', 0, HAIR_FRONT.length-1, 1, HAIR_FRONT.indexOf(c.hairFront),
+    v => HAIR_FRONT[v].replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase()),
+    v => { S.character.hairFront = HAIR_FRONT[v]; SVG.render(); }
+  ));
+  step.appendChild(makeSlider('Back (style)', 0, HAIR_BACK.length-1, 1, HAIR_BACK.indexOf(c.hairBack),
+    v => HAIR_BACK[v].replace(/-/g,' ').replace(/\b\w/g,l=>l.toUpperCase()),
+    v => { S.character.hairBack = HAIR_BACK[v]; SVG.render(); }
+  ));
+  const hOpts = hairColorForEthnicity();
+  const hIdx = hOpts.indexOf(Object.keys(HAIR_COLORS).find(k=>HAIR_COLORS[k]===c.hairColor));
+  step.appendChild(makeSlider('Color', 0, hOpts.length-1, 1, hIdx>=0?hIdx:Math.floor(hOpts.length/2),
+    v => hOpts[v].replace(/-/g,' '),
+    v => { S.character.hairColor = HAIR_COLORS[hOpts[v]]||hOpts[v]; SVG.render(); }
+  ));
+}
+
+function buildStep4_Sexuality() {
+  const step = document.getElementById('step-4');
+  if (step.children.length > 2) return;
+  const c = S.character;
+  step.appendChild(makeSlider('Gender (Masc→Fem)', 0, 100, 5, c.gender, v=>v<30?'Masculine':v<70?'Androgynous':'Feminine', v=>{S.character.gender=v;SVG.render();}));
+  step.appendChild(makeSlider('Romantic→Aromantic', 0, 100, 5, c.romantic, v=>v<30?'Aromantic':v<70?'Gray-Romantic':'Romantic', v=>{S.character.romantic=v;}));
+  step.appendChild(makeSlider('Hetero→Homo', 0, 100, 5, c.homo, v=>v<30?'Heterosexual':v<70?'Bisexual':'Homosexual', v=>{S.character.homo=v;}));
+  step.appendChild(makeSlider('Sexual→Asexual', 0, 100, 5, c.sexual, v=>v<30?'Asexual':v<70?'Gray-Sexual':'Sexual', v=>{S.character.sexual=v;}));
+}
+
+function buildStep5_Personality() {
+  const step = document.getElementById('step-5');
+  if (step.children.length > 2) return;
+  const m = S.character.mbti;
+  document.getElementById('step5-title').textContent = 'Step 6: Personality — '+mbtiType();
+  MBTI.forEach(dim => {
+    const val = m[dim.key];
+    step.appendChild(makeSlider(
+      `${dim.left} ↔ ${dim.right}`, 0, 100, 5, val,
+      v => { const l=v>=50?dim.right.charAt(dim.right.length-1):dim.left[dim.left.length-2]; return l+' '+(v>=50?v:100-v)+'%'; },
+      v => { m[dim.key]=v; document.getElementById('step5-title').textContent='Step 6: Personality — '+mbtiType(); },
+      [dim.cL, dim.cR]
+    ));
+  });
+}
+
+function buildStep6_Socioeconomic() {
+  const step = document.getElementById('step-6');
+  if (step.children.length > 2) return;
+  const c = S.character;
+  step.appendChild(makeSlider('Family Finances', 0, 100, 5, c.finances, v=>v+'%', v=>{c.finances=v;updateSocioPreview();}));
+  step.appendChild(makeSlider('Social Capital', 0, 100, 5, c.socialCapital, v=>v+'%', v=>{c.socialCapital=v;updateSocioPreview();}));
+  step.appendChild(makeSlider('Neighborhood', 0, 100, 5, c.neighborhood, v=>v+'%', v=>{c.neighborhood=v;updateSocioPreview();}));
+
+  const pw = document.createElement('div');
+  pw.className = 'socio-preview';
+  pw.innerHTML = '<div class="cash" id="socio-cash">$0</div><div class="detail" id="socio-hood"></div><div class="detail" id="socio-home"></div>';
+  step.appendChild(pw);
+  updateSocioPreview();
+}
+
+function updateSocioPreview() {
+  const c = S.character;
+  const cash = Math.round(500*Math.pow(1000,c.finances/100));
+  const ht = c.neighborhood<15?'Rough':c.neighborhood<35?'Working Class':c.neighborhood<55?'Suburban':c.neighborhood<80?'Upscale':'Gated';
+  const ft = c.finances<15?'Struggling':c.finances<35?'Working':c.finances<55?'Middle':c.finances<80?'Upper Middle':'Wealthy';
+  const housing = {Struggling:{Rough:'Shared Room',Working:'Shared Room',Suburban:'Apartment',Upscale:'Apartment',Gated:'Apartment'},Working:{Rough:'Apartment',Working:'Apartment',Suburban:'Apartment',Upscale:'Townhouse',Gated:'Townhouse'},Middle:{Rough:'Apartment',Working:'Townhouse',Suburban:'House',Upscale:'House',Gated:'House'},'Upper Middle':{Rough:'Townhouse',Working:'House',Suburban:'House',Upscale:'Luxury',Gated:'Luxury'},Wealthy:{Rough:'House',Working:'House',Suburban:'Luxury',Upscale:'Luxury',Gated:'Luxury'}};
+  const h = housing[ft]?.[ht]||'Apartment';
+  const ce=document.getElementById('socio-cash'), he=document.getElementById('socio-hood'), home=document.getElementById('socio-home');
+  if(ce) ce.textContent='$'+cash.toLocaleString()+' starting cash';
+  if(he) he.textContent='Neighborhood: '+ht;
+  if(home) home.textContent='Housing: '+h;
+}
+
+function buildStep7_City() {
+  const step = document.getElementById('step-7');
+  if (step.querySelector('.city-grid')) return;
+  const grid = document.createElement('div');
+  grid.className = 'city-grid';
+  CITIES.forEach(name => {
+    const btn = document.createElement('button');
+    btn.className = 'city-btn'+(S.character.city===name?' selected':'');
+    btn.textContent = name;
+    btn.addEventListener('click', () => {
+      S.character.city = name;
+      grid.querySelectorAll('.city-btn').forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+    });
+    grid.appendChild(btn);
+  });
+  step.appendChild(grid);
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════════
+const stepBuilders = [null, buildStep1_Background, buildStep2_Body, buildStep3_Hair, buildStep4_Sexuality, buildStep5_Personality, buildStep6_Socioeconomic, buildStep7_City];
+
+function goToStep(n) {
+  // Hide all steps
+  for (let i = 0; i < S.totalSteps; i++) {
+    const el = document.getElementById('step-'+i);
+    if (el) el.hidden = true;
+  }
+  // Show target step
+  const target = document.getElementById('step-'+n);
+  if (target) target.hidden = false;
+
+  // Build step content if needed
+  if (stepBuilders[n]) stepBuilders[n]();
+
+  // Update nav
+  S.step = n;
+  document.getElementById('step-indicator').textContent = (n+1)+' / '+S.totalSteps;
+  document.getElementById('progress-fill').style.width = ((n+1)/S.totalSteps*100)+'%';
+  document.getElementById('btn-back').disabled = (n === 0);
+
+  // Scroll sliders to top
+  document.getElementById('sliders-zone').scrollTop = 0;
+}
+
+document.getElementById('btn-back').addEventListener('click', () => {
+  if (S.step > 0) goToStep(S.step - 1);
+});
+
+document.getElementById('btn-continue').addEventListener('click', () => {
+  if (S.step === 0) {
+    const inp = document.getElementById('name-input');
+    if (inp && inp.value.trim()) S.character.name = inp.value.trim();
+  }
+  if (S.step < S.totalSteps - 1) {
+    goToStep(S.step + 1);
+  } else {
+    // Done — show confirm
+    alert('Character created!\n\nName: '+S.character.name+'\nSex: '+S.character.sex+'\nCity: '+S.character.city+'\nMBTI: '+mbtiType()+'\n\n(In a full build this would start the game)');
+  }
+});
+
+// ── iOS 100vh fix ──
+function setVH() {
+  document.documentElement.style.setProperty('--vh', window.innerHeight*0.01+'px');
+}
+window.addEventListener('resize', setVH);
+setVH();
+
+// ── Init ──
+goToStep(0);
+</script>
+</body>
+</html>
