@@ -592,9 +592,18 @@ const SVG = {
 
     // ── 3. HEAD ──
     const head = this._g('head');
-    // Anime face shape: broad rounded top, narrow chin
-    // Start at top center, wide sweep through temples, taper to chin
-    this._path(head, `M ${cx} ${headY-headR} C ${cx-headR*0.9} ${headY-headR*0.7}, ${cx-headR} ${headY-headR*0.1}, ${cx-headR*0.85} ${eyeY} Q ${cx-headR*0.5} ${headY+headR*0.7} ${cx} ${headY+headR*0.85} Q ${cx+headR*0.5} ${headY+headR*0.7} ${cx+headR*0.85} ${eyeY} C ${cx+headR} ${headY-headR*0.1}, ${cx+headR*0.9} ${headY-headR*0.7}, ${cx} ${headY-headR} Z`, skin);
+    // Anime face shape: smooth rounded crown, tapered jaw, defined chin
+    // Top: wide cubic arc (not a point). Sides: smooth taper. Bottom: narrow chin, slightly lower.
+    const topY = headY - headR;
+    const chinY = headY + headR * 0.95;
+    this._path(head,
+      `M ${cx} ${topY}` +
+      ` C ${cx - headR * 0.6} ${topY + headR * 0.08}, ${cx - headR} ${topY + headR * 0.35}, ${cx - headR * 0.92} ${eyeY}` +
+      ` Q ${cx - headR * 0.7} ${headY + headR * 0.55}, ${cx - headR * 0.35} ${chinY}` +
+      ` Q ${cx} ${chinY + headR * 0.12}, ${cx + headR * 0.35} ${chinY}` +
+      ` Q ${cx + headR * 0.7} ${headY + headR * 0.55}, ${cx + headR * 0.92} ${eyeY}` +
+      ` C ${cx + headR} ${topY + headR * 0.35}, ${cx + headR * 0.6} ${topY + headR * 0.08}, ${cx} ${topY} Z`,
+      skin);
     // Ears
     for (const sd of [-1,1]) {
       this._ellipse(head, cx+sd*(headR-4), headY+4, 5, 9, skin, skinDark, 0.8);
