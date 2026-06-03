@@ -652,14 +652,14 @@ const SVG = {
     if (c.hairFront !== 'none') {
       const hc = hairColor, hi = this._lighten(hc, 0.35);
       const sY = headY - headR + 12, bY = headY - 10;
-      // Clip to not go below brow
+      // Clip to not go below brow — clipPath lives in <defs> (standard-compliant)
       const clipId = 'fhclip';
-      let clip = fh.querySelector('#'+clipId);
+      let clip = this.el.querySelector('#'+clipId);
       if (!clip) {
         clip = document.createElementNS('http://www.w3.org/2000/svg','clipPath');
         clip.id = clipId;
         clip.innerHTML = `<rect x="${cx-headR-15}" y="${headY-headR-15}" width="${(headR+15)*2}" height="${headR+20}"/>`;
-        fh.appendChild(clip);
+        this.el.querySelector('defs').appendChild(clip);
       }
       fh.setAttribute('clip-path', 'url(#'+clipId+')');
 
@@ -912,13 +912,6 @@ document.getElementById('btn-continue').addEventListener('click', () => {
     alert('Character created!\n\nName: '+S.character.name+'\nSex: '+S.character.sex+'\nCity: '+S.character.city+'\nMBTI: '+mbtiType()+'\n\n(In a full build this would start the game)');
   }
 });
-
-// ── iOS 100vh fix ──
-function setVH() {
-  document.documentElement.style.setProperty('--vh', window.innerHeight*0.01+'px');
-}
-window.addEventListener('resize', setVH);
-setVH();
 
 // ── Init ──
 goToStep(0);
