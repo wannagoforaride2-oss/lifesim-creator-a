@@ -99,7 +99,7 @@
     .confirm-list .line { color: #ccc; font-size: 11px; line-height: 1.4; }
     .confirm-list .line.sep { color: #555; }
   </style>
-<!-- build: 20260603T195252Z -->
+<!-- build: 20260603T201133Z -->
 </head>
 <body>
 <div class="app">
@@ -284,77 +284,207 @@ const NOSE_TYPES = [
 ];
 
 // ── HAIRSTYLES ──
-// Each is a paper-doll piece: one SVG group that slots over the head
-const HAIRSTYLES = [
-  { key:'none',     label:'None',     paths:[] },
-  { key:'short',    label:'Short',    paths:[
-    'M 55 84 C 52 68, 58 54, 76 48 C 88 44, 100 43, 112 48 C 126 54, 138 66, 145 84 L 142 80 C 138 64, 124 50, 100 45 C 76 49, 62 64, 58 80 Z',
-    'M 55 84 C 53 90, 52 96, 53 104 L 57 102 C 56 94, 57 88, 58 84 Z',
-    'M 145 84 C 147 90, 148 96, 147 104 L 143 102 C 144 94, 143 88, 142 84 Z',
-  ]},
-  { key:'medium',   label:'Medium',   paths:[
-    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
-    'M 52 82 C 49 94, 47 108, 49 124 L 53 122 C 51 106, 53 94, 55 84 Z',
-    'M 148 82 C 151 94, 153 108, 151 124 L 147 122 C 149 106, 147 94, 145 84 Z',
-    'M 49 124 C 51 138, 58 152, 72 160 L 74 157 C 62 148, 55 136, 53 122 Z',
-    'M 151 124 C 149 138, 142 152, 128 160 L 126 157 C 138 148, 145 136, 147 122 Z',
-  ]},
-  { key:'long',     label:'Long',     paths:[
-    'M 50 80 C 46 62, 54 46, 72 40 C 84 36, 100 36, 116 40 C 130 44, 138 54, 150 80 L 146 76 C 142 60, 128 46, 100 40 C 72 44, 58 60, 54 76 Z',
-    'M 50 80 C 46 94, 44 112, 46 132 C 48 152, 50 172, 54 190 L 58 188 C 54 170, 52 152, 50 132 C 48 112, 50 94, 54 82 Z',
-    'M 150 80 C 154 94, 156 112, 154 132 C 152 152, 150 172, 146 190 L 142 188 C 146 170, 148 152, 150 132 C 152 112, 148 94, 146 82 Z',
-    'M 54 190 C 56 200, 62 208, 72 212 L 74 209 C 66 204, 60 198, 58 190 Z',
-    'M 146 190 C 144 200, 138 208, 128 212 L 126 209 C 134 204, 140 198, 142 190 Z',
-  ]},
-  { key:'ponytail', label:'Ponytail', paths:[
-    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
-    'M 52 82 C 50 92, 49 102, 50 112 L 54 110 C 53 100, 54 92, 55 84 Z',
-    'M 148 82 C 150 92, 151 102, 150 112 L 146 110 C 147 100, 146 92, 145 84 Z',
-    'M 100 38 C 110 36, 118 40, 122 46 L 120 49 C 116 44, 108 41, 100 42 Z',
-    'M 118 46 C 128 50, 138 64, 142 84 C 146 104, 146 124, 144 138 L 140 136 C 142 122, 142 102, 138 84 C 134 66, 124 52, 118 48 Z',
-    'M 82 46 C 72 50, 62 64, 58 84 C 54 104, 54 124, 56 138 L 60 136 C 58 122, 58 102, 62 84 C 66 66, 76 52, 82 48 Z',
-  ]},
-  { key:'pigtails', label:'Pigtails', paths:[
-    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
-    'M 52 82 C 49 94, 47 108, 49 120 L 53 118 C 51 106, 53 94, 55 84 Z',
-    'M 148 82 C 151 94, 153 108, 151 120 L 147 118 C 149 106, 147 94, 145 84 Z',
-    'M 49 120 C 43 126, 35 132, 31 142 C 27 156, 29 172, 35 182 L 39 180 C 33 170, 31 156, 35 144 C 39 134, 45 126, 51 122 Z',
-    'M 151 120 C 157 126, 165 132, 169 142 C 173 156, 171 172, 165 182 L 161 180 C 167 170, 169 156, 165 144 C 161 134, 155 126, 149 122 Z',
-  ]},
-  { key:'bun',      label:'Bun',      paths:[
-    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
-    'M 52 82 C 50 92, 49 102, 50 112 L 54 110 C 53 100, 54 92, 55 84 Z',
-    'M 148 82 C 150 92, 151 102, 150 112 L 146 110 C 147 100, 146 92, 145 84 Z',
-    'M 80 42 C 86 36, 100 34, 112 38 C 122 44, 126 52, 124 62 L 120 60 C 118 52, 112 44, 100 40 C 90 38, 80 42, 78 48 Z',
-  ]},
-  { key:'afro',     label:'Afro',     paths:[
-    'M 46 80 C 42 60, 50 42, 70 36 C 82 32, 100 32, 118 36 C 130 40, 138 50, 154 80 C 152 66, 140 50, 118 40 C 100 36, 82 36, 66 40 C 54 48, 46 64, 46 80 Z',
-    'M 46 80 C 40 94, 36 112, 38 132 C 40 152, 44 170, 50 182 L 54 180 C 48 168, 44 152, 42 132 C 40 114, 44 96, 48 82 Z',
-    'M 154 80 C 160 94, 164 112, 162 132 C 160 152, 156 170, 150 182 L 146 180 C 152 168, 156 152, 158 132 C 160 114, 156 96, 152 82 Z',
-    'M 50 182 C 56 194, 66 202, 80 206 L 82 203 C 70 198, 60 190, 54 180 Z',
-    'M 150 182 C 144 194, 134 202, 120 206 L 118 203 C 130 198, 140 190, 146 180 Z',
-  ]},
-  { key:'braids',   label:'Braids',   paths:[
-    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
-    'M 52 82 C 50 92, 49 102, 50 110 L 54 108 C 53 100, 54 92, 55 84 Z',
-    'M 148 82 C 150 92, 151 102, 150 110 L 146 108 C 147 100, 146 92, 145 84 Z',
-    'M 50 110 C 47 120, 43 134, 41 150 C 39 166, 41 180, 45 190 L 49 188 C 45 178, 43 164, 45 150 C 47 136, 51 122, 54 112 Z',
-    'M 150 110 C 153 120, 157 134, 159 150 C 161 166, 159 180, 155 190 L 151 188 C 155 178, 157 164, 155 150 C 153 136, 149 122, 146 112 Z',
-  ]},
-  { key:'mohawk',   label:'Mohawk',   paths:[
-    'M 60 84 C 58 88, 56 91, 54 94 L 58 92 C 58 88, 60 86, 62 84 Z',
-    'M 140 84 C 142 88, 144 91, 146 94 L 142 92 C 142 88, 140 86, 138 84 Z',
-    'M 86 60 C 88 50, 92 44, 100 40 C 108 44, 112 50, 114 60 L 110 63 C 108 53, 106 46, 100 44 C 94 46, 92 53, 90 63 Z',
-    'M 84 63 C 82 54, 84 44, 100 38 C 116 44, 118 54, 116 63 L 112 61 C 113 53, 110 46, 100 42 C 90 46, 87 53, 88 61 Z',
-  ]},
-  { key:'bob',      label:'Bob',      paths:[
-    'M 50 80 C 46 62, 54 46, 72 40 C 84 36, 100 36, 116 40 C 130 46, 144 58, 150 80 L 146 76 C 142 60, 128 46, 100 40 C 72 44, 58 60, 54 76 Z',
-    'M 50 80 C 46 94, 44 110, 46 130 C 48 144, 52 154, 56 160 L 60 158 C 56 150, 52 142, 50 130 C 48 112, 50 94, 54 82 Z',
-    'M 150 80 C 154 94, 156 110, 154 130 C 152 144, 148 154, 144 160 L 140 158 C 144 150, 148 142, 150 130 C 152 112, 150 94, 146 82 Z',
-    'M 56 160 C 60 168, 70 174, 84 174 L 86 171 C 74 170, 64 165, 60 158 Z',
-    'M 144 160 C 140 168, 130 174, 116 174 L 114 171 C 126 170, 136 165, 140 158 Z',
-  ]},
-];
+// Each is a generator function that takes head params and returns SVG path strings
+// Head params: cx, headY, headR (radius X), headRY (radius Y)
+// Head ellipse: center (cx, headY), top at headY-headRY, bottom at headY+headRY
+function hairTopCap(cx, hY, hR, hRY, extraUp, sideInset) {
+  // Top cap: covers scalp from forehead up to crown+extraUp
+  const top = hY - hRY - extraUp;
+  const brow = hY - hRY * 0.25;  // forehead line
+  const sideR = hR * (1 - sideInset);
+  return [
+    // Main cap
+    `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${top+10}, ${cx-sideR*0.3} ${top}, ${cx} ${top-2} C ${cx+sideR*0.3} ${top}, ${cx+sideR+4} ${top+10}, ${cx+sideR} ${brow}`,
+    // Left side down to ear area
+    `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+12}, ${cx-sideR-2} ${brow+28}, ${cx-sideR+2} ${brow+40} L ${cx-sideR+6} ${brow+36} C ${cx-sideR+4} ${brow+24}, ${cx-sideR+2} ${brow+12}, ${cx-sideR+4} ${brow} Z`,
+    // Right side down to ear area
+    `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+12}, ${cx+sideR+2} ${brow+28}, ${cx+sideR-2} ${brow+40} L ${cx+sideR-6} ${brow+36} C ${cx+sideR-4} ${brow+24}, ${cx+sideR-2} ${brow+12}, ${cx+sideR-4} ${brow} Z`,
+  ];
+}
+
+function hairSidesLong(cx, hY, hR, hRY, extraDown) {
+  const brow = hY - hRY * 0.25;
+  const bottom = hY + hRY + extraDown;
+  const sideR = hR * 0.95;
+  return [
+    `M ${cx-sideR} ${brow+4} C ${cx-sideR-4} ${brow+30}, ${cx-sideR-6} ${brow+80}, ${cx-sideR-2} ${bottom-20} C ${cx-sideR} ${bottom}, ${cx-sideR+8} ${bottom+4}, ${cx-sideR+10} ${bottom-16} C ${cx-sideR+6} ${brow+80}, ${cx-sideR+4} ${brow+30}, ${cx-sideR+4} ${brow+4} Z`,
+    `M ${cx+sideR} ${brow+4} C ${cx+sideR+4} ${brow+30}, ${cx+sideR+6} ${brow+80}, ${cx+sideR+2} ${bottom-20} C ${cx+sideR} ${bottom}, ${cx+sideR-8} ${bottom+4}, ${cx+sideR-10} ${bottom-16} C ${cx+sideR-6} ${brow+80}, ${cx+sideR-4} ${brow+30}, ${cx+sideR-4} ${brow+4} Z`,
+  ];
+}
+
+const HAIRSTYLE_GENERATORS = {
+  none: () => [],
+
+  short: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 4;
+    const brow = hY - hRY * 0.2;
+    const sideR = hR * 0.92;
+    const sideBot = hY + hRY * 0.35;
+    return [
+      // Top cap
+      `M ${cx-sideR} ${brow} C ${cx-sideR-6} ${top+12}, ${cx-sideR*0.3} ${top}, ${cx} ${top-3} C ${cx+sideR*0.3} ${top}, ${cx+sideR+6} ${top+12}, ${cx+sideR} ${brow}`,
+      // Left side
+      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${sideBot-10}, ${cx-sideR+2} ${sideBot} L ${cx-sideR+6} ${sideBot-8} C ${cx-sideR+4} ${brow+12}, ${cx-sideR+2} ${brow+8}, ${cx-sideR+4} ${brow} Z`,
+      // Right side
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${sideBot-10}, ${cx+sideR-2} ${sideBot} L ${cx+sideR-6} ${sideBot-8} C ${cx+sideR-4} ${brow+12}, ${cx+sideR-2} ${brow+8}, ${cx+sideR-4} ${brow} Z`,
+    ];
+  },
+
+  medium: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 6;
+    const brow = hY - hRY * 0.2;
+    const sideR = hR * 0.95;
+    const sideBot = hY + hRY * 0.6;
+    return [
+      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
+      `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${brow+14}, ${cx-sideR-5} ${sideBot-20}, ${cx-sideR} ${sideBot} C ${cx-sideR+2} ${sideBot+6}, ${cx-sideR+10} ${sideBot+4}, ${cx-sideR+8} ${sideBot-16} C ${cx-sideR+4} ${brow+14}, ${cx-sideR+3} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+4} ${brow+14}, ${cx+sideR+5} ${sideBot-20}, ${cx+sideR} ${sideBot} C ${cx+sideR-2} ${sideBot+6}, ${cx+sideR-10} ${sideBot+4}, ${cx+sideR-8} ${sideBot-16} C ${cx+sideR-4} ${brow+14}, ${cx+sideR-3} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
+      // Bottom drape left
+      `M ${cx-sideR} ${sideBot} C ${cx-sideR+4} ${sideBot+14}, ${cx-sideR+12} ${sideBot+28}, ${cx-sideR+20} ${sideBot+36} L ${cx-sideR+24} ${sideBot+32} C ${cx-sideR+16} ${sideBot+22}, ${cx-sideR+6} ${sideBot+10}, ${cx-sideR+4} ${sideBot} Z`,
+      // Bottom drape right
+      `M ${cx+sideR} ${sideBot} C ${cx+sideR-4} ${sideBot+14}, ${cx+sideR-12} ${sideBot+28}, ${cx+sideR-20} ${sideBot+36} L ${cx+sideR-24} ${sideBot+32} C ${cx+sideR-16} ${sideBot+22}, ${cx+sideR-6} ${sideBot+10}, ${cx+sideR-4} ${sideBot} Z`,
+    ];
+  },
+
+  long: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 8;
+    const brow = hY - hRY * 0.2;
+    const sideR = hR * 0.95;
+    const sideBot = hY + hRY * 1.3;
+    return [
+      `M ${cx-sideR} ${brow} C ${cx-sideR-10} ${top+16}, ${cx-sideR*0.3} ${top}, ${cx} ${top-5} C ${cx+sideR*0.3} ${top}, ${cx+sideR+10} ${top+16}, ${cx+sideR} ${brow}`,
+      `M ${cx-sideR} ${brow} C ${cx-sideR-5} ${brow+18}, ${cx-sideR-6} ${brow+60}, ${cx-sideR-4} ${sideBot-30} C ${cx-sideR-2} ${sideBot-10}, ${cx-sideR} ${sideBot+4}, ${cx-sideR+6} ${sideBot+2} C ${cx-sideR+8} ${sideBot-20}, ${cx-sideR+6} ${brow+60}, ${cx-sideR+5} ${brow+18} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+5} ${brow+18}, ${cx+sideR+6} ${brow+60}, ${cx+sideR+4} ${sideBot-30} C ${cx+sideR+2} ${sideBot-10}, ${cx+sideR} ${sideBot+4}, ${cx+sideR-6} ${sideBot+2} C ${cx+sideR-8} ${sideBot-20}, ${cx+sideR-6} ${brow+60}, ${cx+sideR-5} ${brow+18} Z`,
+      // Bottom tips
+      `M ${cx-sideR+6} ${sideBot+2} C ${cx-sideR+10} ${sideBot+12}, ${cx-sideR+18} ${sideBot+20}, ${cx-sideR+24} ${sideBot+22} L ${cx-sideR+22} ${sideBot+18} C ${cx-sideR+14} ${sideBot+10}, ${cx-sideR+8} ${sideBot+4}, ${cx-sideR+4} ${sideBot} Z`,
+      `M ${cx+sideR-6} ${sideBot+2} C ${cx+sideR-10} ${sideBot+12}, ${cx+sideR-18} ${sideBot+20}, ${cx+sideR-24} ${sideBot+22} L ${cx+sideR-22} ${sideBot+18} C ${cx+sideR-14} ${sideBot+10}, ${cx+sideR-8} ${sideBot+4}, ${cx+sideR-4} ${sideBot} Z`,
+    ];
+  },
+
+  ponytail: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 6;
+    const brow = hY - hRY * 0.2;
+    const sideR = hR * 0.95;
+    const tailTop = hY - hRY - 2;
+    const tailBot = hY + hRY * 1.15;
+    return [
+      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
+      // Short sides
+      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+24}, ${cx-sideR+2} ${brow+34} L ${cx-sideR+6} ${brow+30} C ${cx-sideR+4} ${brow+20}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+24}, ${cx+sideR-2} ${brow+34} L ${cx+sideR-6} ${brow+30} C ${cx+sideR-4} ${brow+20}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
+      // Ponytail bump
+      `M ${cx-8} ${tailTop} C ${cx-4} ${tailTop-6}, ${cx+4} ${tailTop-6}, ${cx+8} ${tailTop}`,
+      // Ponytail
+      `M ${cx-6} ${tailTop} C ${cx-8} ${tailTop+20}, ${cx-10} ${tailBot-20}, ${cx-6} ${tailBot} C ${cx-2} ${tailBot+6}, ${cx+2} ${tailBot+6}, ${cx+6} ${tailBot} C ${cx+10} ${tailBot-20}, ${cx+8} ${tailTop+20}, ${cx+6} ${tailTop} Z`,
+    ];
+  },
+
+  pigtails: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 6;
+    const brow = hY - hRY * 0.2;
+    const sideR = hR * 0.95;
+    const tieY = hY + hRY * 0.35;
+    const tailBot = hY + hRY * 1.2;
+    return [
+      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
+      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+12}, ${cx-sideR-2} ${brow+28}, ${cx-sideR+2} ${brow+38} L ${cx-sideR+6} ${brow+34} C ${cx-sideR+4} ${brow+24}, ${cx-sideR+2} ${brow+12}, ${cx-sideR+4} ${brow} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+12}, ${cx+sideR+2} ${brow+28}, ${cx+sideR-2} ${brow+38} L ${cx+sideR-6} ${brow+34} C ${cx+sideR-4} ${brow+24}, ${cx+sideR-2} ${brow+12}, ${cx+sideR-4} ${brow} Z`,
+      // Left pigtail
+      `M ${cx-sideR-2} ${tieY} C ${cx-sideR-10} ${tieY+8}, ${cx-sideR-18} ${tieY+30}, ${cx-sideR-20} ${tailBot} C ${cx-sideR-18} ${tailBot+6}, ${cx-sideR-10} ${tailBot+4}, ${cx-sideR-8} ${tailBot-2} C ${cx-sideR-10} ${tieY+28}, ${cx-sideR-6} ${tieY+6}, ${cx-sideR+2} ${tieY} Z`,
+      // Right pigtail
+      `M ${cx+sideR+2} ${tieY} C ${cx+sideR+10} ${tieY+8}, ${cx+sideR+18} ${tieY+30}, ${cx+sideR+20} ${tailBot} C ${cx+sideR+18} ${tailBot+6}, ${cx+sideR+10} ${tailBot+4}, ${cx+sideR+8} ${tailBot-2} C ${cx+sideR+10} ${tieY+28}, ${cx+sideR+6} ${tieY+6}, ${cx+sideR-2} ${tieY} Z`,
+    ];
+  },
+
+  bun: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 6;
+    const brow = hY - hRY * 0.2;
+    const sideR = hR * 0.95;
+    const bunY = hY - hRY - 4;
+    const bunR = hR * 0.45;
+    return [
+      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
+      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+24}, ${cx-sideR+2} ${brow+34} L ${cx-sideR+6} ${brow+30} C ${cx-sideR+4} ${brow+20}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+24}, ${cx+sideR-2} ${brow+34} L ${cx+sideR-6} ${brow+30} C ${cx+sideR-4} ${brow+20}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
+      // Bun
+      `M ${cx-bunR} ${bunY} C ${cx-bunR} ${bunY-bunR*1.3}, ${cx+bunR} ${bunY-bunR*1.3}, ${cx+bunR} ${bunY} C ${cx+bunR*1.1} ${bunY+bunR*0.6}, ${cx-bunR*1.1} ${bunY+bunR*0.6}, ${cx-bunR} ${bunY} Z`,
+    ];
+  },
+
+  afro: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 16;
+    const brow = hY - hRY * 0.15;
+    const sideR = hR * 1.08;
+    const bot = hY + hRY * 1.25;
+    return [
+      // Large round top
+      `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${top+20}, ${cx-sideR*0.5} ${top}, ${cx} ${top-6} C ${cx+sideR*0.5} ${top}, ${cx+sideR+4} ${top+20}, ${cx+sideR} ${brow}`,
+      // Expand outward left
+      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${brow+20}, ${cx-sideR-12} ${brow+60}, ${cx-sideR-8} ${bot-20} C ${cx-sideR-4} ${bot+10}, ${cx+sideR*0.3} ${bot+14}, ${cx+sideR*0.5} ${bot-10} C ${cx+sideR*0.2} ${bot-30}, ${cx-sideR*0.3} ${brow+40}, ${cx-sideR+4} ${brow} Z`,
+      // Expand outward right (mirror)
+      `M ${cx+sideR} ${brow} C ${cx+sideR+8} ${brow+20}, ${cx+sideR+12} ${brow+60}, ${cx+sideR+8} ${bot-20} C ${cx+sideR+4} ${bot+10}, ${cx-sideR*0.3} ${bot+14}, ${cx-sideR*0.5} ${bot-10} C ${cx-sideR*0.2} ${bot-30}, ${cx+sideR*0.3} ${brow+40}, ${cx+sideR-4} ${brow} Z`,
+      // Bottom curve
+      `M ${cx-sideR*0.5} ${bot-10} C ${cx-sideR*0.3} ${bot+10}, ${cx+sideR*0.3} ${bot+10}, ${cx+sideR*0.5} ${bot-10}`,
+    ];
+  },
+
+  braids: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 6;
+    const brow = hY - hRY * 0.2;
+    const sideR = hR * 0.95;
+    const braidBot = hY + hRY * 1.15;
+    return [
+      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
+      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+22}, ${cx-sideR+2} ${brow+30} L ${cx-sideR+6} ${brow+26} C ${cx-sideR+4} ${brow+18}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+22}, ${cx+sideR-2} ${brow+30} L ${cx+sideR-6} ${brow+26} C ${cx+sideR-4} ${brow+18}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
+      // Left braid
+      `M ${cx-sideR} ${brow+28} C ${cx-sideR-4} ${brow+40}, ${cx-sideR-6} ${braidBot-20}, ${cx-sideR-2} ${braidBot} C ${cx-sideR} ${braidBot+4}, ${cx-sideR+4} ${braidBot+2}, ${cx-sideR+4} ${braidBot-16} C ${cx-sideR+2} ${brow+40}, ${cx-sideR+2} ${brow+32}, ${cx-sideR+4} ${brow+28} Z`,
+      // Right braid
+      `M ${cx+sideR} ${brow+28} C ${cx+sideR+4} ${brow+40}, ${cx+sideR+6} ${braidBot-20}, ${cx+sideR+2} ${braidBot} C ${cx+sideR} ${braidBot+4}, ${cx+sideR-4} ${braidBot+2}, ${cx+sideR-4} ${braidBot-16} C ${cx+sideR-2} ${brow+40}, ${cx+sideR-2} ${brow+32}, ${cx+sideR-4} ${brow+28} Z`,
+    ];
+  },
+
+  mohawk: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 10;
+    const brow = hY - hRY * 0.15;
+    const stripW = hR * 0.28;
+    return [
+      // Shaved sides (very thin)
+      `M ${cx-hR*0.95} ${brow} C ${cx-hR*0.96} ${brow+4}, ${cx-hR*0.97} ${brow+8}, ${cx-hR*0.95} ${brow+12} L ${cx-hR*0.92} ${brow+10} C ${cx-hR*0.93} ${brow+6}, ${cx-hR*0.92} ${brow+2}, ${cx-hR*0.9} ${brow} Z`,
+      `M ${cx+hR*0.95} ${brow} C ${cx+hR*0.96} ${brow+4}, ${cx+hR*0.97} ${brow+8}, ${cx+hR*0.95} ${brow+12} L ${cx+hR*0.92} ${brow+10} C ${cx+hR*0.93} ${brow+6}, ${cx+hR*0.92} ${brow+2}, ${cx+hR*0.9} ${brow} Z`,
+      // Mohawk strip
+      `M ${cx-stripW} ${brow} C ${cx-stripW-2} ${top+10}, ${cx-stripW*0.3} ${top}, ${cx} ${top-4} C ${cx+stripW*0.3} ${top}, ${cx+stripW+2} ${top+10}, ${cx+stripW} ${brow}`,
+      // Volume
+      `M ${cx-stripW-2} ${brow} C ${cx-stripW-4} ${brow-8}, ${cx-stripW-3} ${brow-14}, ${cx} ${brow-16} C ${cx+stripW+3} ${brow-14}, ${cx+stripW+4} ${brow-8}, ${cx+stripW+2} ${brow}`,
+      // Tip
+      `M ${cx-stripW-3} ${brow-14} C ${cx-stripW-2} ${brow-20}, ${cx+stripW*0.5} ${brow-22}, ${cx+stripW+2} ${brow-18} C ${cx+stripW+3} ${brow-14}, ${cx+stripW+2} ${brow-10}, ${cx} ${brow-8} C ${cx-stripW*0.5} ${brow-10}, ${cx-stripW-2} ${brow-12}, ${cx-stripW-3} ${brow-14} Z`,
+    ];
+  },
+
+  bob: (cx, hY, hR, hRY) => {
+    const top = hY - hRY - 6;
+    const brow = hY - hRY * 0.2;
+    const sideR = hR * 0.95;
+    const sideBot = hY + hRY * 0.55;
+    return [
+      `M ${cx-sideR} ${brow} C ${cx-sideR-10} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+10} ${top+14}, ${cx+sideR} ${brow}`,
+      `M ${cx-sideR} ${brow} C ${cx-sideR-5} ${brow+14}, ${cx-sideR-6} ${sideBot-20}, ${cx-sideR-2} ${sideBot} C ${cx-sideR} ${sideBot+8}, ${cx-sideR+8} ${sideBot+10}, ${cx-sideR+10} ${sideBot-8} C ${cx-sideR+6} ${sideBot-20}, ${cx-sideR+4} ${brow+14}, ${cx-sideR+4} ${brow} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+5} ${brow+14}, ${cx+sideR+6} ${sideBot-20}, ${cx+sideR+2} ${sideBot} C ${cx+sideR} ${sideBot+8}, ${cx+sideR-8} ${sideBot+10}, ${cx+sideR-10} ${sideBot-8} C ${cx+sideR-6} ${sideBot-20}, ${cx+sideR-4} ${brow+14}, ${cx+sideR-4} ${brow} Z`,
+      // Bottom curve left
+      `M ${cx-sideR+10} ${sideBot-8} C ${cx-sideR+14} ${sideBot+2}, ${cx-sideR+10} ${sideBot+10}, ${cx-sideR+2} ${sideBot+12} L ${cx-sideR+4} ${sideBot+8} C ${cx-sideR+10} ${sideBot+4}, ${cx-sideR+8} ${sideBot-2}, ${cx-sideR+6} ${sideBot-8} Z`,
+      // Bottom curve right
+      `M ${cx+sideR-10} ${sideBot-8} C ${cx+sideR-14} ${sideBot+2}, ${cx+sideR-10} ${sideBot+10}, ${cx+sideR-2} ${sideBot+12} L ${cx+sideR-4} ${sideBot+8} C ${cx+sideR-10} ${sideBot+4}, ${cx+sideR-8} ${sideBot-2}, ${cx+sideR-6} ${sideBot-8} Z`,
+      // Bangs
+      `M ${cx-sideR+10} ${brow-2} C ${cx-sideR+8} ${brow-8}, ${cx-sideR*0.5} ${brow-10}, ${cx-sideR*0.2} ${brow-6} L ${cx-sideR*0.3} ${brow-2} C ${cx-sideR*0.5} ${brow-6}, ${cx-sideR+6} ${brow-4}, ${cx-sideR+8} ${brow} Z`,
+      `M ${cx+sideR-10} ${brow-2} C ${cx+sideR-8} ${brow-8}, ${cx+sideR*0.5} ${brow-10}, ${cx+sideR*0.2} ${brow-6} L ${cx+sideR*0.3} ${brow-2} C ${cx+sideR*0.5} ${brow-6}, ${cx+sideR-6} ${brow-4}, ${cx+sideR-8} ${brow} Z`,
+    ];
+  },
+};
+
+const HAIRSTYLES = Object.keys(HAIRSTYLE_GENERATORS).map(key => ({
+  key,
+  label: key.charAt(0).toUpperCase() + key.slice(1),
+}));
 
 const CITIES = ['Portland','Los Angeles','Las Vegas','Dallas','Atlanta','Miami','New York'];
 const AGE_BRACKETS = [
@@ -607,9 +737,11 @@ const SVG = {
     // ═══ HAIR LAYER ═══
     const hairG = this._g('hair');
     const hairIdx = clamp(c.hairstyle, 0, HAIRSTYLES.length-1);
-    const hs = HAIRSTYLES[hairIdx];
-    if(hs && hs.paths){
-      hs.paths.forEach(d => this._path(hairG, d, hairFill, '#2a1508', 1.5));
+    const hairKey = HAIRSTYLES[hairIdx]?.key || 'none';
+    const genFn = HAIRSTYLE_GENERATORS[hairKey];
+    if (genFn) {
+      const paths = genFn(cx, headY, headR, headRY);
+      paths.forEach(d => this._path(hairG, d, hairFill, '#2a1508', 1.5));
     }
 
     // ═══ GENITALS LAYER ═══
