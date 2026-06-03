@@ -4,26 +4,23 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- build: 20260603T173857Z -->
   <title>LifeSim — Character Creator</title>
   <style>
-    /* ── RESET ── */
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-
-    /* ── ROOT LAYOUT ── */
     html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a1a; font-family: system-ui, -apple-system, sans-serif; }
+
+    /* ── APP GRID ── */
     .app {
       display: grid;
       grid-template-rows: 42vh 1fr 72px;
       grid-template-areas: "preview" "sliders" "nav";
-      height: 100dvh;
-      height: 100vh;
+      height: 100dvh; height: 100vh;
     }
     @media (min-width: 768px) {
       .app {
         grid-template-columns: 1fr 1fr;
         grid-template-rows: 1fr 72px;
-        grid-template-areas: "preview sliders" "nav     nav";
+        grid-template-areas: "preview sliders" "nav nav";
       }
     }
 
@@ -48,6 +45,7 @@
     .slider-row > div:first-child { display: flex; justify-content: space-between; align-items: center; }
     .slider-label { color: #999; font-size: 10px; max-width: 60%; }
     .slider-value { color: #0f3; font-size: 12px; font-weight: bold; }
+    .range-hints { display: flex; justify-content: space-between; font-size: 8px; color: #555; padding: 0 2px; }
 
     /* ── NATIVE RANGE INPUT ── */
     input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; cursor: pointer; touch-action: pan-y; }
@@ -56,7 +54,7 @@
     input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; border-radius: 50%; background: #FFD700; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.5); margin-top: -20px; }
     input[type="range"]::-moz-range-track { width: 100%; height: 5px; border-radius: 3px; background: #333; }
     input[type="range"]::-moz-range-thumb { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #fff; background: #FFD700; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-    input[type="range"].gradient::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--g-left), var(--g-right)); }
+    input[type="range"].grad::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--g-l), var(--g-r)); }
 
     /* ── PREVIEW FULL ── */
     .preview-full { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; min-height: 0; }
@@ -77,106 +75,86 @@
     .progress-track { width: 80px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; }
     .progress-fill { height: 100%; background: #FFD700; border-radius: 2px; transition: width 0.2s; }
 
+    /* ── GRID BUTTONS (hair, eyes, nose, city) ── */
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; flex: 1; min-height: 0; overflow-y: auto; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 4px; flex: 1; min-height: 0; overflow-y: auto; }
+    .grid-btn {
+      padding: 8px 4px; border-radius: 8px; border: 1px solid #333; background: #1a1a2e;
+      color: #aaa; font-size: 11px; font-weight: 600; cursor: pointer;
+      touch-action: manipulation; text-align: center; min-height: 44px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .grid-btn.selected { border-color: #FFD700; background: rgba(255,215,0,0.1); color: #FFD700; }
+
     /* ── SOCIOECONOMIC PREVIEW ── */
     .socio-preview { display: flex; flex-direction: column; gap: 3px; padding: 6px 8px; background: rgba(255,255,255,0.04); border-radius: 6px; margin-top: 4px; font-size: 10px; }
     .socio-preview .cash { color: #0f3; font-weight: bold; font-size: 11px; }
     .socio-preview .detail { color: #888; }
 
-    /* ── CITY BUTTONS ── */
-    .city-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px; padding: 4px; flex: 1; min-height: 0; overflow-y: auto; }
-    .city-btn { padding: 10px 8px; border-radius: 8px; border: 1px solid #333; background: #1a1a2e; color: #aaa; font-size: 13px; font-weight: 600; cursor: pointer; touch-action: manipulation; text-align: center; }
-    .city-btn.selected { border-color: #FFD700; background: rgba(255,215,0,0.1); color: #FFD700; }
-
     /* ── CONFIRM SCREEN ── */
     .confirm-list { flex: 1; overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
     .confirm-list .line { color: #ccc; font-size: 11px; line-height: 1.4; }
     .confirm-list .line.sep { color: #555; }
-
-    /* ── RANGE HINTS ── */
-    .range-hints { display: flex; justify-content: space-between; font-size: 8px; color: #555; padding: 0 2px; }
-
-    /* ── HAIR STYLE GRID ── */
-    .hair-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; flex: 1; min-height: 0; overflow-y: auto; }
-    .hair-btn { padding: 6px 4px; border-radius: 8px; border: 1px solid #333; background: #1a1a2e; color: #aaa; font-size: 11px; font-weight: 600; cursor: pointer; touch-action: manipulation; text-align: center; min-height: 44px; display: flex; align-items: center; justify-content: center; }
-    .hair-btn.selected { border-color: #FFD700; background: rgba(255,215,0,0.1); color: #FFD700; }
   </style>
+<!-- build: 20260603T194954Z -->
 </head>
 <body>
 <div class="app">
-  <!-- ── PREVIEW ZONE ── -->
+  <!-- ═══ PREVIEW ZONE ═══ -->
   <div class="preview-zone">
     <svg class="svg-background" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
-      <rect width="200" height="200" fill="#0a0a1a"/>
-      <rect x="0" y="180" width="200" height="20" fill="#111128"/>
+      <defs>
+        <radialGradient id="bgGrad" cx="50%" cy="40%" r="60%">
+          <stop offset="0%" stop-color="#1a1a3e"/>
+          <stop offset="100%" stop-color="#0a0a1a"/>
+        </radialGradient>
+      </defs>
+      <rect width="200" height="200" fill="url(#bgGrad)"/>
+      <rect x="0" y="185" width="200" height="15" fill="#111128"/>
     </svg>
     <svg class="preview-character" id="character-preview" viewBox="0 0 200 580" preserveAspectRatio="xMidYMid meet">
       <defs>
-        <radialGradient id="irisGrad" cx="40%" cy="35%" r="60%">
-          <stop offset="0%" stop-color="#7B4FA0"/>
-          <stop offset="50%" stop-color="#4A2878"/>
-          <stop offset="100%" stop-color="#2a1040"/>
+        <!-- Skin -->
+        <radialGradient id="skinGrad" cx="45%" cy="35%" r="65%" color-interpolation="linearRGB">
+          <stop offset="0%" id="skin-stop-0" stop-color="#f0dcc8"/>
+          <stop offset="40%" id="skin-stop-1" stop-color="#e8ceb8"/>
+          <stop offset="70%" id="skin-stop-2" stop-color="#d4b898"/>
+          <stop offset="100%" id="skin-stop-3" stop-color="#c4a888"/>
         </radialGradient>
-        <clipPath id="head-clip">
-          <ellipse cx="100" cy="75" rx="42" ry="48"/>
-        </clipPath>
+        <!-- Hair -->
+        <linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1" color-interpolation="linearRGB">
+          <stop offset="0%" id="hair-stop-0" stop-color="#5a3a1a"/>
+          <stop offset="30%" id="hair-stop-1" stop-color="#4a2a10"/>
+          <stop offset="100%" id="hair-stop-2" stop-color="#3a1a08"/>
+        </linearGradient>
+        <!-- Lip -->
+        <linearGradient id="lipGrad" x1="0" y1="0" x2="0" y2="1" color-interpolation="linearRGB">
+          <stop offset="0%" stop-color="#d08080"/>
+          <stop offset="100%" stop-color="#b06060"/>
+        </linearGradient>
       </defs>
       <g id="layer-back-hair"></g>
       <g id="layer-body"></g>
+      <g id="layer-genitals"></g>
       <g id="layer-clothing"></g>
       <g id="layer-head"></g>
       <g id="layer-face"></g>
-      <g id="layer-genitals"></g>
       <g id="layer-hair"></g>
+      <g id="layer-accessories"></g>
     </svg>
   </div>
 
-  <!-- ── SLIDERS ZONE ── -->
+  <!-- ═══ SLIDERS ZONE ═══ -->
   <div class="sliders-zone" id="sliders-zone">
-    <div class="step" id="step-0">
-      <div class="preview-full">
-        <div class="step-title" style="font-size:22px;text-align:center;">What is your name?</div>
-        <div class="name-input-wrap">
-          <input type="text" id="name-input" placeholder="Enter a name..." maxlength="30">
-        </div>
-        <div class="step-subtitle" style="text-align:center;font-size:13px;">or just press Continue to use "Alex"</div>
-      </div>
-    </div>
-    <div class="step" id="step-1" hidden>
-      <div class="step-title">Step 2: Background</div>
-      <div class="step-subtitle">Sex, age & ethnicity</div>
-    </div>
-    <div class="step" id="step-2" hidden>
-      <div class="step-title" id="step2-title">Step 3: Body</div>
-      <div class="step-subtitle">Proportions & skin tone</div>
-    </div>
-    <div class="step" id="step-3" hidden>
-      <div class="step-title">Step 4: Hairstyle</div>
-      <div class="step-subtitle">Choose a hairstyle & color</div>
-    </div>
-    <div class="step" id="step-4" hidden>
-      <div class="step-title">Step 5: Sexuality & Gender</div>
-      <div class="step-subtitle">Gender is separate from birth sex</div>
-    </div>
-    <div class="step" id="step-5" hidden>
-      <div class="step-title" id="step5-title">Step 6: Personality</div>
-      <div class="step-subtitle">How do you tend to be?</div>
-    </div>
-    <div class="step" id="step-6" hidden>
-      <div class="step-title">Step 7: Background</div>
-      <div class="step-subtitle">Finances, connections & neighborhood</div>
-    </div>
-    <div class="step" id="step-7" hidden>
-      <div class="step-title">Step 8: Starting City</div>
-      <div class="step-subtitle">Where will you begin?</div>
-    </div>
+    <!-- Steps injected by JS -->
   </div>
 
-  <!-- ── NAV ZONE ── -->
+  <!-- ═══ NAV ZONE ═══ -->
   <nav class="nav-zone">
     <button class="btn-back" id="btn-back">← Back</button>
     <div class="step-indicator-wrap">
-      <span class="step-indicator" id="step-indicator">1 / 8</span>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:12.5%"></div></div>
+      <span class="step-indicator" id="step-indicator">1 / 9</span>
+      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:11%"></div></div>
     </div>
     <button class="btn-continue" id="btn-continue">Continue →</button>
   </nav>
@@ -188,23 +166,40 @@
 // ══════════════════════════════════════════════════════════════
 const S = {
   step: 0,
-  totalSteps: 8,
+  totalSteps: 9,
   character: {
     name: 'Alex',
     sex: 'male',
     age: 25,
     ethnicity: 'White / Caucasian',
-    weight: 150,
-    height: 68,
-    muscle: 50,
-    skinTone: '#e0b898',
-    hairstyle: 'none',
-    hairColor: '#3a2a1a',
+
+    // Body sliders (0-100)
+    chest: 50,        // chest/bust size
+    waist: 50,        // waist narrowness
+    hips: 50,         // hip width
+    height: 50,       // overall height
+    weight: 50,       // overall weight
+    muscle: 50,       // muscle definition
+    organSize: 50,    // sex organ size
+
+    // Head sliders
+    headWidth: 50,    // head width
+    headLength: 50,   // head length (chin)
+    eyeType: 0,       // index into EYE_TYPES
+    noseType: 0,      // index into NOSE_TYPES
+    hairstyle: 0,     // index into HAIRSTYLES
+    hairColor: 0,     // index into filtered hair colors
+
+    // Sexuality
     gender: 50,
     romantic: 50,
     homo: 50,
     sexual: 50,
+
+    // Personality
     mbti: { ei: 50, sn: 50, tf: 50, jp: 50 },
+
+    // Socioeconomics
     finances: 50,
     socialCapital: 50,
     neighborhood: 50,
@@ -217,191 +212,146 @@ const S = {
 // ══════════════════════════════════════════════════════════════
 const SEX_TYPES = ['male','female','intersex'];
 const ETHNICITIES = ['White / Caucasian','Black / African American','Hispanic / Latino','East Asian','South Asian','Southeast Asian','Middle Eastern / Arab','Native American / Indigenous','Pacific Islander','Mixed / Multiracial','Other'];
-const SKIN_TONES = { fair:'#fce0d3', light:'#f0d0b8', medium:'#e0b898', olive:'#c8a070', tan:'#b08858', brown:'#8a6040', dark:'#5a3a20' };
+
+const SKIN_TONES = {
+  fair:    { stops: ['#fce0d3','#f5d5c5','#e8c4b0','#dbb8a0'] },
+  light:   { stops: ['#f0d0b8','#e8c4a8','#dbb898','#d0a888'] },
+  medium:  { stops: ['#e0b898','#d4a888','#c89878','#bc8868'] },
+  olive:   { stops: ['#c8a070','#bc9460','#b08850','#a47c40'] },
+  tan:     { stops: ['#b08858','#a47c48','#987038','#8c6428'] },
+  brown:   { stops: ['#8a6040','#7e5430','#724820','#663c10'] },
+  dark:    { stops: ['#5a3a20','#4e2e10','#422200','#361600'] },
+};
 const ETHNICITY_SKIN = {
-  'White / Caucasian':['fair','light','olive'], 'Black / African American':['tan','brown','dark'],
-  'Hispanic / Latino':['light','olive','tan','medium'], 'East Asian':['fair','light','medium'],
-  'South Asian':['olive','tan','brown','medium'], 'Southeast Asian':['light','medium','olive','tan'],
-  'Middle Eastern / Arab':['olive','tan','medium','brown'], 'Native American / Indigenous':['tan','olive','brown','medium'],
-  'Pacific Islander':['tan','brown','medium','olive'], 'Mixed / Multiracial': Object.keys(SKIN_TONES),
+  'White / Caucasian':['fair','light','olive'],
+  'Black / African American':['tan','brown','dark'],
+  'Hispanic / Latino':['light','olive','tan','medium'],
+  'East Asian':['fair','light','medium'],
+  'South Asian':['olive','tan','brown','medium'],
+  'Southeast Asian':['light','medium','olive','tan'],
+  'Middle Eastern / Arab':['olive','tan','medium','brown'],
+  'Native American / Indigenous':['tan','olive','brown','medium'],
+  'Pacific Islander':['tan','brown','medium','olive'],
+  'Mixed / Multiracial': Object.keys(SKIN_TONES),
   'Other': Object.keys(SKIN_TONES),
 };
-const HAIR_COLORS = { 'black':'#1a1a2e','dark-brown':'#3a2a1a','brown':'#6b4226','light-brown':'#a0785a','blonde':'#d4a843','platinum':'#e8dcc8','red':'#a33020' };
+
+const HAIR_COLORS = [
+  { key:'black',      label:'Black',      stops: ['#2a2a3a','#1a1a2a','#0a0a1a'] },
+  { key:'dark-brown', label:'Dark Brown', stops: ['#5a3a1a','#4a2a10','#3a1a08'] },
+  { key:'brown',      label:'Brown',      stops: ['#7b5236','#6b4226','#5b3216'] },
+  { key:'light-brown',label:'Light Brown',stops: ['#a0785a','#90684a','#80583a'] },
+  { key:'blonde',     label:'Blonde',     stops: ['#d4a843','#c49833','#b48823'] },
+  { key:'platinum',   label:'Platinum',   stops: ['#e8dcc8','#d8ccb8','#c8bc98'] },
+  { key:'red',        label:'Red',        stops: ['#b34030','#a33020','#932010'] },
+  { key:'gray',       label:'Gray',       stops: ['#a0a0a0','#888888','#707070'] },
+];
 const ETHNICITY_HAIR = {
-  'White / Caucasian':['black','dark-brown','brown','light-brown','blonde','platinum','red'],
+  'White / Caucasian':     ['black','dark-brown','brown','light-brown','blonde','platinum','red'],
   'Black / African American':['black','dark-brown'],
-  'Hispanic / Latino':['black','dark-brown','brown','light-brown'],
-  'East Asian':['black','dark-brown','brown'], 'South Asian':['black','dark-brown','brown'],
-  'Southeast Asian':['black','dark-brown','brown'], 'Middle Eastern / Arab':['black','dark-brown','brown'],
+  'Hispanic / Latino':     ['black','dark-brown','brown','light-brown'],
+  'East Asian':            ['black','dark-brown','brown'],
+  'South Asian':           ['black','dark-brown','brown'],
+  'Southeast Asian':       ['black','dark-brown','brown'],
+  'Middle Eastern / Arab': ['black','dark-brown','brown'],
   'Native American / Indigenous':['black','dark-brown','brown'],
-  'Pacific Islander':['dark-brown','brown','light-brown'],
-  'Mixed / Multiracial':['black','dark-brown','brown','light-brown','blonde','red'],
-  'Other': Object.keys(HAIR_COLORS),
+  'Pacific Islander':      ['dark-brown','brown','light-brown'],
+  'Mixed / Multiracial':   ['black','dark-brown','brown','light-brown','blonde','red'],
+  'Other': HAIR_COLORS.map(h=>h.key),
 };
 
-// ── PAPER DOLL HAIRSTYLES ──
-// Each hairstyle is a complete piece: bangs + sides + back, all in one SVG path group
-// Designed to slot over the head like a paper doll piece
-const HAIRSTYLES = {
-  none: { label: 'None', paths: [] },
-  short: {
-    label: 'Short',
-    paths: [
-      // ── Top cap — covers scalp from crown (y≈10) to forehead (y≈52) ──
-      'M 55 48 C 52 32, 58 18, 76 10 C 88 5, 100 4, 112 10 C 126 16, 138 28, 145 48 L 142 44 C 138 28, 124 14, 100 10 C 76 14, 62 28, 58 44 Z',
-      // Sideburns
-      'M 55 48 C 53 55, 52 62, 53 70 L 57 68 C 56 60, 57 54, 58 50 Z',
-      'M 145 48 C 147 55, 148 62, 147 70 L 143 68 C 144 60, 143 54, 142 50 Z',
-    ]
-  },
-  medium: {
-    label: 'Medium',
-    paths: [
-      // ── Top cap — fuller coverage, starts at crown y≈6 ──
-      'M 52 46 C 48 28, 56 12, 74 6 C 86 2, 100 2, 114 6 C 128 12, 142 24, 148 46 L 144 42 C 140 26, 126 12, 100 6 C 74 10, 60 26, 56 42 Z',
-      // Sides — cover ears
-      'M 52 46 C 49 58, 47 72, 49 88 L 53 86 C 51 70, 53 58, 55 48 Z',
-      'M 148 46 C 151 58, 153 72, 151 88 L 147 86 C 149 70, 147 58, 145 48 Z',
-      // Back drapes
-      'M 49 88 C 47 108, 48 122, 51 132 L 55 130 C 52 120, 51 106, 53 88 Z',
-      'M 151 88 C 153 108, 152 122, 149 132 L 145 130 C 148 120, 149 106, 147 88 Z',
-      'M 53 88 C 55 102, 62 118, 74 128 L 76 125 C 66 115, 58 100, 57 86 Z',
-      'M 147 88 C 145 102, 138 118, 126 128 L 124 125 C 134 115, 142 100, 143 86 Z',
-    ]
-  },
-  long: {
-    label: 'Long',
-    paths: [
-      // ── Top cap — starts at crown y≈4 ──
-      'M 50 44 C 46 26, 54 10, 72 4 C 84 0, 100 0, 116 4 C 130 8, 138 18, 150 44 L 146 40 C 142 24, 128 10, 100 4 C 72 8, 58 24, 54 40 Z',
-      // Sides — long flowing
-      'M 50 44 C 46 58, 44 76, 46 96 C 48 116, 50 136, 54 154 L 58 152 C 54 134, 52 116, 50 96 C 48 76, 50 58, 54 46 Z',
-      'M 150 44 C 154 58, 156 76, 154 96 C 152 116, 150 136, 146 154 L 142 152 C 146 134, 148 116, 150 96 C 152 76, 148 58, 146 46 Z',
-      // Bottom tips
-      'M 54 154 C 56 164, 62 172, 72 176 L 74 173 C 66 168, 60 162, 58 154 Z',
-      'M 146 154 C 144 164, 138 172, 128 176 L 126 173 C 134 168, 140 162, 142 154 Z',
-      'M 58 154 C 64 164, 78 172, 100 174 C 122 172, 136 164, 142 154 L 140 151 C 134 160, 120 168, 100 170 C 80 168, 66 160, 140 151 Z',
-    ]
-  },
-  ponytail: {
-    label: 'Ponytail',
-    paths: [
-      // ── Top cap ──
-      'M 52 46 C 48 28, 56 12, 74 6 C 86 2, 100 2, 114 6 C 128 12, 142 24, 148 46 L 144 42 C 140 26, 126 12, 100 6 C 74 10, 60 26, 56 42 Z',
-      // Sides
-      'M 52 46 C 50 56, 49 66, 50 76 L 54 74 C 53 64, 54 56, 55 48 Z',
-      'M 148 46 C 150 56, 151 66, 150 76 L 146 74 C 147 64, 146 56, 145 48 Z',
-      // Ponytail bump
-      'M 100 2 C 110 0, 118 4, 122 10 L 120 13 C 116 8, 108 5, 100 6 Z',
-      // Ponytail
-      'M 118 10 C 128 14, 138 28, 142 48 C 146 68, 146 88, 144 102 L 140 100 C 142 86, 142 66, 138 48 C 134 30, 124 16, 118 12 Z',
-      // Ponytail left drape
-      'M 82 10 C 72 14, 62 28, 58 48 C 54 68, 54 88, 56 102 L 60 100 C 58 86, 58 66, 62 48 C 66 30, 76 16, 82 12 Z',
-      // Hair tie ellipse
-      'M 116 8 C 118 4, 124 2, 128 6 C 130 10, 126 14, 122 12 C 118 10, 116 8, 116 8 Z',
-    ]
-  },
-  pigtails: {
-    label: 'Pigtails',
-    paths: [
-      // ── Top cap ──
-      'M 52 46 C 48 28, 56 12, 74 6 C 86 2, 100 2, 114 6 C 128 12, 142 24, 148 46 L 144 42 C 140 26, 126 12, 100 6 C 74 10, 60 26, 56 42 Z',
-      // Side coverage
-      'M 52 46 C 49 58, 47 72, 49 84 L 53 82 C 51 70, 53 58, 55 48 Z',
-      'M 148 46 C 151 58, 153 72, 151 84 L 147 82 C 149 70, 147 58, 145 48 Z',
-      // Left pigtail
-      'M 49 84 C 43 90, 35 96, 31 106 C 27 120, 29 136, 35 146 L 39 144 C 33 134, 31 120, 35 108 C 39 98, 45 90, 51 86 Z',
-      // Right pigtail
-      'M 151 84 C 157 90, 165 96, 169 106 C 173 120, 171 136, 165 146 L 161 144 C 167 134, 169 120, 165 108 C 161 98, 155 90, 149 86 Z',
-      // Hair ties
-      'M 49 84 C 47 82, 45 84, 47 86 L 51 88 C 49 86, 49 84, 51 82 Z',
-      'M 151 84 C 153 82, 155 84, 153 86 L 149 88 C 151 86, 151 84, 149 82 Z',
-    ]
-  },
-  bun: {
-    label: 'Bun',
-    paths: [
-      // ── Top cap ──
-      'M 52 46 C 48 28, 56 12, 74 6 C 86 2, 100 2, 114 6 C 128 12, 142 24, 148 46 L 144 42 C 140 26, 126 12, 100 6 C 74 10, 60 26, 56 42 Z',
-      // Sides
-      'M 52 46 C 50 56, 49 66, 50 76 L 54 74 C 53 64, 54 56, 55 48 Z',
-      'M 148 46 C 150 56, 151 66, 150 76 L 146 74 C 147 64, 146 56, 145 48 Z',
-      // Bun mound on top
-      'M 80 6 C 86 0, 100 -2, 112 2 C 122 8, 126 16, 124 26 L 120 24 C 118 16, 112 8, 100 4 C 90 2, 80 6, 78 12 Z',
-      // Bun ring
-      'M 82 4 C 88 -2, 100 2, 112 0 C 120 6, 124 16, 120 24 C 114 20, 104 16, 92 18 C 84 14, 78 8, 82 4 Z',
-    ]
-  },
-  afro: {
-    label: 'Afro',
-    paths: [
-      // ── Large round afro ── starts at crown y≈0
-      'M 46 44 C 42 24, 50 6, 70 0 C 82 -4, 100 -4, 118 0 C 130 4, 138 14, 154 44 C 152 30, 140 14, 118 4 C 100 0, 82 0, 66 4 C 54 12, 46 28, 46 44 Z',
-      // Expand outward left
-      'M 46 44 C 40 58, 36 76, 38 96 C 40 116, 44 134, 50 146 L 54 144 C 48 132, 44 116, 42 96 C 40 78, 44 60, 48 46 Z',
-      // Expand outward right
-      'M 154 44 C 160 58, 164 76, 162 96 C 160 116, 156 134, 150 146 L 146 144 C 152 132, 156 116, 158 96 C 160 78, 156 60, 152 46 Z',
-      // Bottom curves
-      'M 50 146 C 56 158, 66 166, 80 170 L 82 167 C 70 162, 60 154, 54 144 Z',
-      'M 150 146 C 144 158, 134 166, 120 170 L 118 167 C 130 162, 140 154, 146 144 Z',
-      'M 54 144 C 62 156, 78 164, 100 166 C 122 164, 138 156, 146 144 L 144 141 C 136 152, 120 160, 100 162 C 80 160, 64 152, 144 141 Z',
-      // Texture dots
-      'M 66 36 C 68 32, 74 32, 76 36 C 78 40, 76 46, 70 46 C 64 44, 62 40, 66 36 Z',
-      'M 118 30 C 120 26, 126 26, 128 30 C 130 34, 128 40, 122 40 C 116 38, 114 34, 118 30 Z',
-      'M 86 20 C 88 16, 94 16, 96 20 C 98 24, 96 30, 90 30 C 84 28, 82 24, 86 20 Z',
-    ]
-  },
-  braids: {
-    label: 'Braids',
-    paths: [
-      // ── Top cap — cornrow base ──
-      'M 52 46 C 48 28, 56 12, 74 6 C 86 2, 100 2, 114 6 C 128 12, 142 24, 148 46 L 144 42 C 140 26, 126 12, 100 6 C 74 10, 60 26, 56 42 Z',
-      // Side coverage
-      'M 52 46 C 50 56, 49 66, 50 74 L 54 72 C 53 64, 54 56, 55 48 Z',
-      'M 148 46 C 150 56, 151 66, 150 74 L 146 72 C 147 64, 146 56, 145 48 Z',
-      // Left braid
-      'M 50 74 C 47 84, 43 98, 41 114 C 39 130, 41 144, 45 154 L 49 152 C 45 142, 43 128, 45 114 C 47 100, 51 86, 54 76 Z',
-      // Right braid
-      'M 150 74 C 153 84, 157 98, 159 114 C 161 130, 159 144, 155 154 L 151 152 C 155 142, 157 128, 155 114 C 153 100, 149 86, 146 76 Z',
-      // Braid texture lines (left)
-      'M 49 78 L 45 88 M 47 92 L 43 102 M 45 108 L 41 118 M 43 124 L 40 134 M 42 140 L 40 150',
-      // Braid texture lines (right)
-      'M 151 78 L 155 88 M 153 92 L 157 102 M 155 108 L 159 118 M 157 124 L 160 134 M 158 140 L 160 150',
-    ]
-  },
-  mohawk: {
-    label: 'Mohawk',
-    paths: [
-      // Shaved sides — very thin
-      'M 60 48 C 58 52, 56 55, 54 58 L 58 56 C 58 52, 60 50, 62 48 Z',
-      'M 140 48 C 142 52, 144 55, 146 58 L 142 56 C 142 52, 140 50, 138 48 Z',
-      // Mohawk strip — starts at forehead y≈0
-      'M 86 20 C 88 10, 92 4, 100 0 C 108 4, 112 10, 114 20 L 110 23 C 108 13, 106 6, 100 4 C 94 6, 92 13, 90 23 Z',
-      // Volume
-      'M 84 23 C 82 14, 84 4, 100 -2 C 116 4, 118 14, 116 23 L 112 21 C 113 13, 110 6, 100 2 C 90 6, 87 13, 88 21 Z',
-      // Tip
-      'M 84 23 C 82 28, 81 34, 82 42 L 86 40 C 85 34, 86 28, 88 23 Z',
-      'M 116 23 C 118 28, 119 34, 118 42 L 114 40 C 115 34, 114 28, 112 23 Z',
-    ]
-  },
-  bob: {
-    label: 'Bob',
-    paths: [
-      // ── Top cap ──
-      'M 50 44 C 46 26, 54 10, 72 4 C 84 0, 100 0, 116 4 C 130 10, 144 22, 150 44 L 146 40 C 142 24, 128 10, 100 4 C 72 8, 58 24, 54 40 Z',
-      // Sides — bob length
-      'M 50 44 C 46 58, 44 74, 46 94 C 48 108, 52 118, 56 124 L 60 122 C 56 114, 52 106, 50 94 C 48 76, 50 58, 54 46 Z',
-      'M 150 44 C 154 58, 156 74, 154 94 C 152 108, 148 118, 144 124 L 140 122 C 144 114, 148 106, 150 94 C 152 76, 150 58, 146 46 Z',
-      // Bottom curve
-      'M 56 124 C 60 132, 70 138, 84 138 L 86 135 C 74 134, 64 129, 60 122 Z',
-      'M 144 124 C 140 132, 130 138, 116 138 L 114 135 C 126 134, 136 129, 140 122 Z',
-      'M 60 122 C 66 130, 80 136, 100 136 C 120 136, 134 130, 140 122 L 138 119 C 132 126, 118 132, 100 132 C 82 132, 68 126, 138 119 Z',
-      // Bangs
-      'M 64 42 C 66 34, 72 28, 80 26 L 82 30 C 74 32, 70 38, 68 42 Z',
-      'M 136 42 C 134 34, 128 28, 120 26 L 118 30 C 126 32, 130 38, 132 42 Z',
-    ]
-  },
-};
+// ── EYE TYPES ──
+const EYE_TYPES = [
+  { key:'round',    label:'Round',    desc:'Large round eyes' },
+  { key:'almond',   label:'Almond',   desc:'Classic almond' },
+  { key:'narrow',   label:'Narrow',   desc:'Narrow/small' },
+  { key:'wide',     label:'Wide',     desc:'Wide set' },
+  { key:'hooded',   label:'Hooded',   desc:'Heavy upper lid' },
+  { key:'downturned',label:'Downturned',desc:'Downturned outer' },
+];
+
+// ── NOSE TYPES ──
+const NOSE_TYPES = [
+  { key:'small',    label:'Small',    desc:'Small/simple' },
+  { key:'medium',   label:'Medium',   desc:'Medium bridge' },
+  { key:'pointed',  label:'Pointed',  desc:'Defined bridge' },
+  { key:'flat',     label:'Flat',     desc:'Wide/flat bridge' },
+  { key:'button',   label:'Button',   desc:'Small rounded' },
+  { key:'hooked',   label:'Hooked',   desc:'Prominent bridge' },
+];
+
+// ── HAIRSTYLES ──
+// Each is a paper-doll piece: one SVG group that slots over the head
+const HAIRSTYLES = [
+  { key:'none',     label:'None',     paths:[] },
+  { key:'short',    label:'Short',    paths:[
+    'M 55 84 C 52 68, 58 54, 76 48 C 88 44, 100 43, 112 48 C 126 54, 138 66, 145 84 L 142 80 C 138 64, 124 50, 100 45 C 76 49, 62 64, 58 80 Z',
+    'M 55 84 C 53 90, 52 96, 53 104 L 57 102 C 56 94, 57 88, 58 84 Z',
+    'M 145 84 C 147 90, 148 96, 147 104 L 143 102 C 144 94, 143 88, 142 84 Z',
+  ]},
+  { key:'medium',   label:'Medium',   paths:[
+    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
+    'M 52 82 C 49 94, 47 108, 49 124 L 53 122 C 51 106, 53 94, 55 84 Z',
+    'M 148 82 C 151 94, 153 108, 151 124 L 147 122 C 149 106, 147 94, 145 84 Z',
+    'M 49 124 C 51 138, 58 152, 72 160 L 74 157 C 62 148, 55 136, 53 122 Z',
+    'M 151 124 C 149 138, 142 152, 128 160 L 126 157 C 138 148, 145 136, 147 122 Z',
+  ]},
+  { key:'long',     label:'Long',     paths:[
+    'M 50 80 C 46 62, 54 46, 72 40 C 84 36, 100 36, 116 40 C 130 44, 138 54, 150 80 L 146 76 C 142 60, 128 46, 100 40 C 72 44, 58 60, 54 76 Z',
+    'M 50 80 C 46 94, 44 112, 46 132 C 48 152, 50 172, 54 190 L 58 188 C 54 170, 52 152, 50 132 C 48 112, 50 94, 54 82 Z',
+    'M 150 80 C 154 94, 156 112, 154 132 C 152 152, 150 172, 146 190 L 142 188 C 146 170, 148 152, 150 132 C 152 112, 148 94, 146 82 Z',
+    'M 54 190 C 56 200, 62 208, 72 212 L 74 209 C 66 204, 60 198, 58 190 Z',
+    'M 146 190 C 144 200, 138 208, 128 212 L 126 209 C 134 204, 140 198, 142 190 Z',
+  ]},
+  { key:'ponytail', label:'Ponytail', paths:[
+    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
+    'M 52 82 C 50 92, 49 102, 50 112 L 54 110 C 53 100, 54 92, 55 84 Z',
+    'M 148 82 C 150 92, 151 102, 150 112 L 146 110 C 147 100, 146 92, 145 84 Z',
+    'M 100 38 C 110 36, 118 40, 122 46 L 120 49 C 116 44, 108 41, 100 42 Z',
+    'M 118 46 C 128 50, 138 64, 142 84 C 146 104, 146 124, 144 138 L 140 136 C 142 122, 142 102, 138 84 C 134 66, 124 52, 118 48 Z',
+    'M 82 46 C 72 50, 62 64, 58 84 C 54 104, 54 124, 56 138 L 60 136 C 58 122, 58 102, 62 84 C 66 66, 76 52, 82 48 Z',
+  ]},
+  { key:'pigtails', label:'Pigtails', paths:[
+    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
+    'M 52 82 C 49 94, 47 108, 49 120 L 53 118 C 51 106, 53 94, 55 84 Z',
+    'M 148 82 C 151 94, 153 108, 151 120 L 147 118 C 149 106, 147 94, 145 84 Z',
+    'M 49 120 C 43 126, 35 132, 31 142 C 27 156, 29 172, 35 182 L 39 180 C 33 170, 31 156, 35 144 C 39 134, 45 126, 51 122 Z',
+    'M 151 120 C 157 126, 165 132, 169 142 C 173 156, 171 172, 165 182 L 161 180 C 167 170, 169 156, 165 144 C 161 134, 155 126, 149 122 Z',
+  ]},
+  { key:'bun',      label:'Bun',      paths:[
+    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
+    'M 52 82 C 50 92, 49 102, 50 112 L 54 110 C 53 100, 54 92, 55 84 Z',
+    'M 148 82 C 150 92, 151 102, 150 112 L 146 110 C 147 100, 146 92, 145 84 Z',
+    'M 80 42 C 86 36, 100 34, 112 38 C 122 44, 126 52, 124 62 L 120 60 C 118 52, 112 44, 100 40 C 90 38, 80 42, 78 48 Z',
+  ]},
+  { key:'afro',     label:'Afro',     paths:[
+    'M 46 80 C 42 60, 50 42, 70 36 C 82 32, 100 32, 118 36 C 130 40, 138 50, 154 80 C 152 66, 140 50, 118 40 C 100 36, 82 36, 66 40 C 54 48, 46 64, 46 80 Z',
+    'M 46 80 C 40 94, 36 112, 38 132 C 40 152, 44 170, 50 182 L 54 180 C 48 168, 44 152, 42 132 C 40 114, 44 96, 48 82 Z',
+    'M 154 80 C 160 94, 164 112, 162 132 C 160 152, 156 170, 150 182 L 146 180 C 152 168, 156 152, 158 132 C 160 114, 156 96, 152 82 Z',
+    'M 50 182 C 56 194, 66 202, 80 206 L 82 203 C 70 198, 60 190, 54 180 Z',
+    'M 150 182 C 144 194, 134 202, 120 206 L 118 203 C 130 198, 140 190, 146 180 Z',
+  ]},
+  { key:'braids',   label:'Braids',   paths:[
+    'M 52 82 C 48 64, 56 48, 74 42 C 86 38, 100 38, 114 42 C 128 48, 142 60, 148 82 L 144 78 C 140 62, 126 48, 100 42 C 74 46, 60 62, 56 78 Z',
+    'M 52 82 C 50 92, 49 102, 50 110 L 54 108 C 53 100, 54 92, 55 84 Z',
+    'M 148 82 C 150 92, 151 102, 150 110 L 146 108 C 147 100, 146 92, 145 84 Z',
+    'M 50 110 C 47 120, 43 134, 41 150 C 39 166, 41 180, 45 190 L 49 188 C 45 178, 43 164, 45 150 C 47 136, 51 122, 54 112 Z',
+    'M 150 110 C 153 120, 157 134, 159 150 C 161 166, 159 180, 155 190 L 151 188 C 155 178, 157 164, 155 150 C 153 136, 149 122, 146 112 Z',
+  ]},
+  { key:'mohawk',   label:'Mohawk',   paths:[
+    'M 60 84 C 58 88, 56 91, 54 94 L 58 92 C 58 88, 60 86, 62 84 Z',
+    'M 140 84 C 142 88, 144 91, 146 94 L 142 92 C 142 88, 140 86, 138 84 Z',
+    'M 86 60 C 88 50, 92 44, 100 40 C 108 44, 112 50, 114 60 L 110 63 C 108 53, 106 46, 100 44 C 94 46, 92 53, 90 63 Z',
+    'M 84 63 C 82 54, 84 44, 100 38 C 116 44, 118 54, 116 63 L 112 61 C 113 53, 110 46, 100 42 C 90 46, 87 53, 88 61 Z',
+  ]},
+  { key:'bob',      label:'Bob',      paths:[
+    'M 50 80 C 46 62, 54 46, 72 40 C 84 36, 100 36, 116 40 C 130 46, 144 58, 150 80 L 146 76 C 142 60, 128 46, 100 40 C 72 44, 58 60, 54 76 Z',
+    'M 50 80 C 46 94, 44 110, 46 130 C 48 144, 52 154, 56 160 L 60 158 C 56 150, 52 142, 50 130 C 48 112, 50 94, 54 82 Z',
+    'M 150 80 C 154 94, 156 110, 154 130 C 152 144, 148 154, 144 160 L 140 158 C 144 150, 148 142, 150 130 C 152 112, 150 94, 146 82 Z',
+    'M 56 160 C 60 168, 70 174, 84 174 L 86 171 C 74 170, 64 165, 60 158 Z',
+    'M 144 160 C 140 168, 130 174, 116 174 L 114 171 C 126 170, 136 165, 140 158 Z',
+  ]},
+];
 
 const CITIES = ['Portland','Los Angeles','Las Vegas','Dallas','Atlanta','Miami','New York'];
 const AGE_BRACKETS = [
@@ -415,404 +365,577 @@ const MBTI = [
   {key:'tf', left:'Logical[T]', right:'Empathetic[F]', cL:'#0EA5E9', cR:'#F43F5E'},
   {key:'jp', left:'Planned[J]', right:'Spontaneous[P]', cL:'#14B8A6', cR:'#F97316'},
 ];
-const HEIGHT_LIMITS = {male:{min:59,max:80}, female:{min:55,max:74}, intersex:{min:55,max:78}};
-
-function ageLabel(v){ const b=AGE_BRACKETS.find(x=>v>=x.min&&v<=x.max); return v+(b?' ('+b.label+')':''); }
-function mbtiType(){ const m=S.character.mbti; return (m.ei>=50?'E':'I')+(m.sn>=50?'S':'N')+(m.tf>=50?'T':'F')+(m.jp>=50?'P':'J'); }
-function formatHeight(inches){ return Math.floor(inches/12)+"'"+inches%12+'"'; }
-function hairColorForEthnicity(){ const e=S.character.ethnicity; return ETHNICITY_HAIR[e]||Object.keys(HAIR_COLORS); }
-function skinTonesForEthnicity(){ const e=S.character.ethnicity; return ETHNICITY_SKIN[e]||Object.keys(SKIN_TONES); }
 
 // ══════════════════════════════════════════════════════════════
-// SVG CHARACTER RENDERER — Paper Doll Style
+// HELPERS
+// ══════════════════════════════════════════════════════════════
+function ageLabel(v){ const b=AGE_BRACKETS.find(x=>v>=x.min&&v<=x.max); return v+(b?' ('+b.label+')':''); }
+function mbtiType(){ const m=S.character.mbti; return (m.ei>=50?'E':'I')+(m.sn>=50?'S':'N')+(m.tf>=50?'T':'F')+(m.jp>=50?'P':'J'); }
+function formatHeight(inches){ return Math.floor(inches/12)+'\''+inches%12+'"'; }
+function hairColorsForEthnicity(){ const e=S.character.ethnicity; const keys=ETHNICITY_HAIR[e]||HAIR_COLORS.map(h=>h.key); return HAIR_COLORS.filter(h=>keys.includes(h.key)); }
+function skinTonesForEthnicity(){ const e=S.character.ethnicity; return ETHNICITY_SKIN[e]||Object.keys(SKIN_TONES); }
+
+function lerp(a,b,t){ return a+(b-a)*t; }
+function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
+
+// ══════════════════════════════════════════════════════════════
+// SVG RENDERER
 // ══════════════════════════════════════════════════════════════
 const SVG = {
   el: document.getElementById('character-preview'),
   layers: {},
-  _init() {
-    ['back-hair','body','clothing','head','face','genitals','hair'].forEach(id => {
+  _init(){
+    ['back-hair','body','genitals','clothing','head','face','hair','accessories'].forEach(id=>{
       this.layers[id] = document.getElementById('layer-'+id);
     });
   },
-  _g(id) { return this.layers[id]; },
-  _clear(id) { const g = this._g(id); if(g) g.innerHTML = ''; },
-  _path(parent, d, fill, stroke, sw) {
-    const p = document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('d', d); p.setAttribute('fill', fill||'none');
-    if(stroke) { p.setAttribute('stroke', stroke); p.setAttribute('stroke-width', sw||'1'); }
+  _g(id){ return this.layers[id]; },
+  _clear(id){ const g=this._g(id); if(g) g.innerHTML=''; },
+  _path(parent,d,fill,stroke,sw){
+    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
+    p.setAttribute('d',d); p.setAttribute('fill',fill||'none');
+    if(stroke){p.setAttribute('stroke',stroke);p.setAttribute('stroke-width',sw||'1');}
     parent.appendChild(p); return p;
   },
-  _ellipse(parent, cx, cy, rx, ry, fill, stroke, sw) {
-    const e = document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-    e.setAttribute('cx',cx); e.setAttribute('cy',cy); e.setAttribute('rx',rx); e.setAttribute('ry',ry);
-    e.setAttribute('fill', fill||'none');
-    if(stroke) { e.setAttribute('stroke', stroke); e.setAttribute('stroke-width', sw||'1'); }
+  _ellipse(parent,cx,cy,rx,ry,fill,stroke,sw){
+    const e=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
+    e.setAttribute('cx',cx);e.setAttribute('cy',cy);e.setAttribute('rx',rx);e.setAttribute('ry',ry);
+    e.setAttribute('fill',fill||'none');
+    if(stroke){e.setAttribute('stroke',stroke);e.setAttribute('stroke-width',sw||'1');}
     parent.appendChild(e); return e;
   },
-  _circle(parent, cx, cy, r, fill) {
-    const c = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('cx',cx); c.setAttribute('cy',cy); c.setAttribute('r',r); c.setAttribute('fill',fill||'none');
+  _circle(parent,cx,cy,r,fill){
+    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
+    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);c.setAttribute('fill',fill||'none');
     parent.appendChild(c);
   },
-  _lighten(hex, amt) {
-    const n = parseInt(hex.replace('#',''),16);
-    const r = Math.min(255,(n>>16)+Math.floor(255*amt));
-    const g = Math.min(255,((n>>8)&0xff)+Math.floor(255*amt));
-    const b = Math.min(255,(n&255)+Math.floor(255*amt));
-    return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
-  },
-  _darken(hex, amt) {
-    const n = parseInt(hex.replace('#',''),16);
-    const r = Math.max(0,(n>>16)-Math.floor(255*amt));
-    const g = Math.max(0,((n>>8)&0xff)-Math.floor(255*amt));
-    const b = Math.max(0,(n&255)-Math.floor(255*amt));
-    return '#'+((r<<16)|(g<<8)|b).toString(16).padStart(6,'0');
+  _line(parent,x1,y1,x2,y2,stroke,sw){
+    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+    l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
+    l.setAttribute('stroke',stroke||'#000');l.setAttribute('stroke-width',sw||'1');
+    l.setAttribute('stroke-linecap','round');
+    parent.appendChild(l);
   },
 
-  render() {
+  _updateSkinGradient(){
+    const tones = skinTonesForEthnicity();
+    const idx = clamp(Math.floor(S.character.skinToneIdx||0), 0, tones.length-1);
+    const key = tones[idx];
+    const stops = SKIN_TONES[key].stops;
+    for(let i=0;i<4;i++){
+      const el = document.getElementById('skin-stop-'+i);
+      if(el) el.setAttribute('stop-color', stops[i]);
+    }
+  },
+
+  _updateHairGradient(){
+    const colors = hairColorsForEthnicity();
+    const idx = clamp(S.character.hairColor, 0, colors.length-1);
+    const stops = colors[idx].stops;
+    for(let i=0;i<3;i++){
+      const el = document.getElementById('hair-stop-'+i);
+      if(el) el.setAttribute('stop-color', stops[i]);
+    }
+  },
+
+  render(){
     const c = S.character;
-    const isF = c.sex === 'female' || c.sex === 'intersex';
-    const mus = c.muscle / 100;
-    const sk = c.skinTone;
-    const skinDark = this._darken(sk, 0.2);
-    const skinDeep = this._darken(sk, 0.35);
-    const lipColor = isF ? '#C8607A' : '#B87070';
-    const lipLight = isF ? '#E890A0' : '#C88080';
-    const cx = 100;
+    const isF = c.sex === 'female';
+    const isI = c.sex === 'intersex';
+    const hasBreasts = isF || isI;
 
-    // ── PROPORTIONS ──
-    const headR = 48, headY = 75;
-    const neckY = headR + headY - 2, shoulderY = neckY + 14;
-    const hf = (c.height - 55) / 25, wf = (c.weight - 80) / 320;
-    const shW = (isF ? 26 : 32) + wf * (isF ? 5 : 7) + mus * (isF ? 3 : 9);
-    const waistW = (isF ? 12 : 17) + wf * (isF ? 5 : 6) - mus * (isF ? 4 : 5);
-    const hipW = (isF ? 18 : 12) + (isF ? 10 + (1-mus)*18 : 3 + wf*4) + wf * 2;
-    const legW = (isF ? 5 : 6) + wf * 3 + mus * 4;
-    const waistY = shoulderY + (isF ? 100 : 88) + hf * 8;
-    const hipY = shoulderY + (isF ? 160 : 145) + hf * 10;
-    const footY = shoulderY + 280 + hf * 18;
-    const legSpread = hipW * 0.3, legGap = 2 + legW * 0.25;
-    const breastSize = isF ? (0.5 + (1-mus)*14 - mus*5) : 0;
-    const hairColor = c.hairColor || '#3a2a1a';
-    const eyeY = headY + 2, eyeSp = 20, eyeW = isF?15:13, eyeH = isF?9:7, irisR = isF?8:7;
+    // ── Normalize sliders to 0-1 ──
+    const t = {
+      chest:   c.chest/100,
+      waist:   c.waist/100,
+      hips:    c.hips/100,
+      height:  c.height/100,
+      weight:  c.weight/100,
+      muscle:  c.muscle/100,
+      organ:   c.organSize/100,
+      hWidth:  c.headWidth/100,
+      hLength: c.headLength/100,
+    };
+
+    // ── Core proportions ──
+    const cx = 100;
+    const headR = lerp(40, 54, t.hWidth);     // head radius X
+    const headRY = lerp(46, 58, t.hLength);    // head radius Y
+    const headY = 72;                           // head center Y
+    const neckW = lerp(8, 16, t.weight);
+    const neckH = lerp(10, 18, t.muscle);
+    const shoulderY = headY + headRY + neckH;
+    const shW = lerp(isF?22:28, isF?34:44, t.weight) + lerp(0, 8, t.muscle) + lerp(0, 6, t.chest);
+    const waistW = lerp(isF?10:14, isF?22:26, t.weight) - lerp(0, 6, t.muscle) + lerp(0, -4, t.waist);
+    const hipW = lerp(isF?14:10, isF?28:18, t.hips) + lerp(0, 8, t.weight);
+    const torsoH = lerp(140, 200, t.height);
+    const waistY = shoulderY + torsoH * 0.42;
+    const hipY = shoulderY + torsoH * 0.72;
+    const legH = lerp(120, 170, t.height);
+    const footY = hipY + legH;
+    const legW = lerp(5, 10, t.weight) + lerp(0, 5, t.muscle);
+    const legGap = 2 + legW * 0.3;
+    const breastSize = hasBreasts ? lerp(2, 16, t.chest) * lerp(1, 0.6, t.muscle) : 0;
+
+    // Update gradients
+    this._updateSkinGradient();
+    this._updateHairGradient();
+
+    const skinFill = 'url(#skinGrad)';
+    const hairFill = 'url(#hairGrad)';
+    const outline = '#3a2a1a';
+    const outlineW = 2;
 
     // Clear all layers
-    ['back-hair','body','clothing','head','face','genitals','hair'].forEach(id => this._clear(id));
+    ['back-hair','body','genitals','clothing','head','face','hair','accessories'].forEach(id=>this._clear(id));
 
-    // ── 1. BODY ──
-    const body = this._g('body');
-    // Neck
-    this._path(body, `M ${cx-7} ${neckY-2} C ${cx-9} ${neckY+6}, ${cx-9} ${neckY+10}, ${cx-6} ${shoulderY} L ${cx+6} ${shoulderY} C ${cx+9} ${neckY+10}, ${cx+9} ${neckY+6}, ${cx+7} ${neckY-2} Z`, sk);
-    this._ellipse(body, cx, neckY+6, 5, 3, this._darken(sk, 0.15));
+    // ═══ BODY LAYER ═══
+    const bodyG = this._g('body');
+
     // Torso
-    const torso = isF
-      ? `M ${cx} ${shoulderY} C ${cx+shW*0.3} ${shoulderY+6}, ${cx+shW} ${shoulderY+18}, ${cx+shW*0.92} ${shoulderY+35} C ${cx+shW*0.82} ${shoulderY+55}, ${cx+waistW+3} ${waistY-12}, ${cx+waistW} ${waistY} C ${cx+waistW-1} ${waistY+18}, ${cx+hipW-2} ${hipY-6}, ${cx+hipW} ${hipY} C ${cx+hipW-1} ${hipY+5}, ${cx+legGap*0.5} ${hipY+7}, ${cx+legGap*0.6} ${hipY+9} L ${cx-legGap*0.6} ${hipY+9} C ${cx-legGap*0.5} ${hipY+7}, ${cx-hipW+1} ${hipY+5}, ${cx-hipW} ${hipY} C ${cx-hipW+2} ${hipY-6}, ${cx-waistW+1} ${waistY+18}, ${cx-waistW} ${waistY} C ${cx-waistW-3} ${waistY-12}, ${cx-shW*0.82} ${shoulderY+55}, ${cx-shW*0.92} ${shoulderY+35} C ${cx-shW} ${shoulderY+18}, ${cx-shW*0.3} ${shoulderY+6}, ${cx} ${shoulderY} Z`
-      : `M ${cx} ${shoulderY} C ${cx+shW*0.4} ${shoulderY+6}, ${cx+shW} ${shoulderY+14}, ${cx+shW*0.88} ${shoulderY+38} C ${cx+shW*0.78} ${shoulderY+62}, ${cx+waistW+1} ${waistY-10}, ${cx+waistW} ${waistY} C ${cx+waistW} ${waistY+16}, ${cx+hipW-1} ${hipY-5}, ${cx+hipW} ${hipY} C ${cx+hipW-1} ${hipY+5}, ${cx+legGap*0.5} ${hipY+7}, ${cx+legGap*0.6} ${hipY+9} L ${cx-legGap*0.6} ${hipY+9} C ${cx-legGap*0.5} ${hipY+7}, ${cx-hipW+1} ${hipY+5}, ${cx-hipW} ${hipY} C ${cx-hipW+1} ${hipY-5}, ${cx-waistW} ${waistY+16}, ${cx-waistW} ${waistY} C ${cx-waistW-1} ${waistY-10}, ${cx-shW*0.78} ${shoulderY+62}, ${cx-shW*0.88} ${shoulderY+38} C ${cx-shW} ${shoulderY+14}, ${cx-shW*0.4} ${shoulderY+6}, ${cx} ${shoulderY} Z`;
-    this._path(body, torso, sk);
+    const torso = `
+      M ${cx-shW} ${shoulderY}
+      C ${cx-shW-4} ${shoulderY+20}, ${cx-waistW-2} ${waistY-10}, ${cx-waistW} ${waistY}
+      C ${cx-waistW-2} ${waistY+20}, ${cx-hipW-2} ${hipY-10}, ${cx-hipW} ${hipY}
+      L ${cx+hipW} ${hipY}
+      C ${cx+hipW+2} ${hipY-10}, ${cx+waistW+2} ${waistY+20}, ${cx+waistW} ${waistY}
+      C ${cx+waistW+2} ${waistY-10}, ${cx+shW+4} ${shoulderY+20}, ${cx+shW} ${shoulderY}
+      C ${cx+shW-4} ${shoulderY-4}, ${cx-shW+4} ${shoulderY-4}, ${cx-shW} ${shoulderY} Z`;
+    this._path(bodyG, torso, skinFill, outline, outlineW);
+
+    // Shoulders (caps)
+    this._path(bodyG, `M ${cx-shW} ${shoulderY} C ${cx-shW-10} ${shoulderY-2}, ${cx-shW-18} ${shoulderY+4}, ${cx-shW-16} ${shoulderY+10} C ${cx-shW-12} ${shoulderY+14}, ${cx-shW-4} ${shoulderY+10}, ${cx-shW+4} ${shoulderY+4} Z`, skinFill, outline, outlineW);
+    this._path(bodyG, `M ${cx+shW} ${shoulderY} C ${cx+shW+10} ${shoulderY-2}, ${cx+shW+18} ${shoulderY+4}, ${cx+shW+16} ${shoulderY+10} C ${cx+shW+12} ${shoulderY+14}, ${cx+shW+4} ${shoulderY+10}, ${cx+shW-4} ${shoulderY+4} Z`, skinFill, outline, outlineW);
+
+    // Neck
+    this._path(bodyG, `M ${cx-neckW} ${headY+headRY-4} L ${cx-neckW} ${shoulderY} C ${cx-neckW} ${shoulderY+4}, ${cx+neckW} ${shoulderY+4}, ${cx+neckW} ${shoulderY} L ${cx+neckW} ${headY+headRY-4} Z`, skinFill, outline, outlineW);
+
+    // Arms
+    const armLen = lerp(100, 140, t.height);
+    const armW = lerp(6, 12, t.weight) + lerp(0, 4, t.muscle);
+    // Left arm
+    this._path(bodyG, `M ${cx-shW-8} ${shoulderY+8} C ${cx-shW-12} ${shoulderY+armLen*0.3}, ${cx-shW-14} ${shoulderY+armLen*0.6}, ${cx-shW-10} ${shoulderY+armLen} C ${cx-shW-6} ${shoulderY+armLen+8}, ${cx-shW+4} ${shoulderY+armLen+6}, ${cx-shW+2} ${shoulderY+armLen} C ${cx-shW+6} ${shoulderY+armLen*0.6}, ${cx-shW+4} ${shoulderY+armLen*0.3}, ${cx-shW} ${shoulderY+12} Z`, skinFill, outline, outlineW);
+    // Right arm
+    this._path(bodyG, `M ${cx+shW+8} ${shoulderY+8} C ${cx+shW+12} ${shoulderY+armLen*0.3}, ${cx+shW+14} ${shoulderY+armLen*0.6}, ${cx+shW+10} ${shoulderY+armLen} C ${cx+shW+6} ${shoulderY+armLen+8}, ${cx+shW-4} ${shoulderY+armLen+6}, ${cx+shW-2} ${shoulderY+armLen} C ${cx+shW-6} ${shoulderY+armLen*0.6}, ${cx+shW-4} ${shoulderY+armLen*0.3}, ${cx+shW} ${shoulderY+12} Z`, skinFill, outline, outlineW);
+
     // Legs
-    for (const sd of [-1, 1]) {
-      const lx = cx + sd * legSpread;
-      this._path(body, `M ${lx-legW} ${hipY+7} C ${lx-legW-1} ${hipY+35}, ${lx-legW*0.65} ${(hipY+footY)*0.45}, ${lx-legW*0.55} ${(hipY+footY)*0.55} L ${lx+legW*0.55} ${(hipY+footY)*0.55} C ${lx+legW*0.65} ${(hipY+footY)*0.45}, ${lx+legW+1} ${hipY+35}, ${lx+legW} ${hipY+7} Z`, sk);
-      this._ellipse(body, lx, footY+2, legW+2, 4, this._darken(sk, 0.1));
-    }
-    this._ellipse(body, cx, hipY+(footY-hipY)*0.2, legGap*0.25, (footY-hipY)*0.08, this._darken(sk, 0.08));
-    // Breasts
-    if (isF && breastSize > 0.3) {
-      const bY = shoulderY + (waistY-shoulderY)*0.3;
-      const bX = 7 + breastSize*0.3;
-      for (const sd of [-1, 1]) {
-        this._ellipse(body, cx+sd*bX, bY, breastSize*0.55, breastSize*0.7, sk);
-        this._ellipse(body, cx+sd*bX, bY, breastSize*0.55, breastSize*0.7, 'none', skinDark, 1);
-        this._ellipse(body, cx+sd*(bX-2), bY-3, breastSize*0.2, breastSize*0.15, this._lighten(sk, 0.18));
-        this._circle(body, cx+sd*bX, bY+1, Math.max(1.2, breastSize*0.18), skinDark);
-        this._circle(body, cx+sd*bX, bY+1, Math.max(0.6, breastSize*0.07), skinDeep);
-      }
+    const legSpread = hipW * 0.25;
+    // Left leg
+    this._path(bodyG, `M ${cx-legSpread-legW} ${hipY} C ${cx-legSpread-legW-2} ${hipY+legH*0.3}, ${cx-legSpread-legW-1} ${hipY+legH*0.7}, ${cx-legSpread-legW} ${footY-4} C ${cx-legSpread-legW-1} ${footY}, ${cx-legSpread} ${footY+4}, ${cx-legSpread+legW*0.6} ${footY+2} C ${cx-legSpread+legW} ${footY-2}, ${cx-legSpread+legW+2} ${hipY+legH*0.7}, ${cx-legSpread+legW+1} ${hipY+legH*0.3} Z`, skinFill, outline, outlineW);
+    // Right leg
+    this._path(bodyG, `M ${cx+legSpread+legW} ${hipY} C ${cx+legSpread+legW+2} ${hipY+legH*0.3}, ${cx+legSpread+legW+1} ${hipY+legH*0.7}, ${cx+legSpread+legW} ${footY-4} C ${cx+legSpread+legW+1} ${footY}, ${cx+legSpread} ${footY+4}, ${cx+legSpread-legW*0.6} ${footY+2} C ${cx+legSpread-legW} ${footY-2}, ${cx+legSpread-legW-2} ${hipY+legH*0.7}, ${cx+legSpread-legW-1} ${hipY+legH*0.3} Z`, skinFill, outline, outlineW);
+
+    // Breast outlines (paper-doll style: circles on torso)
+    if(breastSize > 0.5){
+      const bX = lerp(5, 10, t.chest);
+      const bY = shoulderY + lerp(18, 28, t.chest);
+      this._ellipse(bodyG, cx-bX, bY, breastSize, breastSize*0.85, 'none', outline, 1.5);
+      this._ellipse(bodyG, cx+bX, bY, breastSize, breastSize*0.85, 'none', outline, 1.5);
+      // Nipple dots
+      this._circle(bodyG, cx-bX, bY, lerp(1.5, 3, t.chest), outline);
+      this._circle(bodyG, cx+bX, bY, lerp(1.5, 3, t.chest), outline);
     }
 
-    // ── 2. HEAD ──
-    const head = this._g('head');
-    // Paper doll style: smooth rounded top, tapered jaw, narrow chin
-    const topY = headY - headR;
-    const chinY = headY + headR * 0.95;
-    this._path(head,
-      `M ${cx} ${topY}` +
-      ` C ${cx - headR * 0.6} ${topY + headR * 0.08}, ${cx - headR} ${topY + headR * 0.35}, ${cx - headR * 0.92} ${eyeY}` +
-      ` Q ${cx - headR * 0.7} ${headY + headR * 0.55}, ${cx - headR * 0.35} ${chinY}` +
-      ` Q ${cx} ${chinY + headR * 0.12}, ${cx + headR * 0.35} ${chinY}` +
-      ` Q ${cx + headR * 0.7} ${headY + headR * 0.55}, ${cx + headR * 0.92} ${eyeY}` +
-      ` C ${cx + headR} ${topY + headR * 0.35}, ${cx + headR * 0.6} ${topY + headR * 0.08}, ${cx} ${topY} Z`,
-      sk);
+    // ═══ HEAD LAYER ═══
+    const headG = this._g('head');
+    // Head shape: ellipse with width/length control
+    this._ellipse(headG, cx, headY, headR, headRY, skinFill, outline, outlineW);
     // Ears
-    for (const sd of [-1,1]) {
-      this._ellipse(head, cx+sd*(headR-4), headY+4, 5, 9, sk, skinDark, 0.8);
+    this._path(headG, `M ${cx-headR+2} ${headY-4} C ${cx-headR-6} ${headY-10}, ${cx-headR-8} ${headY+2}, ${cx-headR-4} ${headY+8} C ${cx-headR} ${headY+10}, ${cx-headR+4} ${headY+6}, ${cx-headR+2} ${headY} Z`, skinFill, outline, 1.5);
+    this._path(headG, `M ${cx+headR-2} ${headY-4} C ${cx+headR+6} ${headY-10}, ${cx+headR+8} ${headY+2}, ${cx+headR+4} ${headY+8} C ${cx+headR} ${headY+10}, ${cx+headR-4} ${headY+6}, ${cx+headR-2} ${headY} Z`, skinFill, outline, 1.5);
+
+    // ═══ FACE LAYER ═══
+    const faceG = this._g('face');
+    const eyeY = headY + lerp(-2, 4, t.hLength);
+    const eyeSp = lerp(16, 24, t.hWidth);
+    const eyeType = EYE_TYPES[c.eyeType] || EYE_TYPES[0];
+    const noseType = NOSE_TYPES[c.noseType] || NOSE_TYPES[0];
+
+    // ── Eyes based on type ──
+    const eyeW = eyeType.key==='round'?14 : eyeType.key==='narrow'?10 : eyeType.key==='wide'?16 : 13;
+    const eyeH = eyeType.key==='round'?12 : eyeType.key==='narrow'?6 : eyeType.key==='wide'?10 : 9;
+    const irisR = eyeType.key==='round'?7 : eyeType.key==='narrow'?4 : 6;
+    const lidWeight = eyeType.key==='hooded'?3.5 : 2.5;
+
+    for(const side of [-1, 1]){
+      const ex = cx + side * eyeSp;
+      // Sclera
+      this._ellipse(faceG, ex, eyeY, eyeW, eyeH, 'white', outline, 1);
+      // Iris
+      this._circle(faceG, ex, eyeY+1, irisR, '#4a3080');
+      // Pupil
+      this._circle(faceG, ex, eyeY+1, irisR*0.5, '#1a0830');
+      // Upper lid
+      this._path(faceG, `M ${ex-eyeW} ${eyeY-eyeH*0.3} C ${ex-eyeW*0.5} ${eyeY-eyeH-4}, ${ex+eyeW*0.5} ${eyeY-eyeH-4}, ${ex+eyeW} ${eyeY-eyeH*0.3}`, 'none', '#2a1a10', lidWeight);
+      // Lower lid hint
+      this._path(faceG, `M ${ex-eyeW+2} ${eyeY+eyeH*0.5} C ${ex} ${eyeY+eyeH+2}, ${ex+eyeW-2} ${eyeY+eyeH+2}`, 'none', outline, 0.8);
+      // Highlights
+      this._circle(faceG, ex+irisR*0.3, eyeY-irisR*0.3, irisR*0.4, 'white');
+      this._circle(faceG, ex-irisR*0.2, eyeY+irisR*0.3, irisR*0.2, 'white');
     }
 
-    // ── 3. FACE ──
-    const face = this._g('face');
-    // Blush
-    if (isF) {
-      for (const sd of [-1,1]) this._ellipse(face, cx+sd*30, eyeY+14, 12, 6, '#FFB3C688');
-    }
-    // Eyes
-    for (const sd of [-1,1]) {
-      const ex = cx + sd*eyeSp;
-      this._path(face, `M ${ex-eyeW} ${eyeY} Q ${ex} ${eyeY-eyeH} ${ex+eyeW} ${eyeY} Q ${ex} ${eyeY+eyeH*0.7} ${ex-eyeW} ${eyeY} Z`, '#F8F4FF', '#AAAACC', 0.6);
-      this._ellipse(face, ex, eyeY+1, irisR, irisR*0.9, 'url(#irisGrad)');
-      this._ellipse(face, ex-1, eyeY, irisR*0.55, irisR*0.45, '#7B4FA0');
-      this._ellipse(face, ex, eyeY+1, irisR*0.3, irisR*0.35, '#0A0015');
-      this._path(face, `M ${ex-irisR} ${eyeY+1} A ${irisR} ${irisR*0.85} 0 0 0 ${ex+irisR} ${eyeY+1} L ${ex+irisR} ${eyeY-irisR*0.15} A ${irisR*0.5} ${irisR*0.35} 0 0 1 ${ex-irisR} ${eyeY-irisR*0.15} Z`, '#00000055');
-      this._ellipse(face, ex-3, eyeY-3, irisR*0.25, irisR*0.18, '#FFFFFF99');
-      this._circle(face, ex+2, eyeY+3, irisR*0.08, '#FFFFFF');
-      this._path(face, `M ${ex-eyeW+1} ${eyeY-1} Q ${ex} ${eyeY-eyeH-2} ${ex+eyeW-1} ${eyeY-1}`, 'none', '#0D0020', isF?2.5:1.8);
-      if (isF) this._path(face, `M ${ex+eyeW-2} ${eyeY-1} L ${ex+eyeW+4} ${eyeY-4}`, '#0D0020', '#0D0020', 1.2);
-      this._path(face, `M ${ex-eyeW+3} ${eyeY+3} Q ${ex} ${eyeY+eyeH*0.5} ${ex+eyeW-3} ${eyeY+3}`, 'none', '#2A1040', 0.6);
-    }
     // Eyebrows
-    for (const sd of [-1,1]) {
-      const ex = cx+sd*eyeSp, bY = eyeY-eyeH-6;
-      if (isF) this._path(face, `M ${ex-14} ${bY+3} Q ${ex} ${bY-5} ${ex+14} ${bY+3}`, 'none', '#2A103E', 1.5);
-      else this._path(face, `M ${ex-16} ${bY+4} Q ${ex} ${bY} ${ex+16} ${bY+4}`, 'none', '#2A103E', 2.5);
-    }
-    // Nose
-    this._path(face, `M ${cx-2} ${eyeY+14} Q ${cx} ${eyeY+18} ${cx+2} ${eyeY+14}`, 'none', skinDark, 0.7);
-    // Mouth
-    const mY = eyeY+28;
-    this._path(face, `M ${cx-7} ${mY} Q ${cx-3} ${mY-3} ${cx} ${mY-1.5} Q ${cx+3} ${mY-3} ${cx+7} ${mY}`, 'none', lipColor, 1.3);
-    this._path(face, `M ${cx-6} ${mY+1} Q ${cx} ${mY+5} ${cx+6} ${mY+1} Q ${cx} ${mY+2.5} ${cx-6} ${mY+1} Z`, lipLight);
-    this._ellipse(face, cx+1, mY+2.5, 2, 1, '#FFFFFF66');
+    const browY = eyeY - eyeH - 8;
+    this._path(faceG, `M ${cx-eyeSp-eyeW} ${browY} C ${cx-eyeSp-eyeW*0.3} ${browY-4}, ${cx-eyeSp+eyeW*0.3} ${browY-4}, ${cx-eyeSp+eyeW} ${browY+2}`, 'none', outline, 1.8);
+    this._path(faceG, `M ${cx+eyeSp+eyeW} ${browY} C ${cx+eyeSp+eyeW*0.3} ${browY-4}, ${cx+eyeSp-eyeW*0.3} ${browY-4}, ${cx+eyeSp-eyeW} ${browY+2}`, 'none', outline, 1.8);
 
-    // ── 4. HAIR (Paper Doll Style) ──
-    const hair = this._g('hair');
-    const hairstyle = HAIRSTYLES[c.hairstyle] || HAIRSTYLES.none;
-    if (hairstyle.paths.length > 0) {
-      // Create a group for this hairstyle
-      const hg = document.createElementNS('http://www.w3.org/2000/svg','g');
-      hg.setAttribute('fill', hairColor);
-      hg.setAttribute('stroke', this._darken(hairColor, 0.3));
-      hg.setAttribute('stroke-width', '0.5');
-      for (const d of hairstyle.paths) {
-        const p = document.createElementNS('http://www.w3.org/2000/svg','path');
-        p.setAttribute('d', d);
-        // Check if it's a stroke-only path (texture lines)
-        if (d.includes('M') && !d.includes('C') && !d.includes('Q') && !d.includes('Z') && !d.includes('L')) {
-          p.setAttribute('fill', 'none');
-          p.setAttribute('stroke', this._darken(hairColor, 0.25));
-          p.setAttribute('stroke-width', '1');
-        } else if (d.includes('M') && d.includes('L') && !d.includes('C') && !d.includes('Q')) {
-          // Simple lines (texture)
-          p.setAttribute('fill', 'none');
-          p.setAttribute('stroke', this._darken(hairColor, 0.25));
-          p.setAttribute('stroke-width', '1.2');
-        }
-        hg.appendChild(p);
-      }
-      hair.appendChild(hg);
+    // ── Nose based on type ──
+    const noseY = headY + lerp(8, 14, t.hLength);
+    if(noseType.key==='small'){
+      this._path(faceG, `M ${cx-2} ${noseY} L ${cx} ${noseY+6} L ${cx+2} ${noseY}`, 'none', '#a08070', 1.2);
+    } else if(noseType.key==='medium'){
+      this._path(faceG, `M ${cx-4} ${noseY-2} L ${cx-2} ${noseY+8} C ${cx} ${noseY+10}, ${cx+2} ${noseY+8}, ${cx+4} ${noseY-2}`, 'none', '#a08070', 1.2);
+    } else if(noseType.key==='pointed'){
+      this._path(faceG, `M ${cx-3} ${noseY-4} L ${cx} ${noseY+10} L ${cx+3} ${noseY-4}`, 'none', '#907060', 1.3);
+    } else if(noseType.key==='flat'){
+      this._path(faceG, `M ${cx-6} ${noseY+2} C ${cx-4} ${noseY+8}, ${cx+4} ${noseY+8}, ${cx+6} ${noseY+2}`, 'none', '#a08070', 1.2);
+      this._path(faceG, `M ${cx-4} ${noseY+4} C ${cx-2} ${noseY+8}, ${cx+2} ${noseY+8}, ${cx+4} ${noseY+4}`, 'none', '#b09080', 0.8);
+    } else if(noseType.key==='button'){
+      this._path(faceG, `M ${cx-3} ${noseY} C ${cx-4} ${noseY+6}, ${cx} ${noseY+8}, ${cx+4} ${noseY+6} C ${cx+3} ${noseY+4}, ${cx+2} ${noseY}, ${cx-2} ${noseY} Z`, 'none', '#a08070', 1.2);
+    } else { // hooked
+      this._path(faceG, `M ${cx-2} ${noseY-6} C ${cx+2} ${noseY-2}, ${cx+4} ${noseY+4}, ${cx+2} ${noseY+10} C ${cx} ${noseY+12}, ${cx-2} ${noseY+10}, ${cx-4} ${noseY+4}`, 'none', '#907060', 1.3);
+    }
+
+    // Mouth
+    const mouthY = headY + lerp(22, 32, t.hLength);
+    this._path(faceG, `M ${cx-14} ${mouthY} C ${cx-6} ${mouthY+6}, ${cx+6} ${mouthY+6}, ${cx+14} ${mouthY}`, 'url(#lipGrad)', '#a06060', 1);
+    this._path(faceG, `M ${cx-12} ${mouthY+1} C ${cx-4} ${mouthY+4}, ${cx+4} ${mouthY+4}, ${cx+12} ${mouthY+1}`, 'none', '#c07070', 0.5);
+
+    // ═══ HAIR LAYER ═══
+    const hairG = this._g('hair');
+    const hairIdx = clamp(c.hairstyle, 0, HAIRSTYLES.length-1);
+    const hs = HAIRSTYLES[hairIdx];
+    if(hs && hs.paths){
+      hs.paths.forEach(d => this._path(hairG, d, hairFill, '#2a1508', 1.5));
+    }
+
+    // ═══ GENITALS LAYER ═══
+    const genG = this._g('genitals');
+    const genY = hipY + 4;
+    const organT = t.organ;
+
+    if(c.sex === 'male'){
+      // Penis
+      const pLen = lerp(8, 22, organT);
+      const pW = lerp(3, 7, organT);
+      this._path(genG, `M ${cx-pW} ${genY} C ${cx-pW-1} ${genY+pLen*0.5}, ${cx-pW} ${genY+pLen}, ${cx} ${genY+pLen+2} C ${cx+pW} ${genY+pLen}, ${cx+pW+1} ${genY+pLen*0.5}, ${cx+pW} ${genY} Z`, skinFill, outline, 1.5);
+      // Balls
+      const ballR = lerp(3, 7, organT);
+      this._ellipse(genG, cx-ballR, genY+2, ballR, ballR*0.8, skinFill, outline, 1.2);
+      this._ellipse(genG, cx+ballR, genY+2, ballR, ballR*0.8, skinFill, outline, 1.2);
+    } else if(c.sex === 'female'){
+      // Vulva
+      const vW = lerp(4, 10, organT);
+      const vH = lerp(3, 7, organT);
+      // Mons
+      this._ellipse(genG, cx, genY-2, vW+2, vH+2, skinFill, outline, 1.5);
+      // Labia
+      this._path(genG, `M ${cx-vW} ${genY} C ${cx-vW+1} ${genY+vH}, ${cx-1} ${genY+vH+2}, ${cx} ${genY+vH} C ${cx+1} ${genY+vH+2}, ${cx+vW-1} ${genY+vH}, ${cx+vW} ${genY}`, 'none', '#804040', 1.2);
+      // Clitoris
+      this._circle(genG, cx, genY-1, lerp(1, 2.5, organT), '#a06060');
+    } else { // intersex
+      const pLen = lerp(4, 12, organT);
+      const pW = lerp(2, 5, organT);
+      this._path(genG, `M ${cx-pW} ${genY} C ${cx-pW-1} ${genY+pLen*0.5}, ${cx-pW} ${genY+pLen}, ${cx} ${genY+pLen+1} C ${cx+pW} ${genY+pLen}, ${cx+pW+1} ${genY+pLen*0.5}, ${cx+pW} ${genY} Z`, skinFill, outline, 1.5);
+      const vW = lerp(3, 7, organT);
+      this._path(genG, `M ${cx-vW} ${genY+2} C ${cx-vW+1} ${genY+6}, ${cx} ${genY+8}, ${cx+vW-1} ${genY+6} C ${cx+vW} ${genY+4}, ${cx+vW} ${genY+2}, ${cx} ${genY+1}`, 'none', '#804040', 1);
     }
   }
 };
 
-SVG._init();
-
-// ══════════════════════════════════════════════════════════════
-// SLIDER BUILDER
-// ══════════════════════════════════════════════════════════════
-function makeSlider(label, min, max, step, value, fmt, onChange, gradient) {
-  const wrap = document.createElement('div');
-  wrap.className = 'slider-row';
-  const top = document.createElement('div');
-  const lbl = document.createElement('span');
-  lbl.className = 'slider-label';
-  lbl.textContent = label;
-  const val = document.createElement('span');
-  val.className = 'slider-value';
-  val.textContent = fmt(value);
-  top.appendChild(lbl); top.appendChild(val);
-  const inp = document.createElement('input');
-  inp.type = 'range';
-  inp.min = min; inp.max = max; inp.step = step; inp.value = value;
-  if (gradient) {
-    inp.classList.add('gradient');
-    inp.style.setProperty('--g-left', gradient[0]);
-    inp.style.setProperty('--g-right', gradient[1]);
-  }
-  const hints = document.createElement('div');
-  hints.className = 'range-hints';
-  hints.innerHTML = `<span>${fmt(min)}</span><span>${fmt(max)}</span>`;
-  const handler = () => { val.textContent = fmt(parseFloat(inp.value)); onChange(parseFloat(inp.value)); };
-  inp.addEventListener('input', handler);
-  inp.addEventListener('change', handler);
-  wrap.appendChild(top); wrap.appendChild(inp); wrap.appendChild(hints);
-  return wrap;
-}
-
 // ══════════════════════════════════════════════════════════════
 // STEP BUILDERS
 // ══════════════════════════════════════════════════════════════
-
-// Step 1: Background (Sex, Age, Ethnicity)
-function buildStep1() {
-  const s = document.getElementById('step-1');
-  if (s.children.length > 2) return;
-  const sx = SEX_TYPES.indexOf(S.character.sex);
-  s.appendChild(makeSlider('Sex Assigned at Birth', 0, 2, 1, sx >= 0 ? sx : 0, v => ['Male','Female','Intersex'][Math.round(v)], v => { S.character.sex = SEX_TYPES[Math.round(v)]; SVG.render(); }));
-  s.appendChild(makeSlider('Starting Age', 18, 69, 1, S.character.age, v => ageLabel(v), v => { S.character.age = v; }));
-  s.appendChild(makeSlider('Ethnicity', 0, ETHNICITIES.length-1, 1, ETHNICITIES.indexOf(S.character.ethnicity), v => ETHNICITIES[Math.round(v)], v => {
-    S.character.ethnicity = ETHNICITIES[Math.round(v)];
-    const opts = skinTonesForEthnicity();
-    const curKey = Object.keys(SKIN_TONES).find(k => SKIN_TONES[k] === S.character.skinTone);
-    if (opts.indexOf(curKey) < 0) S.character.skinTone = SKIN_TONES[opts[Math.floor(opts.length/2)]];
-    SVG.render();
-  }));
+function mkSlider(label, key, lo, hi, fmt){
+  const id = 'slider-'+key;
+  return `
+    <div class="slider-row">
+      <div><span class="slider-label">${label}</span><span class="slider-value" id="${id}-val"></span></div>
+      <input type="range" id="${id}" min="0" max="100" value="50">
+      <div class="range-hints"><span>${lo}</span><span>${hi}</span></div>
+    </div>`;
 }
 
-// Step 2: Body
-function buildStep2() {
-  const s = document.getElementById('step-2');
-  if (s.children.length > 2) return;
-  const lim = HEIGHT_LIMITS[S.character.sex] || HEIGHT_LIMITS.male;
-  document.getElementById('step2-title').textContent = 'Step 3: Body — ' + (S.character.sex ? S.character.sex[0].toUpperCase() + S.character.sex.slice(1) : 'Male');
-  s.appendChild(makeSlider('Weight (lbs)', 80, 350, 5, S.character.weight, v => v + ' lbs', v => { S.character.weight = v; SVG.render(); }));
-  s.appendChild(makeSlider('Musculature', 0, 100, 5, S.character.muscle, v => (v < 30 ? 'Soft' : v < 70 ? 'Average' : 'Defined') + ' (' + v + ')', v => { S.character.muscle = v; SVG.render(); }));
-  s.appendChild(makeSlider('Height (inches)', lim.min, lim.max, 1, S.character.height, v => formatHeight(v), v => { S.character.height = v; SVG.render(); }));
-  const so = skinTonesForEthnicity();
-  const si = so.indexOf(Object.keys(SKIN_TONES).find(k => SKIN_TONES[k] === S.character.skinTone));
-  s.appendChild(makeSlider('Skin Tone', 0, so.length-1, 1, si >= 0 ? si : Math.floor(so.length/2), v => so[Math.round(v)].charAt(0).toUpperCase() + so[Math.round(v)].slice(1), v => { S.character.skinTone = SKIN_TONES[so[Math.round(v)]]; SVG.render(); }));
+function mkGridButtons(items, key, cls){
+  return `<div class="${cls||'grid-3'}" id="grid-${key}">` +
+    items.map((item,i) => `<button class="grid-btn" data-key="${key}" data-idx="${i}">${item.label}</button>`).join('') +
+    '</div>';
 }
 
-// Step 3: Hairstyle (NEW — paper doll style)
-function buildStep3() {
-  const s = document.getElementById('step-3');
-  // Clear previous content
-  while (s.children.length > 2) s.removeChild(s.lastChild);
-
-  // Hair color selector
-  const ho = hairColorForEthnicity();
-  const hi = ho.indexOf(Object.keys(HAIR_COLORS).find(k => HAIR_COLORS[k] === S.character.hairColor));
-  s.appendChild(makeSlider('Hair Color', 0, ho.length-1, 1, hi >= 0 ? hi : Math.floor(ho.length/2), v => ho[Math.round(v)].replace(/-/g,' '), v => { S.character.hairColor = HAIR_COLORS[ho[Math.round(v)]]; SVG.render(); }));
-
-  // Hairstyle grid
-  const grid = document.createElement('div');
-  grid.className = 'hair-grid';
-  const styleKeys = Object.keys(HAIRSTYLES);
-  for (const key of styleKeys) {
-    const btn = document.createElement('button');
-    btn.className = 'hair-btn' + (S.character.hairstyle === key ? ' selected' : '');
-    btn.textContent = HAIRSTYLES[key].label;
-    btn.addEventListener('click', () => {
-      S.character.hairstyle = key;
-      grid.querySelectorAll('.hair-btn').forEach(b => b.classList.remove('selected'));
-      btn.classList.add('selected');
-      SVG.render();
-    });
-    grid.appendChild(btn);
-  }
-  s.appendChild(grid);
+function mkSliderWithGradient(label, key, lo, hi, cL, cR){
+  const id = 'slider-'+key;
+  return `
+    <div class="slider-row">
+      <div><span class="slider-label">${label}</span><span class="slider-value" id="${id}-val"></span></div>
+      <input type="range" class="grad" id="${id}" min="0" max="100" value="50" style="--g-l:${cL};--g-r:${cR};">
+      <div class="range-hints"><span>${lo}</span><span>${hi}</span></div>
+    </div>`;
 }
 
-// Step 4: Sexuality
-function buildStep4() {
-  const s = document.getElementById('step-4');
-  if (s.children.length > 2) return;
-  s.appendChild(makeSlider('Gender (Masc→Fem)', 0, 100, 5, S.character.gender, v => v < 30 ? 'Masculine' : v < 70 ? 'Androgynous' : 'Feminine', v => { S.character.gender = v; SVG.render(); }));
-  s.appendChild(makeSlider('Romantic→Aromantic', 0, 100, 5, S.character.romantic, v => v < 30 ? 'Aromantic' : v < 70 ? 'Gray-Romantic' : 'Romantic', v => { S.character.romantic = v; }));
-  s.appendChild(makeSlider('Hetero→Homo', 0, 100, 5, S.character.homo, v => v < 30 ? 'Heterosexual' : v < 70 ? 'Bisexual' : 'Homosexual', v => { S.character.homo = v; }));
-  s.appendChild(makeSlider('Sexual→Asexual', 0, 100, 5, S.character.sexual, v => v < 30 ? 'Asexual' : v < 70 ? 'Gray-Sexual' : 'Sexual', v => { S.character.sexual = v; }));
-}
+const stepBuilders = [];
 
-// Step 5: Personality
-function buildStep5() {
-  const s = document.getElementById('step-5');
-  if (s.children.length > 2) return;
-  document.getElementById('step5-title').textContent = 'Step 6: Personality — ' + mbtiType();
-  for (const dim of MBTI) {
-    const val = S.character.mbti[dim.key];
-    const row = makeSlider(dim.left + ' ↔ ' + dim.right, 0, 100, 5, val, v => {
-      const l = v >= 50 ? dim.right[dim.right.length-1] : dim.left[dim.left.length-2];
-      return l + ' ' + (v >= 50 ? v : 100-v) + '%';
-    }, v => { S.character.mbti[dim.key] = v; document.getElementById('step5-title').textContent = 'Step 6: Personality — ' + mbtiType(); }, [dim.cL, dim.cR]);
-    s.appendChild(row);
-  }
-}
+// ── STEP 0: Name ──
+stepBuilders.push(() => `
+  <div class="preview-full">
+    <div class="step-title">What is your name?</div>
+    <div class="name-input-wrap">
+      <input type="text" id="name-input" placeholder="Enter a name..." maxlength="30">
+    </div>
+    <div class="step-subtitle">or just press Continue to use "Alex"</div>
+  </div>`);
 
-// Step 6: SocioEconomics
-function buildStep6() {
-  const s = document.getElementById('step-6');
-  if (s.children.length > 2) return;
-  s.appendChild(makeSlider('Family Finances', 0, 100, 5, S.character.finances, v => v + '%', v => { S.character.finances = v; updateSoc(); }));
-  s.appendChild(makeSlider('Social Capital', 0, 100, 5, S.character.socialCapital, v => v + '%', v => { S.character.socialCapital = v; updateSoc(); }));
-  s.appendChild(makeSlider('Neighborhood', 0, 100, 5, S.character.neighborhood, v => v + '%', v => { S.character.neighborhood = v; updateSoc(); }));
-  const pw = document.createElement('div');
-  pw.className = 'socio-preview';
-  pw.innerHTML = '<div class="cash" id="soc-cash"></div><div class="detail" id="soc-hood"></div><div class="detail" id="soc-house"></div>';
-  s.appendChild(pw);
-  updateSoc();
-}
+// ── STEP 1: Background (Sex, Age, Ethnicity) ──
+stepBuilders.push(() => `
+  <div class="step-title">Step 2: Background</div>
+  <div class="step-subtitle">Sex, age & ethnicity</div>
+  <div class="slider-row">
+    <div><span class="slider-label">Sex</span><span class="slider-value" id="val-sex"></span></div>
+    <div class="grid-3" id="grid-sex">
+      ${SEX_TYPES.map((s,i) => `<button class="grid-btn" data-key="sex" data-val="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
+    </div>
+  </div>
+  ${mkSlider('Age','age','18','69')}
+  ${mkSlider('Ethnicity','ethnicity','A','K')}
+`);
 
-function updateSoc() {
-  const cash = Math.round(500 * Math.pow(1000, S.character.finances / 100));
-  const hood = S.character.neighborhood < 15 ? 'Rough' : S.character.neighborhood < 35 ? 'Working Class' : S.character.neighborhood < 55 ? 'Suburban' : S.character.neighborhood < 80 ? 'Upscale' : 'Gated';
-  const fam = S.character.finances < 15 ? 'Struggling' : S.character.finances < 35 ? 'Working' : S.character.finances < 55 ? 'Middle' : S.character.finances < 80 ? 'Upper Middle' : 'Wealthy';
-  const h = {'Struggling':{'Rough':'Shared Room','Working':'Shared Room','Suburban':'Apartment','Upscale':'Apartment','Gated':'Apartment'},'Working':{'Rough':'Apartment','Working':'Apartment','Suburban':'Apartment','Upscale':'Townhouse','Gated':'Townhouse'},'Middle':{'Rough':'Apartment','Working':'Townhouse','Suburban':'House','Upscale':'House','Gated':'House'},'Upper Middle':{'Rough':'Townhouse','Working':'House','Suburban':'House','Upscale':'Luxury','Gated':'Luxury'},'Wealthy':{'Rough':'House','Working':'House','Suburban':'Luxury','Upscale':'Luxury','Gated':'Luxury'}};
-  const hv = h[fam] && h[fam][hood] ? h[fam][hood] : 'Apartment';
-  const ce = document.getElementById('soc-cash'), he = document.getElementById('soc-hood'), hme = document.getElementById('soc-house');
-  if (ce) ce.textContent = '$' + cash.toLocaleString();
-  if (he) he.textContent = hood;
-  if (hme) hme.textContent = hv;
-}
+// ── STEP 2: Body ──
+stepBuilders.push(() => `
+  <div class="step-title">Step 3: Body</div>
+  <div class="step-subtitle">Size, shape & sex organs</div>
+  ${mkSlider('Chest / Bust','chest','Flat','Large')}
+  ${mkSlider('Waist','waist','Narrow','Wide')}
+  ${mkSlider('Hips','hips','Narrow','Wide')}
+  ${mkSlider('Height','height','Short','Tall')}
+  ${mkSlider('Weight','weight','Light','Heavy')}
+  ${mkSlider('Muscle','muscle','Soft','Ripped')}
+  ${mkSlider('Organ Size','organSize','Small','Large')}
+  <div class="slider-row">
+    <div><span class="slider-label">Skin Tone</span><span class="slider-value" id="val-skinTone"></span></div>
+    <input type="range" id="slider-skinTone" min="0" max="100" value="0">
+  </div>
+`);
 
-// Step 7: City
-function buildStep7() {
-  const s = document.getElementById('step-7');
-  if (s.querySelector('.city-grid')) return;
-  const g = document.createElement('div');
-  g.className = 'city-grid';
-  for (const city of CITIES) {
-    const b = document.createElement('button');
-    b.className = 'city-btn' + (S.character.city === city ? ' selected' : '');
-    b.textContent = city;
-    b.addEventListener('click', () => {
-      S.character.city = city;
-      g.querySelectorAll('.city-btn').forEach(x => x.classList.remove('selected'));
-      b.classList.add('selected');
-    });
-    g.appendChild(b);
-  }
-  s.appendChild(g);
-}
-
-// ══════════════════════════════════════════════════════════════
-// NAVIGATION
-// ══════════════════════════════════════════════════════════════
-const builders = [null, buildStep1, buildStep2, buildStep3, buildStep4, buildStep5, buildStep6, buildStep7];
-
-function goToStep(n) {
-  for (let i = 0; i < 8; i++) {
-    const e = document.getElementById('step-' + i);
-    if (e) e.hidden = true;
-  }
-  const t = document.getElementById('step-' + n);
-  if (t) t.hidden = false;
-  if (builders[n]) builders[n]();
-  S.step = n;
-  document.getElementById('step-indicator').textContent = (n + 1) + ' / 8';
-  document.getElementById('progress-fill').style.width = ((n + 1) / 8 * 100) + '%';
-  document.getElementById('btn-back').disabled = (n === 0);
-  document.getElementById('sliders-zone').scrollTop = 0;
-}
-
-document.getElementById('btn-back').addEventListener('click', () => { if (S.step > 0) goToStep(S.step - 1); });
-document.getElementById('btn-continue').addEventListener('click', () => {
-  if (S.step === 0) {
-    const inp = document.getElementById('name-input');
-    if (inp && inp.value.trim()) S.character.name = inp.value.trim();
-  }
-  if (S.step < 7) goToStep(S.step + 1);
-  else alert('Character: ' + S.character.name + '\nSex: ' + S.character.sex + '\nCity: ' + S.character.city + '\nMBTI: ' + mbtiType());
+// ── STEP 3: Head ──
+stepBuilders.push(() => {
+  const hairColors = hairColorsForEthnicity();
+  return `
+  <div class="step-title">Step 4: Head & Face</div>
+  <div class="step-subtitle">Hair, eyes, nose & head shape</div>
+  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Hairstyle</div>
+  ${mkGridButtons(HAIRSTYLES.map(h=>({label:h.label,key:h.key})), 'hairstyle', 'grid-3')}
+  <div class="slider-row">
+    <div><span class="slider-label">Hair Color</span><span class="slider-value" id="val-hairColor"></span></div>
+    <input type="range" id="slider-hairColor" min="0" max="${Math.max(0,hairColors.length-1)}" value="0">
+  </div>
+  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Eye Type</div>
+  ${mkGridButtons(EYE_TYPES, 'eyeType', 'grid-3')}
+  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Nose Type</div>
+  ${mkGridButtons(NOSE_TYPES, 'noseType', 'grid-3')}
+  ${mkSlider('Head Width','headWidth','Narrow','Wide')}
+  ${mkSlider('Head Length','headLength','Short','Long')}
+`;
 });
 
-// ── Init ──
-goToStep(0);
-SVG.render();
+// ── STEP 4: Sexuality & Gender ──
+stepBuilders.push(() => `
+  <div class="step-title">Step 5: Sexuality & Gender</div>
+  <div class="step-subtitle">Gender is separate from birth sex</div>
+  ${mkSliderWithGradient('Gender','gender','Masc','Fem','#4A90D9','#E94560')}
+  ${mkSlider('Romantic','romantic','Aromantic','Romantic')}
+  ${mkSlider('Attraction','homo','Hetero','Homo')}
+  ${mkSlider('Libido','sexual','Low','High')}
+`);
+
+// ── STEP 5: Personality ──
+stepBuilders.push(() => {
+  const mbtiRows = MBTI.map(m => mkSliderWithGradient(
+    `${m.left} ↔ ${m.right}`, 'mbti-'+m.key, m.left.split('[')[0], m.right.split('[')[0], m.cL, m.cR
+  )).join('');
+  return `<div class="step-title">Step 6: Personality</div>
+    <div class="step-subtitle">How do you tend to be?</div>
+    ${mbtiRows}`;
+});
+
+// ── STEP 6: Socio-Economics ──
+stepBuilders.push(() => `
+  <div class="step-title">Step 7: Background</div>
+  <div class="step-subtitle">Finances, connections & neighborhood</div>
+  ${mkSlider('Family Finances','finances','Poor','Wealthy')}
+  ${mkSlider('Social Capital','socialCapital','Unknown','Well-connected')}
+  ${mkSlider('Neighborhood','neighborhood','Rough','Upscale')}
+  <div class="socio-preview" id="socio-preview"></div>
+`);
+
+// ── STEP 7: City ──
+stepBuilders.push(() => `
+  <div class="step-title">Step 8: Starting City</div>
+  <div class="step-subtitle">Where will you begin?</div>
+  <div class="grid-2" id="grid-city">
+    ${CITIES.map(city => `<button class="grid-btn" data-key="city" data-val="${city}">${city}</button>`).join('')}
+  </div>
+`);
+
+// ══════════════════════════════════════════════════════════════
+// UI CONTROLLER
+// ══════════════════════════════════════════════════════════════
+function renderStep(){
+  const zone = document.getElementById('sliders-zone');
+  const stepDivs = zone.querySelectorAll('.step');
+  stepDivs.forEach(d => d.remove());
+
+  const stepEl = document.createElement('div');
+  stepEl.className = 'step';
+  stepEl.id = 'step-'+S.step;
+  stepEl.innerHTML = stepBuilders[S.step]();
+  zone.appendChild(stepEl);
+
+  // Wire up all inputs for this step
+  wireStep();
+  updateUI();
+}
+
+function wireStep(){
+  const stepEl = document.getElementById('step-'+S.step);
+  if(!stepEl) return;
+
+  // Range sliders
+  stepEl.querySelectorAll('input[type="range"]').forEach(input=>{
+    input.addEventListener('input', ()=>{
+      const key = input.id.replace('slider-','');
+      if(key.startsWith('mbti-')){
+        const mbtiKey = key.replace('mbti-','');
+        S.character.mbti[mbtiKey] = parseInt(input.value);
+      } else if(key === 'skinTone'){
+        S.character.skinToneIdx = parseInt(input.value);
+      } else if(key === 'hairColor'){
+        S.character.hairColor = parseInt(input.value);
+      } else if(key === 'ethnicity'){
+        const ethIdx = Math.round(parseInt(input.value) / (100/(ETHNICITIES.length-1)));
+        S.character.ethnicity = ETHNICITIES[clamp(ethIdx,0,ETHNICITIES.length-1)];
+      } else if(key === 'age'){
+        S.character.age = 18 + Math.round(parseInt(input.value) * 51 / 100);
+      } else {
+        S.character[key] = parseInt(input.value);
+      }
+      updateUI();
+    });
+  });
+
+  // Grid buttons
+  stepEl.querySelectorAll('.grid-btn').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const key = btn.dataset.key;
+      const idx = parseInt(btn.dataset.idx);
+      const val = btn.dataset.val;
+      if(val !== undefined){
+        S.character[key] = val;
+      } else {
+        S.character[key] = idx;
+      }
+      // Update selected state
+      stepEl.querySelectorAll(`.grid-btn[data-key="${key}"]`).forEach(b=>b.classList.remove('selected'));
+      btn.classList.add('selected');
+      updateUI();
+    });
+  });
+
+  // Name input
+  const nameInput = stepEl.querySelector('#name-input');
+  if(nameInput){
+    nameInput.addEventListener('input', ()=>{
+      S.character.name = nameInput.value || 'Alex';
+    });
+  }
+}
+
+function updateUI(){
+  const c = S.character;
+  const stepEl = document.getElementById('step-'+S.step);
+  if(!stepEl) return;
+
+  // Update slider values
+  stepEl.querySelectorAll('input[type="range"]').forEach(input=>{
+    const key = input.id.replace('slider-','');
+    const valEl = document.getElementById(input.id+'-val');
+    if(!valEl) return;
+
+    if(key === 'age'){
+      input.value = Math.round((c.age - 18) * 100 / 51);
+      valEl.textContent = ageLabel(c.age);
+    } else if(key === 'ethnicity'){
+      const ethIdx = ETHNICITIES.indexOf(c.ethnicity);
+      input.value = Math.round(ethIdx * (100/(ETHNICITIES.length-1)));
+      valEl.textContent = c.ethnicity;
+    } else if(key === 'skinTone'){
+      const tones = skinTonesForEthnicity();
+      input.max = Math.max(0, tones.length-1);
+      input.value = clamp(c.skinToneIdx||0, 0, tones.length-1);
+      valEl.textContent = tones[clamp(c.skinToneIdx||0,0,tones.length-1)]||'';
+    } else if(key === 'hairColor'){
+      const colors = hairColorsForEthnicity();
+      input.max = Math.max(0, colors.length-1);
+      input.value = clamp(c.hairColor, 0, colors.length-1);
+      valEl.textContent = colors[clamp(c.hairColor,0,colors.length-1)]?.label||'';
+    } else if(key.startsWith('mbti-')){
+      const mbtiKey = key.replace('mbti-','');
+      input.value = c.mbti[mbtiKey];
+      valEl.textContent = c.mbti[mbtiKey]+'%';
+    } else {
+      input.value = c[key] ?? 50;
+      valEl.textContent = (c[key]??50)+'%';
+    }
+  });
+
+  // Update grid button selection
+  stepEl.querySelectorAll('.grid-btn').forEach(btn=>{
+    const key = btn.dataset.key;
+    const idx = parseInt(btn.dataset.idx);
+    const val = btn.dataset.val;
+    if(val !== undefined){
+      btn.classList.toggle('selected', c[key] === val);
+    } else {
+      btn.classList.toggle('selected', c[key] === idx);
+    }
+  });
+
+  // Socio preview
+  const socioEl = document.getElementById('socio-preview');
+  if(socioEl){
+    const cash = Math.round(Math.pow(c.finances/100, 2.5) * 50000);
+    socioEl.innerHTML = `
+      <span class="cash">Starting Cash: $${cash.toLocaleString()}</span>
+      <span class="detail">Family: ${c.finances<30?'Working class':c.finances<60?'Middle class':'Upper class'}</span>
+      <span class="detail">Connections: ${c.socialCapital<30?'None':c.socialCapital<60?'Some':'Well-connected'}</span>
+      <span class="detail">Neighborhood: ${c.neighborhood<30?'Rough':c.neighborhood<60?'Average':'Upscale'}</span>
+    `;
+  }
+
+  // Re-render character
+  SVG.render();
+}
+
+function updateNav(){
+  document.getElementById('step-indicator').textContent = (S.step+1)+' / '+S.totalSteps;
+  document.getElementById('progress-fill').style.width = ((S.step+1)/S.totalSteps*100)+'%';
+  document.getElementById('btn-back').style.visibility = S.step===0?'hidden':'visible';
+}
+
+// ══════════════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════════════
+document.getElementById('btn-back').addEventListener('click', ()=>{
+  if(S.step>0){ S.step--; renderStep(); updateNav(); }
+});
+document.getElementById('btn-continue').addEventListener('click', ()=>{
+  if(S.step<S.totalSteps-1){ S.step++; renderStep(); updateNav(); }
+});
+
+// ══════════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════════
+SVG._init();
+renderStep();
+updateNav();
 </script>
 </body>
 </html>
