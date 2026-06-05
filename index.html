@@ -12,7 +12,6 @@
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a1a; font-family: system-ui, -apple-system, sans-serif; }
 
-    /* ── APP GRID ── */
     .app {
       display: grid;
       grid-template-rows: 42vh 1fr 72px;
@@ -27,12 +26,10 @@
       }
     }
 
-    /* ── PREVIEW ZONE ── */
     .preview-zone { grid-area: preview; display: grid; position: relative; overflow: hidden; background: #0a0a1a; }
     .preview-zone > * { grid-area: 1/1; width: 100%; height: 100%; }
     .preview-character { z-index: 1; }
 
-    /* ── SLIDERS ZONE ── */
     .sliders-zone {
       grid-area: sliders; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain; display: flex; flex-direction: column; justify-content: center;
@@ -43,14 +40,12 @@
     .step-title { color: #FFD700; font-size: 18px; font-weight: 800; padding: 4px 4px 0; }
     .step-subtitle { color: #aaaacc; font-size: 12px; padding: 0 4px 4px; }
 
-    /* ── SLIDER ROW ── */
     .slider-row { display: flex; flex-direction: column; gap: 0; padding: 4px; flex: 0 0 auto; }
     .slider-row > div:first-child { display: flex; justify-content: space-between; align-items: center; }
     .slider-label { color: #999; font-size: 10px; max-width: 60%; }
     .slider-value { color: #0f3; font-size: 12px; font-weight: bold; }
     .range-hints { display: flex; justify-content: space-between; font-size: 8px; color: #555; padding: 0 2px; }
 
-    /* ── NATIVE RANGE INPUT ── */
     input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; cursor: pointer; touch-action: pan-y; }
     input[type="range"]:focus { outline: none; }
     input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 5px; border-radius: 3px; background: #333; }
@@ -59,16 +54,13 @@
     input[type="range"]::-moz-range-thumb { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #fff; background: #FFD700; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
     input[type="range"].grad::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--g-l), var(--g-r)); }
 
-    /* ── PREVIEW FULL ── */
     .preview-full { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; min-height: 0; }
     .preview-full .step-title { font-size: 22px; text-align: center; }
     .preview-full .step-subtitle { font-size: 14px; text-align: center; }
 
-    /* ── NAME INPUT ── */
     .name-input-wrap { display: flex; flex-direction: column; gap: 8px; padding: 8px 4px; }
     .name-input-wrap input[type="text"] { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #333; background: #1a1a2e; color: #eee; font-size: 16px; }
 
-    /* ── NAV ZONE ── */
     .nav-zone { grid-area: nav; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: #0a0a1a; border-top: 2px solid #e94560; }
     .nav-zone button { padding: 10px 24px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; touch-action: manipulation; }
     .btn-back { background: #222; color: #aaa; }
@@ -78,7 +70,6 @@
     .progress-track { width: 80px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; }
     .progress-fill { height: 100%; background: #FFD700; border-radius: 2px; transition: width 0.2s; }
 
-    /* ── GRID BUTTONS (hair, eyes, nose, city) ── */
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; flex: 1; min-height: 0; overflow-y: auto; }
     .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 4px; flex: 1; min-height: 0; overflow-y: auto; }
     .grid-btn {
@@ -89,21 +80,17 @@
     }
     .grid-btn.selected { border-color: #FFD700; background: rgba(255,215,0,0.1); color: #FFD700; }
 
-    /* ── SOCIOECONOMIC PREVIEW ── */
     .socio-preview { display: flex; flex-direction: column; gap: 3px; padding: 6px 8px; background: rgba(255,255,255,0.04); border-radius: 6px; margin-top: 4px; font-size: 10px; }
     .socio-preview .cash { color: #0f3; font-weight: bold; font-size: 11px; }
     .socio-preview .detail { color: #888; }
 
-    /* ── CONFIRM SCREEN ── */
     .confirm-list { flex: 1; overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
     .confirm-list .line { color: #ccc; font-size: 11px; line-height: 1.4; }
     .confirm-list .line.sep { color: #555; }
   </style>
-<!-- build: 20260605T164500Z -->
 </head>
 <body>
 <div class="app">
-  <!-- ═══ PREVIEW ZONE ═══ -->
   <div class="preview-zone">
     <svg class="svg-background" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
       <defs>
@@ -117,26 +104,8 @@
     </svg>
     <svg class="preview-character" id="character-preview" viewBox="0 0 200 580" preserveAspectRatio="xMidYMid meet">
       <defs>
-        <!-- Skin -->
-        <radialGradient id="skinGrad" cx="45%" cy="35%" r="65%" color-interpolation="linearRGB">
-          <stop offset="0%" id="skin-stop-0" stop-color="#f0dcc8"/>
-          <stop offset="40%" id="skin-stop-1" stop-color="#e8ceb8"/>
-          <stop offset="70%" id="skin-stop-2" stop-color="#d4b898"/>
-          <stop offset="100%" id="skin-stop-3" stop-color="#c4a888"/>
-        </radialGradient>
-        <!-- Hair -->
-        <linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1" color-interpolation="linearRGB">
-          <stop offset="0%" id="hair-stop-0" stop-color="#5a3a1a"/>
-          <stop offset="30%" id="hair-stop-1" stop-color="#4a2a10"/>
-          <stop offset="100%" id="hair-stop-2" stop-color="#3a1a08"/>
-        </linearGradient>
-        <!-- Lip -->
-        <linearGradient id="lipGrad" x1="0" y1="0" x2="0" y2="1" color-interpolation="linearRGB">
-          <stop offset="0%" stop-color="#d08080"/>
-          <stop offset="100%" stop-color="#b06060"/>
-        </linearGradient>
+        <!-- No gradients — flat colors only -->
       </defs>
-      <g id="layer-back-hair"></g>
       <g id="layer-body"></g>
       <g id="layer-genitals"></g>
       <g id="layer-clothing"></g>
@@ -147,12 +116,10 @@
     </svg>
   </div>
 
-  <!-- ═══ SLIDERS ZONE ═══ -->
   <div class="sliders-zone" id="sliders-zone">
     <!-- Steps injected by JS -->
   </div>
 
-  <!-- ═══ NAV ZONE ═══ -->
   <nav class="nav-zone">
     <button class="btn-back" id="btn-back">← Back</button>
     <div class="step-indicator-wrap">
@@ -164,9 +131,9 @@
 </div>
 
 <script>
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // STATE
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 const S = {
   step: 0,
   totalSteps: 9,
@@ -176,33 +143,28 @@ const S = {
     age: 25,
     ethnicity: 'White / Caucasian',
 
-    // Body sliders (0-100)
-    chest: 50,        // chest/bust size
-    waist: 50,        // waist narrowness
-    hips: 50,         // hip width
-    height: 50,       // overall height
-    weight: 50,       // overall weight
-    muscle: 50,       // muscle definition
-    organSize: 50,    // sex organ size
+    chest: 50,
+    waist: 50,
+    hips: 50,
+    height: 50,
+    weight: 50,
+    muscle: 50,
+    organSize: 50,
 
-    // Head sliders
-    headWidth: 50,    // head width
-    headLength: 50,   // head length (chin)
-    eyeType: 0,       // index into EYE_TYPES
-    noseType: 0,      // index into NOSE_TYPES
-    hairstyle: 0,     // index into HAIRSTYLES
-    hairColor: 0,     // index into filtered hair colors
+    headWidth: 50,
+    headLength: 50,
+    eyeType: 0,
+    noseType: 0,
+    hairstyle: 0,
+    hairColor: 0,
 
-    // Sexuality
     gender: 50,
     romantic: 50,
     homo: 50,
     sexual: 50,
 
-    // Personality
     mbti: { ei: 50, sn: 50, tf: 50, jp: 50 },
 
-    // Socioeconomics
     finances: 50,
     socialCapital: 50,
     neighborhood: 50,
@@ -210,20 +172,20 @@ const S = {
   }
 };
 
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // CONSTANTS
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 const SEX_TYPES = ['male','female','intersex'];
 const ETHNICITIES = ['White / Caucasian','Black / African American','Hispanic / Latino','East Asian','South Asian','Southeast Asian','Middle Eastern / Arab','Native American / Indigenous','Pacific Islander','Mixed / Multiracial','Other'];
 
 const SKIN_TONES = {
-  fair:    { stops: ['#fce0d3','#f5d5c5','#e8c4b0','#dbb8a0'] },
-  light:   { stops: ['#f0d0b8','#e8c4a8','#dbb898','#d0a888'] },
-  medium:  { stops: ['#e0b898','#d4a888','#c89878','#bc8868'] },
-  olive:   { stops: ['#c8a070','#bc9460','#b08850','#a47c40'] },
-  tan:     { stops: ['#b08858','#a47c48','#987038','#8c6428'] },
-  brown:   { stops: ['#8a6040','#7e5430','#724820','#663c10'] },
-  dark:    { stops: ['#5a3a20','#4e2e10','#422200','#361600'] },
+  fair:    ['#f5d5c5','#e8c4b0','#dbb8a0'],
+  light:   ['#e8c4a8','#dbb898','#d0a888'],
+  medium:  ['#d4a888','#c89878','#bc8868'],
+  olive:   ['#bc9460','#b08850','#a47c40'],
+  tan:     ['#a47c48','#987038','#8c6428'],
+  brown:   ['#7e5430','#724820','#663c10'],
+  dark:    ['#4e2e10','#422200','#361600'],
 };
 const ETHNICITY_SKIN = {
   'White / Caucasian':['fair','light','olive'],
@@ -240,14 +202,14 @@ const ETHNICITY_SKIN = {
 };
 
 const HAIR_COLORS = [
-  { key:'black',      label:'Black',      stops: ['#2a2a3a','#1a1a2a','#0a0a1a'] },
-  { key:'dark-brown', label:'Dark Brown', stops: ['#5a3a1a','#4a2a10','#3a1a08'] },
-  { key:'brown',      label:'Brown',      stops: ['#7b5236','#6b4226','#5b3216'] },
-  { key:'light-brown',label:'Light Brown',stops: ['#a0785a','#90684a','#80583a'] },
-  { key:'blonde',     label:'Blonde',     stops: ['#d4a843','#c49833','#b48823'] },
-  { key:'platinum',   label:'Platinum',   stops: ['#e8dcc8','#d8ccb8','#c8bc98'] },
-  { key:'red',        label:'Red',        stops: ['#b34030','#a33020','#932010'] },
-  { key:'gray',       label:'Gray',       stops: ['#a0a0a0','#888888','#707070'] },
+  { key:'black',      label:'Black',      fill:'#1a1a2a' },
+  { key:'dark-brown', label:'Dark Brown', fill:'#4a2a10' },
+  { key:'brown',      label:'Brown',      fill:'#6b4226' },
+  { key:'light-brown',label:'Light Brown',fill:'#90684a' },
+  { key:'blonde',     label:'Blonde',     fill:'#c49833' },
+  { key:'platinum',   label:'Platinum',   fill:'#d8ccb8' },
+  { key:'red',        label:'Red',        fill:'#a33020' },
+  { key:'gray',       label:'Gray',       fill:'#888888' },
 ];
 const ETHNICITY_HAIR = {
   'White / Caucasian':     ['black','dark-brown','brown','light-brown','blonde','platinum','red'],
@@ -263,220 +225,181 @@ const ETHNICITY_HAIR = {
   'Other': HAIR_COLORS.map(h=>h.key),
 };
 
-// ── EYE TYPES ──
-const EYE_TYPES = [
-  { key:'round',    label:'Round',    desc:'Large round eyes' },
-  { key:'almond',   label:'Almond',   desc:'Classic almond' },
-  { key:'narrow',   label:'Narrow',   desc:'Narrow/small' },
-  { key:'wide',     label:'Wide',     desc:'Wide set' },
-  { key:'hooded',   label:'Hooded',   desc:'Heavy upper lid' },
-  { key:'downturned',label:'Downturned',desc:'Downturned outer' },
-];
-
-// ── NOSE TYPES ──
-const NOSE_TYPES = [
-  { key:'small',    label:'Small',    desc:'Small/simple' },
-  { key:'medium',   label:'Medium',   desc:'Medium bridge' },
-  { key:'pointed',  label:'Pointed',  desc:'Defined bridge' },
-  { key:'flat',     label:'Flat',     desc:'Wide/flat bridge' },
-  { key:'button',   label:'Button',   desc:'Small rounded' },
-  { key:'hooked',   label:'Hooked',   desc:'Prominent bridge' },
-];
-
-// ── HAIRSTYLES ──
-// Each is a generator function that takes head params and returns SVG path strings
-// Head params: cx, headY, headR (radius X), headRY (radius Y)
-// Head ellipse: center (cx, headY), top at headY-headRY, bottom at headY+headRY
-function hairTopCap(cx, hY, hR, hRY, extraUp, sideInset) {
-  // Top cap: covers scalp from forehead up to crown+extraUp
-  const top = hY - hRY - extraUp;
-  const brow = hY - hRY * 0.25;  // forehead line
-  const sideR = hR * (1 - sideInset);
-  return [
-    // Main cap
-    `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${top+10}, ${cx-sideR*0.3} ${top}, ${cx} ${top-2} C ${cx+sideR*0.3} ${top}, ${cx+sideR+4} ${top+10}, ${cx+sideR} ${brow}`,
-    // Left side down to ear area
-    `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+12}, ${cx-sideR-2} ${brow+28}, ${cx-sideR+2} ${brow+40} L ${cx-sideR+6} ${brow+36} C ${cx-sideR+4} ${brow+24}, ${cx-sideR+2} ${brow+12}, ${cx-sideR+4} ${brow} Z`,
-    // Right side down to ear area
-    `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+12}, ${cx+sideR+2} ${brow+28}, ${cx+sideR-2} ${brow+40} L ${cx+sideR-6} ${brow+36} C ${cx+sideR-4} ${brow+24}, ${cx+sideR-2} ${brow+12}, ${cx+sideR-4} ${brow} Z`,
-  ];
+function skinColor() {
+  const tones = skinTonesForEthnicity();
+  const idx = S.character.skinToneIdx || 0;
+  const key = tones[Math.min(idx, tones.length-1)];
+  const stops = SKIN_TONES[key] || SKIN_TONES.light;
+  return stops[1] || stops[0];
+}
+function hairFillColor() {
+  const colors = hairColorsForEthnicity();
+  const idx = Math.min(S.character.hairColor, colors.length-1);
+  return colors[idx]?.fill || '#4a2a10';
 }
 
-function hairSidesLong(cx, hY, hR, hRY, extraDown) {
-  const brow = hY - hRY * 0.25;
-  const bottom = hY + hRY + extraDown;
-  const sideR = hR * 0.95;
-  return [
-    `M ${cx-sideR} ${brow+4} C ${cx-sideR-4} ${brow+30}, ${cx-sideR-6} ${brow+80}, ${cx-sideR-2} ${bottom-20} C ${cx-sideR} ${bottom}, ${cx-sideR+8} ${bottom+4}, ${cx-sideR+10} ${bottom-16} C ${cx-sideR+6} ${brow+80}, ${cx-sideR+4} ${brow+30}, ${cx-sideR+4} ${brow+4} Z`,
-    `M ${cx+sideR} ${brow+4} C ${cx+sideR+4} ${brow+30}, ${cx+sideR+6} ${brow+80}, ${cx+sideR+2} ${bottom-20} C ${cx+sideR} ${bottom}, ${cx+sideR-8} ${bottom+4}, ${cx+sideR-10} ${bottom-16} C ${cx+sideR-6} ${brow+80}, ${cx+sideR-4} ${brow+30}, ${cx+sideR-4} ${brow+4} Z`,
-  ];
+// ── EYE TYPES (BIG ANIME EYES) ──
+const EYE_TYPES = [
+  { key:'round',    label:'Round',    w:26, h:20, iris:12, desc:'Large round anime' },
+  { key:'almond',   label:'Almond',   w:24, h:16, iris:10, desc:'Classic almond' },
+  { key:'narrow',   label:'Narrow',   w:20, h:12, iris:8,  desc:'Narrow/cool' },
+  { key:'wide',     label:'Wide',     w:30, h:18, iris:14, desc:'Wide innocent' },
+  { key:'hooded',   label:'Hooded',   w:24, h:14, iris:10, desc:'Heavy lid/sultry' },
+  { key:'cat',      label:'Cat',      w:26, h:14, iris:11, desc:'Cat eye/sharp' },
+];
+
+const NOSE_TYPES = [
+  { key:'small',    label:'Small',    desc:'Dot/minimal' },
+  { key:'medium',   label:'Medium',   desc:'Small line' },
+  { key:'pointed',  label:'Pointed',  desc:'Defined tip' },
+  { key:'flat',     label:'Flat',     desc:'Wide bridge' },
+  { key:'button',   label:'Button',   desc:'Small rounded' },
+  { key:'hooked',   label:'Hooked',   desc:'Prominent' },
+];
+
+// ════════════════════════════════════════════════
+// HAIRSTYLE GENERATORS (flat fill, no outlines)
+// ════════════════════════════════════════════════
+// Each takes (cx, headY, headR, headRY) and returns SVG path strings
+
+function hairTopCap(cx, hY, hRY, sideR, extraUp) {
+  const top = hY - hRY - extraUp;
+  const brow = hY - hRY * 0.2;
+  return `M ${cx-sideR} ${brow} C ${cx-sideR-6} ${top+12}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+6} ${top+12}, ${cx+sideR} ${brow}`;
+}
+
+function hairSide(cx, brow, sideR, sideBot, inset) {
+  const si = inset || 0;
+  return `M ${cx-sideR} ${brow} C ${cx-sideR-4+si} ${brow+14}, ${cx-sideR-4+si} ${sideBot-10}, ${cx-sideR+2} ${sideBot} C ${cx-sideR+6} ${sideBot-4}, ${cx-sideR+6} ${sideBot-12}, ${cx-sideR+4} ${brow+10} Z`;
 }
 
 const HAIRSTYLE_GENERATORS = {
   none: () => [],
 
   short: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 4;
-    const brow = hY - hRY * 0.2;
     const sideR = hR * 0.92;
     const sideBot = hY + hRY * 0.35;
     return [
-      // Top cap
-      `M ${cx-sideR} ${brow} C ${cx-sideR-6} ${top+12}, ${cx-sideR*0.3} ${top}, ${cx} ${top-3} C ${cx+sideR*0.3} ${top}, ${cx+sideR+6} ${top+12}, ${cx+sideR} ${brow}`,
-      // Left side
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${sideBot-10}, ${cx-sideR+2} ${sideBot} L ${cx-sideR+6} ${sideBot-8} C ${cx-sideR+4} ${brow+12}, ${cx-sideR+2} ${brow+8}, ${cx-sideR+4} ${brow} Z`,
-      // Right side
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${sideBot-10}, ${cx+sideR-2} ${sideBot} L ${cx+sideR-6} ${sideBot-8} C ${cx+sideR-4} ${brow+12}, ${cx+sideR-2} ${brow+8}, ${cx+sideR-4} ${brow} Z`,
+      hairTopCap(cx, hY, hRY, sideR, 4),
+      hairSide(cx, hY - hRY*0.2, sideR, sideBot, -2),
+      `M ${cx+sideR} ${hY-hRY*0.2} C ${cx+sideR+4} ${hY-hRY*0.2+14}, ${cx+sideR+4} ${sideBot-10}, ${cx+sideR-2} ${sideBot} C ${cx+sideR-6} ${sideBot-4}, ${cx+sideR-6} ${sideBot-12}, ${cx+sideR-4} ${hY-hRY*0.2+10} Z`,
     ];
   },
 
   medium: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
     const sideR = hR * 0.95;
+    const brow = hY - hRY * 0.2;
     const sideBot = hY + hRY * 0.6;
     return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${brow+14}, ${cx-sideR-5} ${sideBot-20}, ${cx-sideR} ${sideBot} C ${cx-sideR+2} ${sideBot+6}, ${cx-sideR+10} ${sideBot+4}, ${cx-sideR+8} ${sideBot-16} C ${cx-sideR+4} ${brow+14}, ${cx-sideR+3} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+4} ${brow+14}, ${cx+sideR+5} ${sideBot-20}, ${cx+sideR} ${sideBot} C ${cx+sideR-2} ${sideBot+6}, ${cx+sideR-10} ${sideBot+4}, ${cx+sideR-8} ${sideBot-16} C ${cx+sideR-4} ${brow+14}, ${cx+sideR-3} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
-      // Bottom drape left
-      `M ${cx-sideR} ${sideBot} C ${cx-sideR+4} ${sideBot+14}, ${cx-sideR+12} ${sideBot+28}, ${cx-sideR+20} ${sideBot+36} L ${cx-sideR+24} ${sideBot+32} C ${cx-sideR+16} ${sideBot+22}, ${cx-sideR+6} ${sideBot+10}, ${cx-sideR+4} ${sideBot} Z`,
-      // Bottom drape right
-      `M ${cx+sideR} ${sideBot} C ${cx+sideR-4} ${sideBot+14}, ${cx+sideR-12} ${sideBot+28}, ${cx+sideR-20} ${sideBot+36} L ${cx+sideR-24} ${sideBot+32} C ${cx+sideR-16} ${sideBot+22}, ${cx+sideR-6} ${sideBot+10}, ${cx+sideR-4} ${sideBot} Z`,
+      hairTopCap(cx, hY, hRY, sideR, 6),
+      hairSide(cx, brow, sideR, sideBot, 0),
+      `M ${cx+sideR} ${brow} C ${cx+sideR+4} ${brow+14}, ${cx+sideR+6} ${sideBot-20}, ${cx+sideR} ${sideBot} C ${cx+sideR-2} ${sideBot+6}, ${cx+sideR-8} ${sideBot+4}, ${cx+sideR-6} ${sideBot-16} C ${cx+sideR-4} ${brow+14}, ${cx+sideR-3} ${brow+10}, ${cx+sideR-2} ${brow+12} Z`,
+      `M ${cx-sideR} ${sideBot} C ${cx-sideR+6} ${sideBot+16}, ${cx-sideR+14} ${sideBot+30}, ${cx-sideR+22} ${sideBot+38} L ${cx-sideR+26} ${sideBot+34} C ${cx-sideR+18} ${sideBot+24}, ${cx-sideR+8} ${sideBot+12}, ${cx-sideR+4} ${sideBot} Z`,
+      `M ${cx+sideR} ${sideBot} C ${cx+sideR-6} ${sideBot+16}, ${cx+sideR-14} ${sideBot+30}, ${cx+sideR-22} ${sideBot+38} L ${cx+sideR-26} ${sideBot+34} C ${cx+sideR-18} ${sideBot+24}, ${cx+sideR-8} ${sideBot+12}, ${cx+sideR-4} ${sideBot} Z`,
     ];
   },
 
   long: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 8;
-    const brow = hY - hRY * 0.2;
     const sideR = hR * 0.95;
+    const brow = hY - hRY * 0.2;
     const sideBot = hY + hRY * 1.3;
     return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-10} ${top+16}, ${cx-sideR*0.3} ${top}, ${cx} ${top-5} C ${cx+sideR*0.3} ${top}, ${cx+sideR+10} ${top+16}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-5} ${brow+18}, ${cx-sideR-6} ${brow+60}, ${cx-sideR-4} ${sideBot-30} C ${cx-sideR-2} ${sideBot-10}, ${cx-sideR} ${sideBot+4}, ${cx-sideR+6} ${sideBot+2} C ${cx-sideR+8} ${sideBot-20}, ${cx-sideR+6} ${brow+60}, ${cx-sideR+5} ${brow+18} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+5} ${brow+18}, ${cx+sideR+6} ${brow+60}, ${cx+sideR+4} ${sideBot-30} C ${cx+sideR+2} ${sideBot-10}, ${cx+sideR} ${sideBot+4}, ${cx+sideR-6} ${sideBot+2} C ${cx+sideR-8} ${sideBot-20}, ${cx+sideR-6} ${brow+60}, ${cx+sideR-5} ${brow+18} Z`,
-      // Bottom tips
-      `M ${cx-sideR+6} ${sideBot+2} C ${cx-sideR+10} ${sideBot+12}, ${cx-sideR+18} ${sideBot+20}, ${cx-sideR+24} ${sideBot+22} L ${cx-sideR+22} ${sideBot+18} C ${cx-sideR+14} ${sideBot+10}, ${cx-sideR+8} ${sideBot+4}, ${cx-sideR+4} ${sideBot} Z`,
-      `M ${cx+sideR-6} ${sideBot+2} C ${cx+sideR-10} ${sideBot+12}, ${cx+sideR-18} ${sideBot+20}, ${cx+sideR-24} ${sideBot+22} L ${cx+sideR-22} ${sideBot+18} C ${cx+sideR-14} ${sideBot+10}, ${cx+sideR-8} ${sideBot+4}, ${cx+sideR-4} ${sideBot} Z`,
+      hairTopCap(cx, hY, hRY, sideR, 8),
+      `M ${cx-sideR} ${brow} C ${cx-sideR-6} ${brow+18}, ${cx-sideR-8} ${brow+60}, ${cx-sideR-4} ${sideBot-30} C ${cx-sideR-2} ${sideBot-10}, ${cx-sideR} ${sideBot+4}, ${cx-sideR+4} ${sideBot+2} C ${cx-sideR+6} ${sideBot-20}, ${cx-sideR+6} ${brow+60}, ${cx-sideR+4} ${brow+18} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+6} ${brow+18}, ${cx+sideR+8} ${brow+60}, ${cx+sideR+4} ${sideBot-30} C ${cx+sideR+2} ${sideBot-10}, ${cx+sideR} ${sideBot+4}, ${cx+sideR-4} ${sideBot+2} C ${cx+sideR-6} ${sideBot-20}, ${cx+sideR-6} ${brow+60}, ${cx+sideR-4} ${brow+18} Z`,
+      `M ${cx-sideR+4} ${sideBot+2} C ${cx-sideR+10} ${sideBot+14}, ${cx-sideR+20} ${sideBot+24}, ${cx-sideR+26} ${sideBot+26} L ${cx-sideR+24} ${sideBot+22} C ${cx-sideR+16} ${sideBot+14}, ${cx-sideR+8} ${sideBot+6}, ${cx-sideR+2} ${sideBot} Z`,
+      `M ${cx+sideR-4} ${sideBot+2} C ${cx+sideR-10} ${sideBot+14}, ${cx+sideR-20} ${sideBot+24}, ${cx+sideR-26} ${sideBot+26} L ${cx+sideR-24} ${sideBot+22} C ${cx+sideR-16} ${sideBot+14}, ${cx+sideR-8} ${sideBot+6}, ${cx+sideR-2} ${sideBot} Z`,
     ];
   },
 
   ponytail: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
     const sideR = hR * 0.95;
+    const brow = hY - hRY * 0.2;
     const tailTop = hY - hRY - 2;
     const tailBot = hY + hRY * 1.15;
     return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      // Short sides
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+24}, ${cx-sideR+2} ${brow+34} L ${cx-sideR+6} ${brow+30} C ${cx-sideR+4} ${brow+20}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+24}, ${cx+sideR-2} ${brow+34} L ${cx+sideR-6} ${brow+30} C ${cx+sideR-4} ${brow+20}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
-      // Ponytail bump
-      `M ${cx-8} ${tailTop} C ${cx-4} ${tailTop-6}, ${cx+4} ${tailTop-6}, ${cx+8} ${tailTop}`,
-      // Ponytail
-      `M ${cx-6} ${tailTop} C ${cx-8} ${tailTop+20}, ${cx-10} ${tailBot-20}, ${cx-6} ${tailBot} C ${cx-2} ${tailBot+6}, ${cx+2} ${tailBot+6}, ${cx+6} ${tailBot} C ${cx+10} ${tailBot-20}, ${cx+8} ${tailTop+20}, ${cx+6} ${tailTop} Z`,
+      hairTopCap(cx, hY, hRY, sideR, 6),
+      hairSide(cx, brow, sideR, hY + hRY*0.35, -2),
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${hY+hRY*0.35+10}, ${cx+sideR-2} ${hY+hRY*0.35+12} C ${cx+sideR-6} ${hY+hRY*0.35+8}, ${cx+sideR-4} ${brow+10}, ${cx+sideR-2} ${brow+10} Z`,
+      `M ${cx-10} ${tailTop} C ${cx-6} ${tailTop-6}, ${cx+6} ${tailTop-6}, ${cx+10} ${tailTop}`,
+      `M ${cx-8} ${tailTop} C ${cx-10} ${tailTop+20}, ${cx-12} ${tailBot-20}, ${cx-8} ${tailBot} C ${cx-4} ${tailBot+8}, ${cx+4} ${tailBot+8}, ${cx+8} ${tailBot} C ${cx+12} ${tailBot-20}, ${cx+10} ${tailTop+20}, ${cx+8} ${tailTop} Z`,
     ];
   },
 
   pigtails: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
     const sideR = hR * 0.95;
+    const brow = hY - hRY * 0.2;
     const tieY = hY + hRY * 0.35;
     const tailBot = hY + hRY * 1.2;
     return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+12}, ${cx-sideR-2} ${brow+28}, ${cx-sideR+2} ${brow+38} L ${cx-sideR+6} ${brow+34} C ${cx-sideR+4} ${brow+24}, ${cx-sideR+2} ${brow+12}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+12}, ${cx+sideR+2} ${brow+28}, ${cx+sideR-2} ${brow+38} L ${cx+sideR-6} ${brow+34} C ${cx+sideR-4} ${brow+24}, ${cx+sideR-2} ${brow+12}, ${cx+sideR-4} ${brow} Z`,
-      // Left pigtail
-      `M ${cx-sideR-2} ${tieY} C ${cx-sideR-10} ${tieY+8}, ${cx-sideR-18} ${tieY+30}, ${cx-sideR-20} ${tailBot} C ${cx-sideR-18} ${tailBot+6}, ${cx-sideR-10} ${tailBot+4}, ${cx-sideR-8} ${tailBot-2} C ${cx-sideR-10} ${tieY+28}, ${cx-sideR-6} ${tieY+6}, ${cx-sideR+2} ${tieY} Z`,
-      // Right pigtail
-      `M ${cx+sideR+2} ${tieY} C ${cx+sideR+10} ${tieY+8}, ${cx+sideR+18} ${tieY+30}, ${cx+sideR+20} ${tailBot} C ${cx+sideR+18} ${tailBot+6}, ${cx+sideR+10} ${tailBot+4}, ${cx+sideR+8} ${tailBot-2} C ${cx+sideR+10} ${tieY+28}, ${cx+sideR+6} ${tieY+6}, ${cx+sideR-2} ${tieY} Z`,
+      hairTopCap(cx, hY, hRY, sideR, 6),
+      hairSide(cx, brow, sideR, tieY+8, -2),
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${tieY}, ${cx+sideR-2} ${tieY+8} C ${cx+sideR-6} ${tieY+4}, ${cx+sideR-4} ${brow+10}, ${cx+sideR-2} ${brow+10} Z`,
+      `M ${cx-sideR-2} ${tieY} C ${cx-sideR-12} ${tieY+10}, ${cx-sideR-22} ${tieY+34}, ${cx-sideR-24} ${tailBot} C ${cx-sideR-22} ${tailBot+8}, ${cx-sideR-12} ${tailBot+6}, ${cx-sideR-10} ${tailBot-2} C ${cx-sideR-12} ${tieY+32}, ${cx-sideR-8} ${tieY+10}, ${cx-sideR} ${tieY} Z`,
+      `M ${cx+sideR+2} ${tieY} C ${cx+sideR+12} ${tieY+10}, ${cx+sideR+22} ${tieY+34}, ${cx+sideR+24} ${tailBot} C ${cx+sideR+22} ${tailBot+8}, ${cx+sideR+12} ${tailBot+6}, ${cx+sideR+10} ${tailBot-2} C ${cx+sideR+12} ${tieY+32}, ${cx+sideR+8} ${tieY+10}, ${cx+sideR} ${tieY} Z`,
     ];
   },
 
   bun: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
     const sideR = hR * 0.95;
+    const brow = hY - hRY * 0.2;
     const bunY = hY - hRY - 4;
     const bunR = hR * 0.45;
     return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+24}, ${cx-sideR+2} ${brow+34} L ${cx-sideR+6} ${brow+30} C ${cx-sideR+4} ${brow+20}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+24}, ${cx+sideR-2} ${brow+34} L ${cx+sideR-6} ${brow+30} C ${cx+sideR-4} ${brow+20}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
-      // Bun
-      `M ${cx-bunR} ${bunY} C ${cx-bunR} ${bunY-bunR*1.3}, ${cx+bunR} ${bunY-bunR*1.3}, ${cx+bunR} ${bunY} C ${cx+bunR*1.1} ${bunY+bunR*0.6}, ${cx-bunR*1.1} ${bunY+bunR*0.6}, ${cx-bunR} ${bunY} Z`,
+      hairTopCap(cx, hY, hRY, sideR, 6),
+      hairSide(cx, brow, sideR, hY + hRY * 0.35, -2),
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${hY+hRY*0.35}, ${cx+sideR-2} ${hY+hRY*0.35+6} C ${cx+sideR-6} ${hY+hRY*0.35+2}, ${cx+sideR-4} ${brow+10}, ${cx+sideR-2} ${brow+12} Z`,
+      `M ${cx-bunR} ${bunY} C ${cx-bunR} ${bunY-bunR*1.3}, ${cx+bunR} ${bunY-bunR*1.3}, ${cx+bunR} ${bunY} C ${cx+bunR*1.1} ${bunY+bunR*0.8}, ${cx-bunR*1.1} ${bunY+bunR*0.8}, ${cx-bunR} ${bunY} Z`,
     ];
   },
 
   afro: (cx, hY, hR, hRY) => {
     const top = hY - hRY - 16;
     const brow = hY - hRY * 0.15;
-    const sideR = hR * 1.08;
+    const sideR = hR * 1.1;
     const bot = hY + hRY * 1.25;
     return [
-      // Large round top
-      `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${top+20}, ${cx-sideR*0.5} ${top}, ${cx} ${top-6} C ${cx+sideR*0.5} ${top}, ${cx+sideR+4} ${top+20}, ${cx+sideR} ${brow}`,
-      // Expand outward left
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${brow+20}, ${cx-sideR-12} ${brow+60}, ${cx-sideR-8} ${bot-20} C ${cx-sideR-4} ${bot+10}, ${cx+sideR*0.3} ${bot+14}, ${cx+sideR*0.5} ${bot-10} C ${cx+sideR*0.2} ${bot-30}, ${cx-sideR*0.3} ${brow+40}, ${cx-sideR+4} ${brow} Z`,
-      // Expand outward right (mirror)
-      `M ${cx+sideR} ${brow} C ${cx+sideR+8} ${brow+20}, ${cx+sideR+12} ${brow+60}, ${cx+sideR+8} ${bot-20} C ${cx+sideR+4} ${bot+10}, ${cx-sideR*0.3} ${bot+14}, ${cx-sideR*0.5} ${bot-10} C ${cx-sideR*0.2} ${bot-30}, ${cx+sideR*0.3} ${brow+40}, ${cx+sideR-4} ${brow} Z`,
-      // Bottom curve
-      `M ${cx-sideR*0.5} ${bot-10} C ${cx-sideR*0.3} ${bot+10}, ${cx+sideR*0.3} ${bot+10}, ${cx+sideR*0.5} ${bot-10}`,
+      `M ${cx-sideR} ${brow} C ${cx-sideR-6} ${top+22}, ${cx-sideR*0.5} ${top}, ${cx} ${top-8} C ${cx+sideR*0.5} ${top}, ${cx+sideR+6} ${top+22}, ${cx+sideR} ${brow}`,
+      `M ${cx-sideR} ${brow} C ${cx-sideR-10} ${brow+22}, ${cx-sideR-14} ${brow+70}, ${cx-sideR-8} ${bot-20} C ${cx-sideR-4} ${bot+12}, ${cx+sideR*0.3} ${bot+16}, ${cx+sideR*0.5} ${bot-12} C ${cx+sideR*0.2} ${bot-34}, ${cx-sideR*0.3} ${brow+44}, ${cx-sideR+2} ${brow} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+10} ${brow+22}, ${cx+sideR+14} ${brow+70}, ${cx+sideR+8} ${bot-20} C ${cx+sideR+4} ${bot+12}, ${cx-sideR*0.3} ${bot+16}, ${cx-sideR*0.5} ${bot-12} C ${cx-sideR*0.2} ${bot-34}, ${cx+sideR*0.3} ${brow+44}, ${cx+sideR-2} ${brow} Z`,
+      `M ${cx-sideR*0.5} ${bot-12} C ${cx-sideR*0.3} ${bot+12}, ${cx+sideR*0.3} ${bot+12}, ${cx+sideR*0.5} ${bot-12}`,
     ];
   },
 
   braids: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
     const sideR = hR * 0.95;
+    const brow = hY - hRY * 0.2;
     const braidBot = hY + hRY * 1.15;
     return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+22}, ${cx-sideR+2} ${brow+30} L ${cx-sideR+6} ${brow+26} C ${cx-sideR+4} ${brow+18}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+22}, ${cx+sideR-2} ${brow+30} L ${cx+sideR-6} ${brow+26} C ${cx+sideR-4} ${brow+18}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
-      // Left braid
-      `M ${cx-sideR} ${brow+28} C ${cx-sideR-4} ${brow+40}, ${cx-sideR-6} ${braidBot-20}, ${cx-sideR-2} ${braidBot} C ${cx-sideR} ${braidBot+4}, ${cx-sideR+4} ${braidBot+2}, ${cx-sideR+4} ${braidBot-16} C ${cx-sideR+2} ${brow+40}, ${cx-sideR+2} ${brow+32}, ${cx-sideR+4} ${brow+28} Z`,
-      // Right braid
-      `M ${cx+sideR} ${brow+28} C ${cx+sideR+4} ${brow+40}, ${cx+sideR+6} ${braidBot-20}, ${cx+sideR+2} ${braidBot} C ${cx+sideR} ${braidBot+4}, ${cx+sideR-4} ${braidBot+2}, ${cx+sideR-4} ${braidBot-16} C ${cx+sideR-2} ${brow+40}, ${cx+sideR-2} ${brow+32}, ${cx+sideR-4} ${brow+28} Z`,
+      hairTopCap(cx, hY, hRY, sideR, 6),
+      hairSide(cx, brow, sideR, hY + hRY * 0.35, -2),
+      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${hY+hRY*0.35}, ${cx+sideR-2} ${hY+hRY*0.35+6} C ${cx+sideR-6} ${hY+hRY*0.35+2}, ${cx+sideR-4} ${brow+10}, ${cx+sideR-2} ${brow+12} Z`,
+      `M ${cx-sideR} ${brow+28} C ${cx-sideR-5} ${brow+44}, ${cx-sideR-8} ${braidBot-20}, ${cx-sideR-4} ${braidBot} C ${cx-sideR-2} ${braidBot+6}, ${cx-sideR+4} ${braidBot+4}, ${cx-sideR+4} ${braidBot-18} C ${cx-sideR+2} ${brow+44}, ${cx-sideR+2} ${brow+32}, ${cx-sideR+2} ${brow+28} Z`,
+      `M ${cx+sideR} ${brow+28} C ${cx+sideR+5} ${brow+44}, ${cx+sideR+8} ${braidBot-20}, ${cx+sideR+4} ${braidBot} C ${cx+sideR+2} ${braidBot+6}, ${cx+sideR-4} ${braidBot+4}, ${cx+sideR-4} ${braidBot-18} C ${cx+sideR-2} ${brow+44}, ${cx+sideR-2} ${brow+32}, ${cx+sideR-2} ${brow+28} Z`,
     ];
   },
 
   mohawk: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 10;
+    const top = hY - hRY - 12;
     const brow = hY - hRY * 0.15;
-    const stripW = hR * 0.28;
+    const stripW = hR * 0.30;
     return [
-      // Shaved sides (very thin)
-      `M ${cx-hR*0.95} ${brow} C ${cx-hR*0.96} ${brow+4}, ${cx-hR*0.97} ${brow+8}, ${cx-hR*0.95} ${brow+12} L ${cx-hR*0.92} ${brow+10} C ${cx-hR*0.93} ${brow+6}, ${cx-hR*0.92} ${brow+2}, ${cx-hR*0.9} ${brow} Z`,
-      `M ${cx+hR*0.95} ${brow} C ${cx+hR*0.96} ${brow+4}, ${cx+hR*0.97} ${brow+8}, ${cx+hR*0.95} ${brow+12} L ${cx+hR*0.92} ${brow+10} C ${cx+hR*0.93} ${brow+6}, ${cx+hR*0.92} ${brow+2}, ${cx+hR*0.9} ${brow} Z`,
-      // Mohawk strip
-      `M ${cx-stripW} ${brow} C ${cx-stripW-2} ${top+10}, ${cx-stripW*0.3} ${top}, ${cx} ${top-4} C ${cx+stripW*0.3} ${top}, ${cx+stripW+2} ${top+10}, ${cx+stripW} ${brow}`,
-      // Volume
-      `M ${cx-stripW-2} ${brow} C ${cx-stripW-4} ${brow-8}, ${cx-stripW-3} ${brow-14}, ${cx} ${brow-16} C ${cx+stripW+3} ${brow-14}, ${cx+stripW+4} ${brow-8}, ${cx+stripW+2} ${brow}`,
-      // Tip
-      `M ${cx-stripW-3} ${brow-14} C ${cx-stripW-2} ${brow-20}, ${cx+stripW*0.5} ${brow-22}, ${cx+stripW+2} ${brow-18} C ${cx+stripW+3} ${brow-14}, ${cx+stripW+2} ${brow-10}, ${cx} ${brow-8} C ${cx-stripW*0.5} ${brow-10}, ${cx-stripW-2} ${brow-12}, ${cx-stripW-3} ${brow-14} Z`,
+      `M ${cx-hR*0.95} ${brow} C ${cx-hR*0.96} ${brow+4}, ${cx-hR*0.97} ${brow+10}, ${cx-hR*0.95} ${brow+14} L ${cx-hR*0.9} ${brow+12} C ${cx-hR*0.92} ${brow+8}, ${cx-hR*0.92} ${brow+4}, ${cx-hR*0.9} ${brow} Z`,
+      `M ${cx+hR*0.95} ${brow} C ${cx+hR*0.96} ${brow+4}, ${cx+hR*0.97} ${brow+10}, ${cx+hR*0.95} ${brow+14} L ${cx+hR*0.9} ${brow+12} C ${cx+hR*0.92} ${brow+8}, ${cx+hR*0.92} ${brow+4}, ${cx+hR*0.9} ${brow} Z`,
+      `M ${cx-stripW} ${brow} C ${cx-stripW-3} ${top+14}, ${cx-stripW*0.3} ${top}, ${cx} ${top-6} C ${cx+stripW*0.3} ${top}, ${cx+stripW+3} ${top+14}, ${cx+stripW} ${brow}`,
+      `M ${cx-stripW-3} ${brow} C ${cx-stripW-6} ${brow-10}, ${cx-stripW-4} ${brow-18}, ${cx} ${brow-20} C ${cx+stripW+4} ${brow-18}, ${cx+stripW+6} ${brow-10}, ${cx+stripW+3} ${brow}`,
+      `M ${cx-stripW-4} ${brow-18} C ${cx-stripW-2} ${brow-26}, ${cx+stripW*0.5} ${brow-28}, ${cx+stripW+2} ${brow-24} C ${cx+stripW+4} ${brow-20}, ${cx+stripW+2} ${brow-14}, ${cx} ${brow-12} C ${cx-stripW*0.5} ${brow-14}, ${cx-stripW-2} ${brow-16}, ${cx-stripW-4} ${brow-18} Z`,
     ];
   },
 
   bob: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
     const sideR = hR * 0.95;
+    const brow = hY - hRY * 0.2;
     const sideBot = hY + hRY * 0.55;
     return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-10} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+10} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-5} ${brow+14}, ${cx-sideR-6} ${sideBot-20}, ${cx-sideR-2} ${sideBot} C ${cx-sideR} ${sideBot+8}, ${cx-sideR+8} ${sideBot+10}, ${cx-sideR+10} ${sideBot-8} C ${cx-sideR+6} ${sideBot-20}, ${cx-sideR+4} ${brow+14}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+5} ${brow+14}, ${cx+sideR+6} ${sideBot-20}, ${cx+sideR+2} ${sideBot} C ${cx+sideR} ${sideBot+8}, ${cx+sideR-8} ${sideBot+10}, ${cx+sideR-10} ${sideBot-8} C ${cx+sideR-6} ${sideBot-20}, ${cx+sideR-4} ${brow+14}, ${cx+sideR-4} ${brow} Z`,
-      // Bottom curve left
-      `M ${cx-sideR+10} ${sideBot-8} C ${cx-sideR+14} ${sideBot+2}, ${cx-sideR+10} ${sideBot+10}, ${cx-sideR+2} ${sideBot+12} L ${cx-sideR+4} ${sideBot+8} C ${cx-sideR+10} ${sideBot+4}, ${cx-sideR+8} ${sideBot-2}, ${cx-sideR+6} ${sideBot-8} Z`,
-      // Bottom curve right
-      `M ${cx+sideR-10} ${sideBot-8} C ${cx+sideR-14} ${sideBot+2}, ${cx+sideR-10} ${sideBot+10}, ${cx+sideR-2} ${sideBot+12} L ${cx+sideR-4} ${sideBot+8} C ${cx+sideR-10} ${sideBot+4}, ${cx+sideR-8} ${sideBot-2}, ${cx+sideR-6} ${sideBot-8} Z`,
-      // Bangs
-      `M ${cx-sideR+10} ${brow-2} C ${cx-sideR+8} ${brow-8}, ${cx-sideR*0.5} ${brow-10}, ${cx-sideR*0.2} ${brow-6} L ${cx-sideR*0.3} ${brow-2} C ${cx-sideR*0.5} ${brow-6}, ${cx-sideR+6} ${brow-4}, ${cx-sideR+8} ${brow} Z`,
-      `M ${cx+sideR-10} ${brow-2} C ${cx+sideR-8} ${brow-8}, ${cx+sideR*0.5} ${brow-10}, ${cx+sideR*0.2} ${brow-6} L ${cx+sideR*0.3} ${brow-2} C ${cx+sideR*0.5} ${brow-6}, ${cx+sideR-6} ${brow-4}, ${cx+sideR-8} ${brow} Z`,
+      hairTopCap(cx, hY, hRY, sideR, 6),
+      `M ${cx-sideR} ${brow} C ${cx-sideR-6} ${brow+16}, ${cx-sideR-8} ${sideBot-20}, ${cx-sideR-4} ${sideBot} C ${cx-sideR-2} ${sideBot+10}, ${cx+sideR*0.3} ${sideBot+12}, ${cx+sideR*0.4} ${sideBot-8} C ${cx+sideR*0.2} ${sideBot-20}, ${cx-sideR+2} ${brow+16}, ${cx-sideR+2} ${brow} Z`,
+      `M ${cx+sideR} ${brow} C ${cx+sideR+6} ${brow+16}, ${cx+sideR+8} ${sideBot-20}, ${cx+sideR+4} ${sideBot} C ${cx+sideR+2} ${sideBot+10}, ${cx-sideR*0.3} ${sideBot+12}, ${cx-sideR*0.4} ${sideBot-8} C ${cx-sideR*0.2} ${sideBot-20}, ${cx+sideR-2} ${brow+16}, ${cx+sideR-2} ${brow} Z`,
     ];
   },
 };
@@ -499,21 +422,17 @@ const MBTI = [
   {key:'jp', left:'Planned[J]', right:'Spontaneous[P]', cL:'#14B8A6', cR:'#F97316'},
 ];
 
-// ══════════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════════
 function ageLabel(v){ const b=AGE_BRACKETS.find(x=>v>=x.min&&v<=x.max); return v+(b?' ('+b.label+')':''); }
 function mbtiType(){ const m=S.character.mbti; return (m.ei>=50?'E':'I')+(m.sn>=50?'S':'N')+(m.tf>=50?'T':'F')+(m.jp>=50?'P':'J'); }
-function formatHeight(inches){ return Math.floor(inches/12)+'\''+inches%12+'"'; }
 function hairColorsForEthnicity(){ const e=S.character.ethnicity; const keys=ETHNICITY_HAIR[e]||HAIR_COLORS.map(h=>h.key); return HAIR_COLORS.filter(h=>keys.includes(h.key)); }
 function skinTonesForEthnicity(){ const e=S.character.ethnicity; return ETHNICITY_SKIN[e]||Object.keys(SKIN_TONES); }
 
 function lerp(a,b,t){ return a+(b-a)*t; }
 function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
 
-// ══════════════════════════════════════════════════════════════
-// PNG BODY IMAGES
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// PNG BODY IMAGES + WARP ENGINE
+// ════════════════════════════════════════════════
 const bodyImgMale = new Image();
 const bodyImgFemale = new Image();
 let bodyImagesLoaded = false;
@@ -524,23 +443,19 @@ bodyImgFemale.onload = () => { bodyLoadedFemale = true; bodyImagesLoaded = bodyL
 bodyImgMale.src = 'body.png';
 bodyImgFemale.src = 'body2.png';
 
-// Mesh grid for warp
 const WARP_COLS = 12;
 const WARP_ROWS = 20;
 
-// ── WARP ENGINE ──
-// Displacement for each vertex based on body sliders
 function computeWarp(vert_nx, vert_ny, fat, muscle, height, waist) {
   const x = vert_nx, y = vert_ny;
   let dx = 0, dy = 0;
 
-  const f = (fat - 50) / 50;        // -1..1
-  const m = (muscle - 50) / 50;     // -1..1
-  const h = (height - 50) / 50;     // -1..1
-  const w = (waist - 50) / 50;      // -1..1
+  const f = (fat - 50) / 50;
+  const m = (muscle - 50) / 50;
+  const h = (height - 50) / 50;
+  const w = (waist - 50) / 50;
 
-  // ── FAT — horizontal expansion ──
-  // Profile: max at belly (y 0.55-0.75), moderate at chest/hips, none at head/feet
+  // FAT
   let fatPro = 0;
   if (y > 0.10 && y < 0.30) fatPro = 0.2 * (y - 0.10) / 0.20;
   else if (y >= 0.30 && y < 0.50) fatPro = 0.3 + 0.3 * (y - 0.30) / 0.20;
@@ -553,44 +468,24 @@ function computeWarp(vert_nx, vert_ny, fat, muscle, height, waist) {
   const dir = x > 0.5 ? 1 : -1;
   dx += f * fatPro * 0.10 * edgeF * dir;
 
-  // ── MUSCLE — localized bulges ──
+  // MUSCLE
   let musPro = 0, musDir = 0;
-  // Shoulders (y 0.20-0.30)
-  if (y >= 0.20 && y < 0.30) {
-    const t = (y - 0.20) / 0.10;
-    musPro = 0.10 * Math.sin(t * Math.PI);
-    musDir = dir;
-  }
-  // Biceps (y 0.35-0.45)
-  else if (y >= 0.35 && y < 0.45) {
-    const t = (y - 0.35) / 0.10;
-    musPro = 0.08 * Math.sin(t * Math.PI);
-    musDir = dir;
-  }
-  // Chest (y 0.25-0.38)
+  if (y >= 0.20 && y < 0.30) { const t = (y - 0.20) / 0.10; musPro = 0.10 * Math.sin(t * Math.PI); musDir = dir; }
+  else if (y >= 0.35 && y < 0.45) { const t = (y - 0.35) / 0.10; musPro = 0.08 * Math.sin(t * Math.PI); musDir = dir; }
   else if (y >= 0.25 && y < 0.38) {
     const t = (y - 0.25) / 0.13;
     musPro = 0.10 * Math.sin(t * Math.PI);
     const chestLat = 1 - Math.abs(x - 0.35) / 0.15;
     if (chestLat > 0) musPro *= Math.min(1, chestLat);
-    musDir = x > 0.5 ? 1 : -1;
-  }
-  // Thighs (y 0.78-0.88)
-  else if (y >= 0.78 && y < 0.88) {
-    const t = (y - 0.78) / 0.10;
-    musPro = 0.08 * Math.sin(t * Math.PI);
     musDir = dir;
   }
+  else if (y >= 0.78 && y < 0.88) { const t = (y - 0.78) / 0.10; musPro = 0.08 * Math.sin(t * Math.PI); musDir = dir; }
   dx += m * musPro * edgeF * musDir;
 
-  // ── HEIGHT — vertical stretch from top ──
-  if (y > 0.12) {
-    const hAmt = h * 0.12;
-    const hPro = (y - 0.12) / 0.88;
-    dy += hAmt * hPro;
-  }
+  // HEIGHT
+  if (y > 0.12) { const hAmt = h * 0.12; const hPro = (y - 0.12) / 0.88; dy += hAmt * hPro; }
 
-  // ── WAIST — independent narrow/wide at mid-torso ──
+  // WAIST
   if (y >= 0.35 && y < 0.65) {
     const wa = Math.sin((y - 0.35) / 0.30 * Math.PI);
     const latD = Math.abs(x - 0.5) / 0.5;
@@ -600,7 +495,6 @@ function computeWarp(vert_nx, vert_ny, fat, muscle, height, waist) {
   return { dx, dy };
 }
 
-// Render warped body using triangle affine transform (seam-free with rounded clip)
 function renderWarpedBody(srcCanvas, fat, muscle, height, waist) {
   const sw = srcCanvas.width, sh = srcCanvas.height;
   const outCanvas = document.createElement('canvas');
@@ -608,22 +502,17 @@ function renderWarpedBody(srcCanvas, fat, muscle, height, waist) {
   outCanvas.height = sh;
   const outCtx = outCanvas.getContext('2d');
 
-  // Build warp grid
   const grid = [];
   for (let r = 0; r <= WARP_ROWS; r++) {
     const row = [];
     for (let c = 0; c <= WARP_COLS; c++) {
       const nx = c / WARP_COLS, ny = r / WARP_ROWS;
       const d = computeWarp(nx, ny, fat, muscle, height, waist);
-      row.push({
-        x: (nx + d.dx) * sw,
-        y: (ny + d.dy) * sh
-      });
+      row.push({ x: (nx + d.dx) * sw, y: (ny + d.dy) * sh });
     }
     grid.push(row);
   }
 
-  // Source UV in pixels
   const srcUV = [];
   for (let r = 0; r <= WARP_ROWS; r++) {
     const row = [];
@@ -633,29 +522,19 @@ function renderWarpedBody(srcCanvas, fat, muscle, height, waist) {
     srcUV.push(row);
   }
 
-  // Draw each quad as 2 triangles with rounded clip to prevent seams
   for (let r = 0; r < WARP_ROWS; r++) {
     for (let c = 0; c < WARP_COLS; c++) {
       const d0 = grid[r][c], d1 = grid[r][c+1], d2 = grid[r+1][c], d3 = grid[r+1][c+1];
       const s0 = srcUV[r][c], s1 = srcUV[r][c+1], s2 = srcUV[r+1][c], s3 = srcUV[r+1][c+1];
 
-      // Triangle 1: d0-d1-d2
-      drawTri(outCtx, srcCanvas,
-        d0.x, d0.y, d1.x, d1.y, d2.x, d2.y,
-        s0.u, s0.v, s1.u, s1.v, s2.u, s2.v
-      );
-      // Triangle 2: d1-d3-d2
-      drawTri(outCtx, srcCanvas,
-        d1.x, d1.y, d3.x, d3.y, d2.x, d2.y,
-        s1.u, s1.v, s3.u, s3.v, s2.u, s2.v
-      );
+      drawTri(outCtx, srcCanvas, d0.x, d0.y, d1.x, d1.y, d2.x, d2.y, s0.u, s0.v, s1.u, s1.v, s2.u, s2.v);
+      drawTri(outCtx, srcCanvas, d1.x, d1.y, d3.x, d3.y, d2.x, d2.y, s1.u, s1.v, s3.u, s3.v, s2.u, s2.v);
     }
   }
 
   return outCanvas;
 }
 
-// Draw a single triangle with affine transform and rounded clip (seam-free)
 function drawTri(ctx, img, x0,y0, x1,y1, x2,y2, u0,v0, u1,v1, u2,v2) {
   const a0 = x1 - x0, b0 = y1 - y0;
   const a1 = x2 - x0, b1 = y2 - y0;
@@ -673,10 +552,9 @@ function drawTri(ctx, img, x0,y0, x1,y1, x2,y2, u0,v0, u1,v1, u2,v2) {
 
   ctx.save();
   ctx.beginPath();
-  // Rounded coords to prevent sub-pixel seam gaps
-  ctx.moveTo(Math.round(x0 * 2) / 2, Math.round(y0 * 2) / 2);
-  ctx.lineTo(Math.round(x1 * 2) / 2, Math.round(y1 * 2) / 2);
-  ctx.lineTo(Math.round(x2 * 2) / 2, Math.round(y2 * 2) / 2);
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x1, y1);
+  ctx.lineTo(x2, y2);
   ctx.closePath();
   ctx.clip();
   ctx.transform(A, C, B, D, E, F);
@@ -684,56 +562,41 @@ function drawTri(ctx, img, x0,y0, x1,y1, x2,y2, u0,v0, u1,v1, u2,v2) {
   ctx.restore();
 }
 
-// Get warped body as data URL, cropped to visible body bounds
 function getWarpedBodyDataURL(sex, fat, muscle, height, waist) {
   const isMale = sex === 'male';
   const srcImg = isMale ? bodyImgMale : bodyImgFemale;
   if (!srcImg || !srcImg.width) return null;
 
-  // Draw source to temp canvas
   const tmpCanvas = document.createElement('canvas');
   tmpCanvas.width = srcImg.width;
   tmpCanvas.height = srcImg.height;
   const tmpCtx = tmpCanvas.getContext('2d');
   tmpCtx.drawImage(srcImg, 0, 0);
 
-  // Warp it
   const warpedCanvas = renderWarpedBody(tmpCanvas, fat, muscle, height, waist);
   const w = warpedCanvas.width, h = warpedCanvas.height;
 
-  // Find visible pixel bounds (with padding)
   const wCtx = warpedCanvas.getContext('2d');
   const wData = wCtx.getImageData(0, 0, w, h);
   let minX = w, maxX = 0, minY = h, maxY = 0;
   for (let y = 0; y < h; y++) {
     for (let x = 0; x < w; x++) {
       if (wData.data[(y * w + x) * 4 + 3] > 10) {
-        if (x < minX) minX = x;
-        if (x > maxX) maxX = x;
-        if (y < minY) minY = y;
-        if (y > maxY) maxY = y;
+        if (x < minX) minX = x; if (x > maxX) maxX = x;
+        if (y < minY) minY = y; if (y > maxY) maxY = y;
       }
     }
   }
 
   const pad = 4;
-  minX = Math.max(0, minX - pad);
-  minY = Math.max(0, minY - pad);
-  maxX = Math.min(w - 1, maxX + pad);
-  maxY = Math.min(h - 1, maxY + pad);
+  minX = Math.max(0, minX - pad); minY = Math.max(0, minY - pad);
+  maxX = Math.min(w - 1, maxX + pad); maxY = Math.min(h - 1, maxY + pad);
+  const cropW = maxX - minX + 1, cropH = maxY - minY + 1;
 
-  const cropW = maxX - minX + 1;
-  const cropH = maxY - minY + 1;
-
-  // Crop to body bounds
   const cropCanvas = document.createElement('canvas');
-  cropCanvas.width = cropW;
-  cropCanvas.height = cropH;
+  cropCanvas.width = cropW; cropCanvas.height = cropH;
   const cropCtx = cropCanvas.getContext('2d');
   cropCtx.putImageData(wData, -minX, -minY);
-  // Re-clip with proper transparency
-  const imgData = cropCtx.getImageData(0, 0, cropW, cropH);
-  cropCtx.putImageData(imgData, 0, 0);
 
   return {
     dataURL: cropCanvas.toDataURL('image/png'),
@@ -743,123 +606,73 @@ function getWarpedBodyDataURL(sex, fat, muscle, height, waist) {
   };
 }
 
-// ══════════════════════════════════════════════════════════════
-// SVG RENDERER
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
+// SVG RENDERER (FLAT, NO OUTLINES)
+// ════════════════════════════════════════════════
 const SVG = {
   el: document.getElementById('character-preview'),
   layers: {},
   _init(){
-    ['back-hair','body','genitals','clothing','head','face','hair','accessories'].forEach(id=>{
+    ['body','genitals','clothing','head','face','hair','accessories'].forEach(id=>{
       this.layers[id] = document.getElementById('layer-'+id);
     });
   },
   _g(id){ return this.layers[id]; },
   _clear(id){ const g=this._g(id); if(g) g.innerHTML=''; },
-  _path(parent,d,fill,stroke,sw){
+  _path(parent,d,fill){
     const p=document.createElementNS('http://www.w3.org/2000/svg','path');
     p.setAttribute('d',d); p.setAttribute('fill',fill||'none');
-    if(stroke){p.setAttribute('stroke',stroke);p.setAttribute('stroke-width',sw||'1');}
     parent.appendChild(p); return p;
   },
-  _ellipse(parent,cx,cy,rx,ry,fill,stroke,sw){
+  _ellipse(parent,cx,cy,rx,ry,fill){
     const e=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-    e.setAttribute('cx',cx);e.setAttribute('cy',cy);e.setAttribute('rx',rx);e.setAttribute('ry',ry);
+    e.setAttribute('cx',cx); e.setAttribute('cy',cy);
+    e.setAttribute('rx',rx); e.setAttribute('ry',ry);
     e.setAttribute('fill',fill||'none');
-    if(stroke){e.setAttribute('stroke',stroke);e.setAttribute('stroke-width',sw||'1');}
     parent.appendChild(e); return e;
   },
   _circle(parent,cx,cy,r,fill){
     const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);c.setAttribute('fill',fill||'none');
+    c.setAttribute('cx',cx); c.setAttribute('cy',cy);
+    c.setAttribute('r',r); c.setAttribute('fill',fill||'none');
     parent.appendChild(c);
-  },
-  _line(parent,x1,y1,x2,y2,stroke,sw){
-    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-    l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
-    l.setAttribute('stroke',stroke||'#000');l.setAttribute('stroke-width',sw||'1');
-    l.setAttribute('stroke-linecap','round');
-    parent.appendChild(l);
-  },
-
-  _updateSkinGradient(){
-    const tones = skinTonesForEthnicity();
-    const idx = clamp(Math.floor(S.character.skinToneIdx||0), 0, tones.length-1);
-    const key = tones[idx];
-    const stops = SKIN_TONES[key].stops;
-    for(let i=0;i<4;i++){
-      const el = document.getElementById('skin-stop-'+i);
-      if(el) el.setAttribute('stop-color', stops[i]);
-    }
-  },
-
-  _updateHairGradient(){
-    const colors = hairColorsForEthnicity();
-    const idx = clamp(S.character.hairColor, 0, colors.length-1);
-    const stops = colors[idx].stops;
-    for(let i=0;i<3;i++){
-      const el = document.getElementById('hair-stop-'+i);
-      if(el) el.setAttribute('stop-color', stops[i]);
-    }
   },
 
   render(){
     const c = S.character;
-    const isF = c.sex === 'female';
-    const isI = c.sex === 'intersex';
+    const skin = skinColor();
+    const hairFill = hairFillColor();
 
-    // ── Normalize sliders to 0-1 ──
+    // Normalize
     const t = {
-      chest:   c.chest/100,
-      waist:   c.waist/100,
-      hips:    c.hips/100,
-      height:  c.height/100,
-      weight:  c.weight/100,
-      muscle:  c.muscle/100,
-      organ:   c.organSize/100,
-      hWidth:  c.headWidth/100,
-      hLength: c.headLength/100,
+      chest: c.chest/100, waist: c.waist/100, hips: c.hips/100,
+      height: c.height/100, weight: c.weight/100, muscle: c.muscle/100,
+      organ: c.organSize/100, hWidth: c.headWidth/100, hLength: c.headLength/100,
     };
 
-    // ── Core proportions ──
     const cx = 100;
-    const headR = lerp(40, 54, t.hWidth);     // head radius X
-    const headRY = lerp(46, 58, t.hLength);    // head radius Y
-    const headY = 72;                           // head center Y
+    const headR = lerp(40, 54, t.hWidth);
+    const headRY = lerp(46, 58, t.hLength);
+    const headY = 72;
     const neckW = lerp(8, 16, t.weight);
     const neckH = lerp(10, 18, t.muscle);
     const shoulderY = headY + headRY + neckH;
-    const shW = lerp(isF?22:28, isF?34:44, t.weight) + lerp(0, 8, t.muscle) + lerp(0, 6, t.chest);
-    const waistW = lerp(isF?10:14, isF?22:26, t.weight) - lerp(0, 6, t.muscle) + lerp(0, -4, t.waist);
-    const hipW = lerp(isF?14:10, isF?28:18, t.hips) + lerp(0, 8, t.weight);
+    const shW = lerp(c.sex==='female'?22:28, c.sex==='female'?34:44, t.weight) + lerp(0, 8, t.muscle) + lerp(0, 6, t.chest);
+    const waistW = lerp(c.sex==='female'?10:14, c.sex==='female'?22:26, t.weight) - lerp(0, 6, t.muscle) + lerp(0, -4, t.waist);
+    const hipW = lerp(c.sex==='female'?14:10, c.sex==='female'?28:18, t.hips) + lerp(0, 8, t.weight);
     const torsoH = lerp(140, 200, t.height);
     const waistY = shoulderY + torsoH * 0.42;
     const hipY = shoulderY + torsoH * 0.72;
     const legH = lerp(120, 170, t.height);
     const footY = hipY + legH;
-    const legW = lerp(5, 10, t.weight) + lerp(0, 5, t.muscle);
-    const legGap = 2 + legW * 0.3;
-    // Update gradients
-    this._updateSkinGradient();
-    this._updateHairGradient();
 
-    const skinFill = 'url(#skinGrad)';
-    const hairFill = 'url(#hairGrad)';
-    const outline = '#3a2a1a';
-    const outlineW = 2;
+    ['body','genitals','clothing','head','face','hair','accessories'].forEach(id=>this._clear(id));
 
-    // Clear all layers
-    ['back-hair','body','genitals','clothing','head','face','hair','accessories'].forEach(id=>this._clear(id));
-
-    // ═══ BODY LAYER ═══ (PNG warp)
+    // ═══ BODY LAYER ═══
     const bodyG = this._g('body');
-
-    // Render warped PNG body and display as SVG <image>
     if (bodyImagesLoaded) {
       const bodyResult = getWarpedBodyDataURL(c.sex, c.weight, c.muscle, c.height, c.waist);
       if (bodyResult) {
-        // Map the cropped body to SVG body area
-        // Shoulder/neck starts at around shoulderY in SVG
         const svgBodyY = shoulderY - 6;
         const svgHeight = footY - svgBodyY + 8;
         const scale = svgHeight / bodyResult.bodyH;
@@ -868,78 +681,99 @@ const SVG = {
 
         const img = document.createElementNS('http://www.w3.org/2000/svg','image');
         img.setAttribute('href', bodyResult.dataURL);
-        img.setAttribute('x', svgX);
-        img.setAttribute('y', svgBodyY);
-        img.setAttribute('width', svgWidth);
-        img.setAttribute('height', svgHeight);
+        img.setAttribute('x', svgX); img.setAttribute('y', svgBodyY);
+        img.setAttribute('width', svgWidth); img.setAttribute('height', svgHeight);
         bodyG.appendChild(img);
       }
     }
 
     // ═══ HEAD LAYER ═══
     const headG = this._g('head');
-    // Head shape: ellipse with width/length control
-    this._ellipse(headG, cx, headY, headR, headRY, skinFill, outline, outlineW);
-    // Ears
-    this._path(headG, `M ${cx-headR+2} ${headY-4} C ${cx-headR-6} ${headY-10}, ${cx-headR-8} ${headY+2}, ${cx-headR-4} ${headY+8} C ${cx-headR} ${headY+10}, ${cx-headR+4} ${headY+6}, ${cx-headR+2} ${headY} Z`, skinFill, outline, 1.5);
-    this._path(headG, `M ${cx+headR-2} ${headY-4} C ${cx+headR+6} ${headY-10}, ${cx+headR+8} ${headY+2}, ${cx+headR+4} ${headY+8} C ${cx+headR} ${headY+10}, ${cx+headR-4} ${headY+6}, ${cx+headR-2} ${headY} Z`, skinFill, outline, 1.5);
+    this._ellipse(headG, cx, headY, headR, headRY, skin);
+    // Ears (flat)
+    this._path(headG, `M ${cx-headR+2} ${headY-4} C ${cx-headR-6} ${headY-10}, ${cx-headR-8} ${headY+2}, ${cx-headR-4} ${headY+8} C ${cx-headR} ${headY+10}, ${cx-headR+4} ${headY+6}, ${cx-headR+2} ${headY} Z`, skin);
+    this._path(headG, `M ${cx+headR-2} ${headY-4} C ${cx+headR+6} ${headY-10}, ${cx+headR+8} ${headY+2}, ${cx+headR+4} ${headY+8} C ${cx+headR} ${headY+10}, ${cx+headR-4} ${headY+6}, ${cx+headR-2} ${headY} Z`, skin);
 
-    // ═══ FACE LAYER ═══
+    // ═══ FACE LAYER (ANIME STYLE) ═══
     const faceG = this._g('face');
     const eyeY = headY + lerp(-2, 4, t.hLength);
     const eyeSp = lerp(16, 24, t.hWidth);
     const eyeType = EYE_TYPES[c.eyeType] || EYE_TYPES[0];
     const noseType = NOSE_TYPES[c.noseType] || NOSE_TYPES[0];
 
-    // ── Eyes based on type ──
-    const eyeW = eyeType.key==='round'?14 : eyeType.key==='narrow'?10 : eyeType.key==='wide'?16 : 13;
-    const eyeH = eyeType.key==='round'?12 : eyeType.key==='narrow'?6 : eyeType.key==='wide'?10 : 9;
-    const irisR = eyeType.key==='round'?7 : eyeType.key==='narrow'?4 : 6;
-    const lidWeight = eyeType.key==='hooded'?3.5 : 2.5;
+    // ── BIG ANIME EYES ──
+    const eW = eyeType.w;
+    const eH = eyeType.h;
+    const irisR = eyeType.iris;
 
-    for(const side of [-1, 1]){
+    for (const side of [-1, 1]) {
       const ex = cx + side * eyeSp;
-      // Sclera
-      this._ellipse(faceG, ex, eyeY, eyeW, eyeH, 'white', outline, 1);
+      
+      // Eye shadow/base
+      this._ellipse(faceG, ex, eyeY+1, eW+2, eH+1, 'rgba(0,0,0,0.08)');
+      
+      // Sclera (white)
+      this._ellipse(faceG, ex, eyeY, eW, eH, '#fff');
+      
       // Iris
       this._circle(faceG, ex, eyeY+1, irisR, '#4a3080');
+      
+      // Iris gradient effect (lighter bottom)
+      this._path(faceG, `M ${ex-irisR} ${eyeY+1} C ${ex-irisR*0.7} ${eyeY+1+irisR*0.5}, ${ex+irisR*0.7} ${eyeY+1+irisR*0.5}, ${ex+irisR} ${eyeY+1} C ${ex+irisR*0.7} ${eyeY+1+irisR*0.8}, ${ex-irisR*0.7} ${eyeY+1+irisR*0.8}, ${ex-irisR} ${eyeY+1} Z`, '#5a40a0');
+      
       // Pupil
       this._circle(faceG, ex, eyeY+1, irisR*0.5, '#1a0830');
-      // Upper lid
-      this._path(faceG, `M ${ex-eyeW} ${eyeY-eyeH*0.3} C ${ex-eyeW*0.5} ${eyeY-eyeH-4}, ${ex+eyeW*0.5} ${eyeY-eyeH-4}, ${ex+eyeW} ${eyeY-eyeH*0.3}`, 'none', '#2a1a10', lidWeight);
-      // Lower lid hint
-      this._path(faceG, `M ${ex-eyeW+2} ${eyeY+eyeH*0.5} C ${ex} ${eyeY+eyeH+2}, ${ex+eyeW-2} ${eyeY+eyeH+2}`, 'none', outline, 0.8);
-      // Highlights
-      this._circle(faceG, ex+irisR*0.3, eyeY-irisR*0.3, irisR*0.4, 'white');
-      this._circle(faceG, ex-irisR*0.2, eyeY+irisR*0.3, irisR*0.2, 'white');
+      
+      // Big sparkle highlight (top-left)
+      this._circle(faceG, ex-irisR*0.35, eyeY-irisR*0.4, irisR*0.45, '#fff');
+      
+      // Small sparkle (bottom-right)
+      this._circle(faceG, ex+irisR*0.25, eyeY+irisR*0.35, irisR*0.2, 'rgba(255,255,255,0.7)');
+      
+      // Upper eyelid (thin slit for expression)
+      this._path(faceG, `M ${ex-eW-2} ${eyeY-eH*0.4} C ${ex-eW*0.3} ${eyeY-eH-3}, ${ex+eW*0.3} ${eyeY-eH-3}, ${ex+eW+2} ${eyeY-eH*0.4}`, '#2a1a10');
+      
+      // Eyelashes (upper)
+      this._path(faceG, `M ${ex-eW+2} ${eyeY-eH+2} L ${ex-eW+5} ${eyeY-eH-3}`, '#2a1a10');
+      this._path(faceG, `M ${ex} ${eyeY-eH-1} L ${ex} ${eyeY-eH-5}`, '#2a1a10');
+      this._path(faceG, `M ${ex+eW-2} ${eyeY-eH+2} L ${ex+eW-5} ${eyeY-eH-3}`, '#2a1a10');
+      
+      // Lower lash line
+      this._path(faceG, `M ${ex-eW+3} ${eyeY+eH*0.6} C ${ex-eW*0.5} ${eyeY+eH+3}, ${ex+eW*0.5} ${eyeY+eH+3}, ${ex+eW-3} ${eyeY+eH*0.6}`, '#3a2a1a');
     }
 
-    // Eyebrows
-    const browY = eyeY - eyeH - 8;
-    this._path(faceG, `M ${cx-eyeSp-eyeW} ${browY} C ${cx-eyeSp-eyeW*0.3} ${browY-4}, ${cx-eyeSp+eyeW*0.3} ${browY-4}, ${cx-eyeSp+eyeW} ${browY+2}`, 'none', outline, 1.8);
-    this._path(faceG, `M ${cx+eyeSp+eyeW} ${browY} C ${cx+eyeSp+eyeW*0.3} ${browY-4}, ${cx+eyeSp-eyeW*0.3} ${browY-4}, ${cx+eyeSp-eyeW} ${browY+2}`, 'none', outline, 1.8);
+    // Eyebrows (thicker, anime)
+    const browY = eyeY - eH - 10;
+    this._path(faceG, `M ${cx-eyeSp-eW-4} ${browY} C ${cx-eyeSp-eW*0.2} ${browY-3}, ${cx-eyeSp+eW*0.2} ${browY-3}, ${cx-eyeSp+eW+4} ${browY+1}`, '#2a1a10');
+    this._path(faceG, `M ${cx+eyeSp-eW-4} ${browY} C ${cx+eyeSp-eW*0.2} ${browY-3}, ${cx+eyeSp+eW*0.2} ${browY-3}, ${cx+eyeSp+eW+4} ${browY+1}`, '#2a1a10');
 
-    // ── Nose based on type ──
-    const noseY = headY + lerp(8, 14, t.hLength);
-    if(noseType.key==='small'){
-      this._path(faceG, `M ${cx-2} ${noseY} L ${cx} ${noseY+6} L ${cx+2} ${noseY}`, 'none', '#a08070', 1.2);
-    } else if(noseType.key==='medium'){
-      this._path(faceG, `M ${cx-4} ${noseY-2} L ${cx-2} ${noseY+8} C ${cx} ${noseY+10}, ${cx+2} ${noseY+8}, ${cx+4} ${noseY-2}`, 'none', '#a08070', 1.2);
-    } else if(noseType.key==='pointed'){
-      this._path(faceG, `M ${cx-3} ${noseY-4} L ${cx} ${noseY+10} L ${cx+3} ${noseY-4}`, 'none', '#907060', 1.3);
-    } else if(noseType.key==='flat'){
-      this._path(faceG, `M ${cx-6} ${noseY+2} C ${cx-4} ${noseY+8}, ${cx+4} ${noseY+8}, ${cx+6} ${noseY+2}`, 'none', '#a08070', 1.2);
-      this._path(faceG, `M ${cx-4} ${noseY+4} C ${cx-2} ${noseY+8}, ${cx+2} ${noseY+8}, ${cx+4} ${noseY+4}`, 'none', '#b09080', 0.8);
-    } else if(noseType.key==='button'){
-      this._path(faceG, `M ${cx-3} ${noseY} C ${cx-4} ${noseY+6}, ${cx} ${noseY+8}, ${cx+4} ${noseY+6} C ${cx+3} ${noseY+4}, ${cx+2} ${noseY}, ${cx-2} ${noseY} Z`, 'none', '#a08070', 1.2);
+    // ── NOSE (minimal anime) ──
+    const noseY = headY + 12;
+    const noseColor = '#c09070';
+    if (noseType.key==='small') {
+      this._path(faceG, `M ${cx-1} ${noseY} L ${cx} ${noseY+5} L ${cx+1} ${noseY}`, noseColor);
+    } else if (noseType.key==='medium') {
+      this._path(faceG, `M ${cx-2} ${noseY-1} C ${cx-1} ${noseY+5}, ${cx+1} ${noseY+5}, ${cx+2} ${noseY-1}`, noseColor);
+    } else if (noseType.key==='pointed') {
+      this._path(faceG, `M ${cx-2} ${noseY-2} L ${cx} ${noseY+7} L ${cx+2} ${noseY-2}`, noseColor);
+    } else if (noseType.key==='flat') {
+      this._path(faceG, `M ${cx-5} ${noseY+2} C ${cx-3} ${noseY+6}, ${cx+3} ${noseY+6}, ${cx+5} ${noseY+2}`, noseColor);
+    } else if (noseType.key==='button') {
+      this._circle(faceG, cx, noseY+3, 3, noseColor);
     } else { // hooked
-      this._path(faceG, `M ${cx-2} ${noseY-6} C ${cx+2} ${noseY-2}, ${cx+4} ${noseY+4}, ${cx+2} ${noseY+10} C ${cx} ${noseY+12}, ${cx-2} ${noseY+10}, ${cx-4} ${noseY+4}`, 'none', '#907060', 1.3);
+      this._path(faceG, `M ${cx-1} ${noseY-4} C ${cx+2} ${noseY}, ${cx+3} ${noseY+4}, ${cx+1} ${noseY+8} C ${cx-1} ${noseY+10}, ${cx-2} ${noseY+8}, ${cx-3} ${noseY+4}`, noseColor);
     }
 
-    // Mouth
-    const mouthY = headY + lerp(22, 32, t.hLength);
-    this._path(faceG, `M ${cx-14} ${mouthY} C ${cx-6} ${mouthY+6}, ${cx+6} ${mouthY+6}, ${cx+14} ${mouthY}`, 'url(#lipGrad)', '#a06060', 1);
-    this._path(faceG, `M ${cx-12} ${mouthY+1} C ${cx-4} ${mouthY+4}, ${cx+4} ${mouthY+4}, ${cx+12} ${mouthY+1}`, 'none', '#c07070', 0.5);
+    // ── MOUTH ──
+    const mouthY = headY + lerp(24, 34, t.hLength);
+    this._path(faceG, `M ${cx-12} ${mouthY} C ${cx-6} ${mouthY+5}, ${cx+6} ${mouthY+5}, ${cx+12} ${mouthY}`, '#c07070');
+    // Lower lip hint
+    this._path(faceG, `M ${cx-8} ${mouthY+2} C ${cx-3} ${mouthY+5}, ${cx+3} ${mouthY+5}, ${cx+8} ${mouthY+2}`, '#d08080');
+
+    // ── BLUSH (subtle) ──
+    const blushY = headY + 15;
+    this._circle(faceG, cx-eyeSp-5, blushY, 8, 'rgba(220,120,120,0.15)');
+    this._circle(faceG, cx+eyeSp+5, blushY, 8, 'rgba(220,120,120,0.15)');
 
     // ═══ HAIR LAYER ═══
     const hairG = this._g('hair');
@@ -948,190 +782,86 @@ const SVG = {
     const genFn = HAIRSTYLE_GENERATORS[hairKey];
     if (genFn) {
       const paths = genFn(cx, headY, headR, headRY);
-      paths.forEach(d => this._path(hairG, d, hairFill, '#2a1508', 1.5));
+      paths.forEach(d => this._path(hairG, d, hairFill));
     }
 
-    // ═══ GENITALS LAYER ═══
+    // ═══ GENITALS LAYER (flat, no outlines) ═══
     const genG = this._g('genitals');
     const genY = hipY + 4;
     const organT = t.organ;
 
-    if(c.sex === 'male'){
-      // Penis
+    if (c.sex === 'male') {
       const pLen = lerp(8, 22, organT);
       const pW = lerp(3, 7, organT);
-      this._path(genG, `M ${cx-pW} ${genY} C ${cx-pW-1} ${genY+pLen*0.5}, ${cx-pW} ${genY+pLen}, ${cx} ${genY+pLen+2} C ${cx+pW} ${genY+pLen}, ${cx+pW+1} ${genY+pLen*0.5}, ${cx+pW} ${genY} Z`, skinFill, outline, 1.5);
-      // Balls
+      this._path(genG, `M ${cx-pW} ${genY} C ${cx-pW-1} ${genY+pLen*0.5}, ${cx-pW} ${genY+pLen}, ${cx} ${genY+pLen+2} C ${cx+pW} ${genY+pLen}, ${cx+pW+1} ${genY+pLen*0.5}, ${cx+pW} ${genY} Z`, skin);
       const ballR = lerp(3, 7, organT);
-      this._ellipse(genG, cx-ballR, genY+2, ballR, ballR*0.8, skinFill, outline, 1.2);
-      this._ellipse(genG, cx+ballR, genY+2, ballR, ballR*0.8, skinFill, outline, 1.2);
-    } else if(c.sex === 'female'){
-      // Vulva
+      this._ellipse(genG, cx-ballR, genY+2, ballR, ballR*0.8, skin);
+      this._ellipse(genG, cx+ballR, genY+2, ballR, ballR*0.8, skin);
+    } else if (c.sex === 'female') {
       const vW = lerp(4, 10, organT);
       const vH = lerp(3, 7, organT);
-      // Mons
-      this._ellipse(genG, cx, genY-2, vW+2, vH+2, skinFill, outline, 1.5);
-      // Labia
-      this._path(genG, `M ${cx-vW} ${genY} C ${cx-vW+1} ${genY+vH}, ${cx-1} ${genY+vH+2}, ${cx} ${genY+vH} C ${cx+1} ${genY+vH+2}, ${cx+vW-1} ${genY+vH}, ${cx+vW} ${genY}`, 'none', '#804040', 1.2);
-      // Clitoris
+      this._ellipse(genG, cx, genY-2, vW+2, vH+2, skin);
+      this._path(genG, `M ${cx-vW} ${genY} C ${cx-vW+1} ${genY+vH}, ${cx-1} ${genY+vH+2}, ${cx} ${genY+vH} C ${cx+1} ${genY+vH+2}, ${cx+vW-1} ${genY+vH}, ${cx+vW} ${genY}`, '#804040');
       this._circle(genG, cx, genY-1, lerp(1, 2.5, organT), '#a06060');
-    } else { // intersex
+    } else {
       const pLen = lerp(4, 12, organT);
       const pW = lerp(2, 5, organT);
-      this._path(genG, `M ${cx-pW} ${genY} C ${cx-pW-1} ${genY+pLen*0.5}, ${cx-pW} ${genY+pLen}, ${cx} ${genY+pLen+1} C ${cx+pW} ${genY+pLen}, ${cx+pW+1} ${genY+pLen*0.5}, ${cx+pW} ${genY} Z`, skinFill, outline, 1.5);
+      this._path(genG, `M ${cx-pW} ${genY} C ${cx-pW-1} ${genY+pLen*0.5}, ${cx-pW} ${genY+pLen}, ${cx} ${genY+pLen+1} C ${cx+pW} ${genY+pLen}, ${cx+pW+1} ${genY+pLen*0.5}, ${cx+pW} ${genY} Z`, skin);
       const vW = lerp(3, 7, organT);
-      this._path(genG, `M ${cx-vW} ${genY+2} C ${cx-vW+1} ${genY+6}, ${cx} ${genY+8}, ${cx+vW-1} ${genY+6} C ${cx+vW} ${genY+4}, ${cx+vW} ${genY+2}, ${cx} ${genY+1}`, 'none', '#804040', 1);
+      this._path(genG, `M ${cx-vW} ${genY+2} C ${cx-vW+1} ${genY+6}, ${cx} ${genY+8}, ${cx+vW-1} ${genY+6} C ${cx+vW} ${genY+4}, ${cx+vW} ${genY+2}, ${cx} ${genY+1}`, '#804040');
     }
   }
 };
 
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // STEP BUILDERS
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function mkSlider(label, key, lo, hi, fmt){
   const id = 'slider-'+key;
-  return `
-    <div class="slider-row">
-      <div><span class="slider-label">${label}</span><span class="slider-value" id="${id}-val"></span></div>
-      <input type="range" id="${id}" min="0" max="100" value="50">
-      <div class="range-hints"><span>${lo}</span><span>${hi}</span></div>
-    </div>`;
+  return `<div class="slider-row"><div><span class="slider-label">${label}</span><span class="slider-value" id="${id}-val"></span></div><input type="range" id="${id}" min="0" max="100" value="50"><div class="range-hints"><span>${lo}</span><span>${hi}</span></div></div>`;
 }
 
 function mkGridButtons(items, key, cls){
-  return `<div class="${cls||'grid-3'}" id="grid-${key}">` +
-    items.map((item,i) => `<button class="grid-btn" data-key="${key}" data-idx="${i}">${item.label}</button>`).join('') +
-    '</div>';
+  return `<div class="${cls||'grid-3'}" id="grid-${key}">` + items.map((item,i) => `<button class="grid-btn" data-key="${key}" data-idx="${i}">${item.label}</button>`).join('') + '</div>';
 }
 
 function mkSliderWithGradient(label, key, lo, hi, cL, cR){
   const id = 'slider-'+key;
-  return `
-    <div class="slider-row">
-      <div><span class="slider-label">${label}</span><span class="slider-value" id="${id}-val"></span></div>
-      <input type="range" class="grad" id="${id}" min="0" max="100" value="50" style="--g-l:${cL};--g-r:${cR};">
-      <div class="range-hints"><span>${lo}</span><span>${hi}</span></div>
-    </div>`;
+  return `<div class="slider-row"><div><span class="slider-label">${label}</span><span class="slider-value" id="${id}-val"></span></div><input type="range" class="grad" id="${id}" min="0" max="100" value="50" style="--g-l:${cL};--g-r:${cR};"><div class="range-hints"><span>${lo}</span><span>${hi}</span></div></div>`;
 }
 
 const stepBuilders = [];
 
-// ── STEP 0: Name ──
-stepBuilders.push(() => `
-  <div class="preview-full">
-    <div class="step-title">What is your name?</div>
-    <div class="name-input-wrap">
-      <input type="text" id="name-input" placeholder="Enter a name..." maxlength="30">
-    </div>
-    <div class="step-subtitle">or just press Continue to use "Alex"</div>
-  </div>`);
+stepBuilders.push(() => `<div class="preview-full"><div class="step-title">What is your name?</div><div class="name-input-wrap"><input type="text" id="name-input" placeholder="Enter a name..." maxlength="30"></div><div class="step-subtitle">or just press Continue to use "Alex"</div></div>`);
 
-// ── STEP 1: Background (Sex, Age, Ethnicity) ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 2: Background</div>
-  <div class="step-subtitle">Sex, age & ethnicity</div>
-  <div class="slider-row">
-    <div><span class="slider-label">Sex</span><span class="slider-value" id="val-sex"></span></div>
-    <div class="grid-3" id="grid-sex">
-      ${SEX_TYPES.map((s,i) => `<button class="grid-btn" data-key="sex" data-val="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
-    </div>
-  </div>
-  ${mkSlider('Age','age','18','69')}
-  ${mkSlider('Ethnicity','ethnicity','A','K')}
-`);
+stepBuilders.push(() => `<div class="step-title">Step 2: Background</div><div class="step-subtitle">Sex, age & ethnicity</div><div class="slider-row"><div><span class="slider-label">Sex</span><span class="slider-value" id="val-sex"></span></div><div class="grid-3" id="grid-sex">${SEX_TYPES.map((s,i) => `<button class="grid-btn" data-key="sex" data-val="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}</div></div>${mkSlider('Age','age','18','69')}${mkSlider('Ethnicity','ethnicity','A','K')}`);
 
-// ── STEP 2: Body ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 3: Body</div>
-  <div class="step-subtitle">Size, shape & sex organs</div>
-  ${mkSlider('Chest / Bust','chest','Flat','Large')}
-  ${mkSlider('Waist','waist','Narrow','Wide')}
-  ${mkSlider('Hips','hips','Narrow','Wide')}
-  ${mkSlider('Height','height','Short','Tall')}
-  ${mkSlider('Weight','weight','Light','Heavy')}
-  ${mkSlider('Muscle','muscle','Soft','Ripped')}
-  ${mkSlider('Organ Size','organSize','Small','Large')}
-  <div class="slider-row">
-    <div><span class="slider-label">Skin Tone</span><span class="slider-value" id="val-skinTone"></span></div>
-    <input type="range" id="slider-skinTone" min="0" max="100" value="0">
-  </div>
-`);
+stepBuilders.push(() => `<div class="step-title">Step 3: Body</div><div class="step-subtitle">Size, shape & sex organs</div>${mkSlider('Chest / Bust','chest','Flat','Large')}${mkSlider('Waist','waist','Narrow','Wide')}${mkSlider('Hips','hips','Narrow','Wide')}${mkSlider('Height','height','Short','Tall')}${mkSlider('Weight','weight','Light','Heavy')}${mkSlider('Muscle','muscle','Soft','Ripped')}${mkSlider('Organ Size','organSize','Small','Large')}<div class="slider-row"><div><span class="slider-label">Skin Tone</span><span class="slider-value" id="val-skinTone"></span></div><input type="range" id="slider-skinTone" min="0" max="100" value="0"></div>`);
 
-// ── STEP 3: Head ──
 stepBuilders.push(() => {
   const hairColors = hairColorsForEthnicity();
-  return `
-  <div class="step-title">Step 4: Head & Face</div>
-  <div class="step-subtitle">Hair, eyes, nose & head shape</div>
-  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Hairstyle</div>
-  ${mkGridButtons(HAIRSTYLES.map(h=>({label:h.label,key:h.key})), 'hairstyle', 'grid-3')}
-  <div class="slider-row">
-    <div><span class="slider-label">Hair Color</span><span class="slider-value" id="val-hairColor"></span></div>
-    <input type="range" id="slider-hairColor" min="0" max="${Math.max(0,hairColors.length-1)}" value="0">
-  </div>
-  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Eye Type</div>
-  ${mkGridButtons(EYE_TYPES, 'eyeType', 'grid-3')}
-  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Nose Type</div>
-  ${mkGridButtons(NOSE_TYPES, 'noseType', 'grid-3')}
-  ${mkSlider('Head Width','headWidth','Narrow','Wide')}
-  ${mkSlider('Head Length','headLength','Short','Long')}
-`;
+  return `<div class="step-title">Step 4: Head & Face</div><div class="step-subtitle">Hair, eyes, nose & head shape</div><div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Hairstyle</div>${mkGridButtons(HAIRSTYLES.map(h=>({label:h.label,key:h.key})), 'hairstyle', 'grid-3')}<div class="slider-row"><div><span class="slider-label">Hair Color</span><span class="slider-value" id="val-hairColor"></span></div><input type="range" id="slider-hairColor" min="0" max="${Math.max(0,hairColors.length-1)}" value="0"></div><div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Eye Type</div>${mkGridButtons(EYE_TYPES, 'eyeType', 'grid-3')}<div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Nose Type</div>${mkGridButtons(NOSE_TYPES, 'noseType', 'grid-3')}${mkSlider('Head Width','headWidth','Narrow','Wide')}${mkSlider('Head Length','headLength','Short','Long')}`;
 });
 
-// ── STEP 4: Sexuality & Gender ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 5: Sexuality & Gender</div>
-  <div class="step-subtitle">Gender is separate from birth sex</div>
-  ${mkSliderWithGradient('Gender','gender','Masc','Fem','#4A90D9','#E94560')}
-  ${mkSlider('Romantic','romantic','Aromantic','Romantic')}
-  ${mkSlider('Attraction','homo','Hetero','Homo')}
-  ${mkSlider('Libido','sexual','Low','High')}
-`);
+stepBuilders.push(() => `<div class="step-title">Step 5: Sexuality & Gender</div><div class="step-subtitle">Gender is separate from birth sex</div>${mkSliderWithGradient('Gender','gender','Masc','Fem','#4A90D9','#E94560')}${mkSlider('Romantic','romantic','Aromantic','Romantic')}${mkSlider('Attraction','homo','Hetero','Homo')}${mkSlider('Libido','sexual','Low','High')}`);
 
-// ── STEP 5: Personality ──
-stepBuilders.push(() => {
-  const mbtiRows = MBTI.map(m => mkSliderWithGradient(
-    `${m.left} ↔ ${m.right}`, 'mbti-'+m.key, m.left.split('[')[0], m.right.split('[')[0], m.cL, m.cR
-  )).join('');
-  return `<div class="step-title">Step 6: Personality</div>
-    <div class="step-subtitle">How do you tend to be?</div>
-    ${mbtiRows}`;
-});
+stepBuilders.push(() => { const mbtiRows = MBTI.map(m => mkSliderWithGradient(`${m.left} ↔ ${m.right}`, 'mbti-'+m.key, m.left.split('[')[0], m.right.split('[')[0], m.cL, m.cR)).join(''); return `<div class="step-title">Step 6: Personality</div><div class="step-subtitle">How do you tend to be?</div>${mbtiRows}`; });
 
-// ── STEP 6: Socio-Economics ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 7: Background</div>
-  <div class="step-subtitle">Finances, connections & neighborhood</div>
-  ${mkSlider('Family Finances','finances','Poor','Wealthy')}
-  ${mkSlider('Social Capital','socialCapital','Unknown','Well-connected')}
-  ${mkSlider('Neighborhood','neighborhood','Rough','Upscale')}
-  <div class="socio-preview" id="socio-preview"></div>
-`);
+stepBuilders.push(() => `<div class="step-title">Step 7: Background</div><div class="step-subtitle">Finances, connections & neighborhood</div>${mkSlider('Family Finances','finances','Poor','Wealthy')}${mkSlider('Social Capital','socialCapital','Unknown','Well-connected')}${mkSlider('Neighborhood','neighborhood','Rough','Upscale')}<div class="socio-preview" id="socio-preview"></div>`);
 
-// ── STEP 7: City ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 8: Starting City</div>
-  <div class="step-subtitle">Where will you begin?</div>
-  <div class="grid-2" id="grid-city">
-    ${CITIES.map(city => `<button class="grid-btn" data-key="city" data-val="${city}">${city}</button>`).join('')}
-  </div>
-`);
+stepBuilders.push(() => `<div class="step-title">Step 8: Starting City</div><div class="step-subtitle">Where will you begin?</div><div class="grid-2" id="grid-city">${CITIES.map(city => `<button class="grid-btn" data-key="city" data-val="${city}">${city}</button>`).join('')}</div>`);
 
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 // UI CONTROLLER
-// ══════════════════════════════════════════════════════════════
+// ════════════════════════════════════════════════
 function renderStep(){
   const zone = document.getElementById('sliders-zone');
-  const stepDivs = zone.querySelectorAll('.step');
-  stepDivs.forEach(d => d.remove());
-
+  zone.querySelectorAll('.step').forEach(d=>d.remove());
   const stepEl = document.createElement('div');
   stepEl.className = 'step';
   stepEl.id = 'step-'+S.step;
   stepEl.innerHTML = stepBuilders[S.step]();
   zone.appendChild(stepEl);
-
-  // Wire up all inputs for this step
   wireStep();
   updateUI();
 }
@@ -1140,7 +870,6 @@ function wireStep(){
   const stepEl = document.getElementById('step-'+S.step);
   if(!stepEl) return;
 
-  // Range sliders
   stepEl.querySelectorAll('input[type="range"]').forEach(input=>{
     input.addEventListener('input', ()=>{
       const key = input.id.replace('slider-','');
@@ -1163,7 +892,6 @@ function wireStep(){
     });
   });
 
-  // Grid buttons
   stepEl.querySelectorAll('.grid-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const key = btn.dataset.key;
@@ -1174,19 +902,15 @@ function wireStep(){
       } else {
         S.character[key] = idx;
       }
-      // Update selected state
       stepEl.querySelectorAll(`.grid-btn[data-key="${key}"]`).forEach(b=>b.classList.remove('selected'));
       btn.classList.add('selected');
       updateUI();
     });
   });
 
-  // Name input
   const nameInput = stepEl.querySelector('#name-input');
   if(nameInput){
-    nameInput.addEventListener('input', ()=>{
-      S.character.name = nameInput.value || 'Alex';
-    });
+    nameInput.addEventListener('input', ()=>{ S.character.name = nameInput.value || 'Alex'; });
   }
 }
 
@@ -1195,7 +919,6 @@ function updateUI(){
   const stepEl = document.getElementById('step-'+S.step);
   if(!stepEl) return;
 
-  // Update slider values
   stepEl.querySelectorAll('input[type="range"]').forEach(input=>{
     const key = input.id.replace('slider-','');
     const valEl = document.getElementById(input.id+'-val');
@@ -1228,7 +951,6 @@ function updateUI(){
     }
   });
 
-  // Update grid button selection
   stepEl.querySelectorAll('.grid-btn').forEach(btn=>{
     const key = btn.dataset.key;
     const idx = parseInt(btn.dataset.idx);
@@ -1240,19 +962,12 @@ function updateUI(){
     }
   });
 
-  // Socio preview
   const socioEl = document.getElementById('socio-preview');
   if(socioEl){
     const cash = Math.round(Math.pow(c.finances/100, 2.5) * 50000);
-    socioEl.innerHTML = `
-      <span class="cash">Starting Cash: $${cash.toLocaleString()}</span>
-      <span class="detail">Family: ${c.finances<30?'Working class':c.finances<60?'Middle class':'Upper class'}</span>
-      <span class="detail">Connections: ${c.socialCapital<30?'None':c.socialCapital<60?'Some':'Well-connected'}</span>
-      <span class="detail">Neighborhood: ${c.neighborhood<30?'Rough':c.neighborhood<60?'Average':'Upscale'}</span>
-    `;
+    socioEl.innerHTML = `<span class="cash">Starting Cash: $${cash.toLocaleString()}</span><span class="detail">Family: ${c.finances<30?'Working class':c.finances<60?'Middle class':'Upper class'}</span><span class="detail">Connections: ${c.socialCapital<30?'None':c.socialCapital<60?'Some':'Well-connected'}</span><span class="detail">Neighborhood: ${c.neighborhood<30?'Rough':c.neighborhood<60?'Average':'Upscale'}</span>`;
   }
 
-  // Re-render character
   SVG.render();
 }
 
@@ -1262,19 +977,9 @@ function updateNav(){
   document.getElementById('btn-back').style.visibility = S.step===0?'hidden':'visible';
 }
 
-// ══════════════════════════════════════════════════════════════
-// NAV
-// ══════════════════════════════════════════════════════════════
-document.getElementById('btn-back').addEventListener('click', ()=>{
-  if(S.step>0){ S.step--; renderStep(); updateNav(); }
-});
-document.getElementById('btn-continue').addEventListener('click', ()=>{
-  if(S.step<S.totalSteps-1){ S.step++; renderStep(); updateNav(); }
-});
+document.getElementById('btn-back').addEventListener('click', ()=>{ if(S.step>0){ S.step--; renderStep(); updateNav(); }});
+document.getElementById('btn-continue').addEventListener('click', ()=>{ if(S.step<S.totalSteps-1){ S.step++; renderStep(); updateNav(); }});
 
-// ══════════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════════
 SVG._init();
 renderStep();
 updateNav();
