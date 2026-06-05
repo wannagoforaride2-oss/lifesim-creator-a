@@ -7,12 +7,11 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <meta http-equiv="Pragma" content="no-cache">
   <meta http-equiv="Expires" content="0">
-  <title>LifeSim — Character Creator</title>
+  <title>LifeSim — PNG Body Warp Demo</title>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #0a0a1a; font-family: system-ui, -apple-system, sans-serif; }
 
-    /* ── APP GRID ── */
     .app {
       display: grid;
       grid-template-rows: 42vh 1fr 72px;
@@ -27,60 +26,36 @@
       }
     }
 
-    /* ── PREVIEW ZONE ── */
-    .preview-zone { grid-area: preview; display: grid; position: relative; overflow: hidden; background: #0a0a1a; }
-    .preview-zone > * { grid-area: 1/1; width: 100%; height: 100%; }
-    .preview-character { z-index: 1; }
+    .preview-zone { grid-area: preview; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; background: radial-gradient(ellipse at 50% 40%, #1a1a3e, #0a0a1a); }
+    .preview-zone canvas { max-width: 100%; max-height: 100%; display: block; }
 
-    /* ── SLIDERS ZONE ── */
     .sliders-zone {
       grid-area: sliders; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch;
       overscroll-behavior: contain; display: flex; flex-direction: column; justify-content: center;
       gap: 4px; padding: 8px 12px; background: #0f0f23;
     }
-    .step { display: flex; flex-direction: column; gap: 4px; }
     .step[hidden] { display: none !important; }
     .step-title { color: #FFD700; font-size: 18px; font-weight: 800; padding: 4px 4px 0; }
-    .step-subtitle { color: #aaaacc; font-size: 12px; padding: 0 4px 4px; }
 
-    /* ── SLIDER ROW ── */
     .slider-row { display: flex; flex-direction: column; gap: 0; padding: 4px; flex: 0 0 auto; }
     .slider-row > div:first-child { display: flex; justify-content: space-between; align-items: center; }
     .slider-label { color: #999; font-size: 10px; max-width: 60%; }
     .slider-value { color: #0f3; font-size: 12px; font-weight: bold; }
     .range-hints { display: flex; justify-content: space-between; font-size: 8px; color: #555; padding: 0 2px; }
 
-    /* ── NATIVE RANGE INPUT ── */
     input[type="range"] { -webkit-appearance: none; appearance: none; width: 100%; height: 44px; background: transparent; cursor: pointer; touch-action: pan-y; }
     input[type="range"]:focus { outline: none; }
     input[type="range"]::-webkit-slider-runnable-track { width: 100%; height: 5px; border-radius: 3px; background: #333; }
     input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 44px; height: 44px; border-radius: 50%; background: #FFD700; border: 3px solid #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.5); margin-top: -20px; }
     input[type="range"]::-moz-range-track { width: 100%; height: 5px; border-radius: 3px; background: #333; }
     input[type="range"]::-moz-range-thumb { width: 44px; height: 44px; border-radius: 50%; border: 3px solid #fff; background: #FFD700; box-shadow: 0 2px 8px rgba(0,0,0,0.5); }
-    input[type="range"].grad::-webkit-slider-runnable-track { background: linear-gradient(to right, var(--g-l), var(--g-r)); }
 
-    /* ── PREVIEW FULL ── */
-    .preview-full { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; min-height: 0; }
-    .preview-full .step-title { font-size: 22px; text-align: center; }
-    .preview-full .step-subtitle { font-size: 14px; text-align: center; }
-
-    /* ── NAME INPUT ── */
-    .name-input-wrap { display: flex; flex-direction: column; gap: 8px; padding: 8px 4px; }
-    .name-input-wrap input[type="text"] { width: 100%; padding: 10px 12px; border-radius: 8px; border: 1px solid #333; background: #1a1a2e; color: #eee; font-size: 16px; }
-
-    /* ── NAV ZONE ── */
     .nav-zone { grid-area: nav; display: flex; align-items: center; justify-content: space-between; padding: 8px 16px; background: #0a0a1a; border-top: 2px solid #e94560; }
     .nav-zone button { padding: 10px 24px; border-radius: 10px; border: none; font-size: 15px; font-weight: 700; cursor: pointer; touch-action: manipulation; }
-    .btn-back { background: #222; color: #aaa; }
     .btn-continue { background: #e94560; color: #fff; }
-    .step-indicator-wrap { display: flex; flex-direction: column; align-items: center; gap: 3px; }
-    .step-indicator { color: #555; font-size: 13px; font-weight: 600; }
-    .progress-track { width: 80px; height: 3px; background: rgba(255,255,255,0.1); border-radius: 2px; }
-    .progress-fill { height: 100%; background: #FFD700; border-radius: 2px; transition: width 0.2s; }
+    .btn-back { background: #222; color: #aaa; }
 
-    /* ── GRID BUTTONS (hair, eyes, nose, city) ── */
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; flex: 1; min-height: 0; overflow-y: auto; }
-    .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 4px; padding: 4px; flex: 1; min-height: 0; overflow-y: auto; }
     .grid-btn {
       padding: 8px 4px; border-radius: 8px; border: 1px solid #333; background: #1a1a2e;
       color: #aaa; font-size: 11px; font-weight: 600; cursor: pointer;
@@ -88,989 +63,382 @@
       display: flex; align-items: center; justify-content: center;
     }
     .grid-btn.selected { border-color: #FFD700; background: rgba(255,215,0,0.1); color: #FFD700; }
-
-    /* ── SOCIOECONOMIC PREVIEW ── */
-    .socio-preview { display: flex; flex-direction: column; gap: 3px; padding: 6px 8px; background: rgba(255,255,255,0.04); border-radius: 6px; margin-top: 4px; font-size: 10px; }
-    .socio-preview .cash { color: #0f3; font-weight: bold; font-size: 11px; }
-    .socio-preview .detail { color: #888; }
-
-    /* ── CONFIRM SCREEN ── */
-    .confirm-list { flex: 1; overflow-y: auto; padding: 8px 12px; display: flex; flex-direction: column; gap: 4px; }
-    .confirm-list .line { color: #ccc; font-size: 11px; line-height: 1.4; }
-    .confirm-list .line.sep { color: #555; }
   </style>
-<!-- build: 20260603T201133Z -->
 </head>
 <body>
 <div class="app">
-  <!-- ═══ PREVIEW ZONE ═══ -->
   <div class="preview-zone">
-    <svg class="svg-background" viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice">
-      <defs>
-        <radialGradient id="bgGrad" cx="50%" cy="40%" r="60%">
-          <stop offset="0%" stop-color="#1a1a3e"/>
-          <stop offset="100%" stop-color="#0a0a1a"/>
-        </radialGradient>
-      </defs>
-      <rect width="200" height="200" fill="url(#bgGrad)"/>
-      <rect x="0" y="185" width="200" height="15" fill="#111128"/>
-    </svg>
-    <svg class="preview-character" id="character-preview" viewBox="0 0 200 580" preserveAspectRatio="xMidYMid meet">
-      <defs>
-        <!-- Skin -->
-        <radialGradient id="skinGrad" cx="45%" cy="35%" r="65%" color-interpolation="linearRGB">
-          <stop offset="0%" id="skin-stop-0" stop-color="#f0dcc8"/>
-          <stop offset="40%" id="skin-stop-1" stop-color="#e8ceb8"/>
-          <stop offset="70%" id="skin-stop-2" stop-color="#d4b898"/>
-          <stop offset="100%" id="skin-stop-3" stop-color="#c4a888"/>
-        </radialGradient>
-        <!-- Hair -->
-        <linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1" color-interpolation="linearRGB">
-          <stop offset="0%" id="hair-stop-0" stop-color="#5a3a1a"/>
-          <stop offset="30%" id="hair-stop-1" stop-color="#4a2a10"/>
-          <stop offset="100%" id="hair-stop-2" stop-color="#3a1a08"/>
-        </linearGradient>
-        <!-- Lip -->
-        <linearGradient id="lipGrad" x1="0" y1="0" x2="0" y2="1" color-interpolation="linearRGB">
-          <stop offset="0%" stop-color="#d08080"/>
-          <stop offset="100%" stop-color="#b06060"/>
-        </linearGradient>
-      </defs>
-      <g id="layer-back-hair"></g>
-      <g id="layer-body"></g>
-      <g id="layer-genitals"></g>
-      <g id="layer-clothing"></g>
-      <g id="layer-head"></g>
-      <g id="layer-face"></g>
-      <g id="layer-hair"></g>
-      <g id="layer-accessories"></g>
-    </svg>
+    <canvas id="body-canvas"></canvas>
   </div>
 
-  <!-- ═══ SLIDERS ZONE ═══ -->
   <div class="sliders-zone" id="sliders-zone">
-    <!-- Steps injected by JS -->
+    <div class="step">
+      <div class="step-title">Body Shaping</div>
+
+      <div class="slider-row">
+        <div><span class="slider-label">Fatness</span><span class="slider-value" id="fat-val">50</span></div>
+        <input type="range" id="fat-slider" min="0" max="100" value="50">
+        <div class="range-hints"><span>Slim</span><span>Heavy</span></div>
+      </div>
+
+      <div class="slider-row">
+        <div><span class="slider-label">Muscle</span><span class="slider-value" id="muscle-val">50</span></div>
+        <input type="range" id="muscle-slider" min="0" max="100" value="50">
+        <div class="range-hints"><span>Minimal</span><span>Ripped</span></div>
+      </div>
+
+      <div class="slider-row">
+        <div><span class="slider-label">Height</span><span class="slider-value" id="height-val">50</span></div>
+        <input type="range" id="height-slider" min="0" max="100" value="50">
+        <div class="range-hints"><span>Short</span><span>Tall</span></div>
+      </div>
+
+      <div class="slider-row">
+        <div><span class="slider-label">Waist</span><span class="slider-value" id="waist-val">50</span></div>
+        <input type="range" id="waist-slider" min="0" max="100" value="50">
+        <div class="range-hints"><span>Narrow</span><span>Wide</span></div>
+      </div>
+    </div>
   </div>
 
-  <!-- ═══ NAV ZONE ═══ -->
   <nav class="nav-zone">
-    <button class="btn-back" id="btn-back">← Back</button>
-    <div class="step-indicator-wrap">
-      <span class="step-indicator" id="step-indicator">1 / 9</span>
-      <div class="progress-track"><div class="progress-fill" id="progress-fill" style="width:11%"></div></div>
-    </div>
-    <button class="btn-continue" id="btn-continue">Continue →</button>
+    <button class="btn-back" id="btn-reset">Reset</button>
+    <span style="color:#555;font-size:13px;font-weight:600">PNG Warp Demo</span>
+    <button class="btn-continue" id="btn-screenshot">Save</button>
   </nav>
 </div>
 
 <script>
 // ══════════════════════════════════════════════════════════════
-// STATE
+// PNG BODY WARP — Canvas Mesh Deformation
 // ══════════════════════════════════════════════════════════════
-const S = {
-  step: 0,
-  totalSteps: 9,
-  character: {
-    name: 'Alex',
-    sex: 'male',
-    age: 25,
-    ethnicity: 'White / Caucasian',
 
-    // Body sliders (0-100)
-    chest: 50,        // chest/bust size
-    waist: 50,        // waist narrowness
-    hips: 50,         // hip width
-    height: 50,       // overall height
-    weight: 50,       // overall weight
-    muscle: 50,       // muscle definition
-    organSize: 50,    // sex organ size
+const canvas = document.getElementById('body-canvas');
+const ctx = canvas.getContext('2d');
 
-    // Head sliders
-    headWidth: 50,    // head width
-    headLength: 50,   // head length (chin)
-    eyeType: 0,       // index into EYE_TYPES
-    noseType: 0,      // index into NOSE_TYPES
-    hairstyle: 0,     // index into HAIRSTYLES
-    hairColor: 0,     // index into filtered hair colors
+const bodyImg = new Image();
+bodyImg.src = 'body.png';
 
-    // Sexuality
-    gender: 50,
-    romantic: 50,
-    homo: 50,
-    sexual: 50,
+// Mesh grid dimensions
+const COLS = 14;
+const ROWS = 24;
 
-    // Personality
-    mbti: { ei: 50, sn: 50, tf: 50, jp: 50 },
+// Warp state
+let fat = 50;
+let muscle = 50;
+let height = 50;
+let waist = 50;
+let imgLoaded = false;
+let imgW, imgH;
 
-    // Socioeconomics
-    finances: 50,
-    socialCapital: 50,
-    neighborhood: 50,
-    city: '',
+// Buffer canvases for speed
+let srcCanvas, srcCtx;
+
+// ── MESH SETUP ──
+
+// Define the rest-position grid (normalized 0..1 for x,y)
+// Each vertex: { x, y, zone }
+function buildRestGrid(w, h) {
+  const grid = [];
+  for (let row = 0; row <= ROWS; row++) {
+    const rowVerts = [];
+    for (let col = 0; col <= COLS; col++) {
+      rowVerts.push({ x: col / COLS, y: row / ROWS });
+    }
+    grid.push(rowVerts);
   }
-};
-
-// ══════════════════════════════════════════════════════════════
-// CONSTANTS
-// ══════════════════════════════════════════════════════════════
-const SEX_TYPES = ['male','female','intersex'];
-const ETHNICITIES = ['White / Caucasian','Black / African American','Hispanic / Latino','East Asian','South Asian','Southeast Asian','Middle Eastern / Arab','Native American / Indigenous','Pacific Islander','Mixed / Multiracial','Other'];
-
-const SKIN_TONES = {
-  fair:    { stops: ['#fce0d3','#f5d5c5','#e8c4b0','#dbb8a0'] },
-  light:   { stops: ['#f0d0b8','#e8c4a8','#dbb898','#d0a888'] },
-  medium:  { stops: ['#e0b898','#d4a888','#c89878','#bc8868'] },
-  olive:   { stops: ['#c8a070','#bc9460','#b08850','#a47c40'] },
-  tan:     { stops: ['#b08858','#a47c48','#987038','#8c6428'] },
-  brown:   { stops: ['#8a6040','#7e5430','#724820','#663c10'] },
-  dark:    { stops: ['#5a3a20','#4e2e10','#422200','#361600'] },
-};
-const ETHNICITY_SKIN = {
-  'White / Caucasian':['fair','light','olive'],
-  'Black / African American':['tan','brown','dark'],
-  'Hispanic / Latino':['light','olive','tan','medium'],
-  'East Asian':['fair','light','medium'],
-  'South Asian':['olive','tan','brown','medium'],
-  'Southeast Asian':['light','medium','olive','tan'],
-  'Middle Eastern / Arab':['olive','tan','medium','brown'],
-  'Native American / Indigenous':['tan','olive','brown','medium'],
-  'Pacific Islander':['tan','brown','medium','olive'],
-  'Mixed / Multiracial': Object.keys(SKIN_TONES),
-  'Other': Object.keys(SKIN_TONES),
-};
-
-const HAIR_COLORS = [
-  { key:'black',      label:'Black',      stops: ['#2a2a3a','#1a1a2a','#0a0a1a'] },
-  { key:'dark-brown', label:'Dark Brown', stops: ['#5a3a1a','#4a2a10','#3a1a08'] },
-  { key:'brown',      label:'Brown',      stops: ['#7b5236','#6b4226','#5b3216'] },
-  { key:'light-brown',label:'Light Brown',stops: ['#a0785a','#90684a','#80583a'] },
-  { key:'blonde',     label:'Blonde',     stops: ['#d4a843','#c49833','#b48823'] },
-  { key:'platinum',   label:'Platinum',   stops: ['#e8dcc8','#d8ccb8','#c8bc98'] },
-  { key:'red',        label:'Red',        stops: ['#b34030','#a33020','#932010'] },
-  { key:'gray',       label:'Gray',       stops: ['#a0a0a0','#888888','#707070'] },
-];
-const ETHNICITY_HAIR = {
-  'White / Caucasian':     ['black','dark-brown','brown','light-brown','blonde','platinum','red'],
-  'Black / African American':['black','dark-brown'],
-  'Hispanic / Latino':     ['black','dark-brown','brown','light-brown'],
-  'East Asian':            ['black','dark-brown','brown'],
-  'South Asian':           ['black','dark-brown','brown'],
-  'Southeast Asian':       ['black','dark-brown','brown'],
-  'Middle Eastern / Arab': ['black','dark-brown','brown'],
-  'Native American / Indigenous':['black','dark-brown','brown'],
-  'Pacific Islander':      ['dark-brown','brown','light-brown'],
-  'Mixed / Multiracial':   ['black','dark-brown','brown','light-brown','blonde','red'],
-  'Other': HAIR_COLORS.map(h=>h.key),
-};
-
-// ── EYE TYPES ──
-const EYE_TYPES = [
-  { key:'round',    label:'Round',    desc:'Large round eyes' },
-  { key:'almond',   label:'Almond',   desc:'Classic almond' },
-  { key:'narrow',   label:'Narrow',   desc:'Narrow/small' },
-  { key:'wide',     label:'Wide',     desc:'Wide set' },
-  { key:'hooded',   label:'Hooded',   desc:'Heavy upper lid' },
-  { key:'downturned',label:'Downturned',desc:'Downturned outer' },
-];
-
-// ── NOSE TYPES ──
-const NOSE_TYPES = [
-  { key:'small',    label:'Small',    desc:'Small/simple' },
-  { key:'medium',   label:'Medium',   desc:'Medium bridge' },
-  { key:'pointed',  label:'Pointed',  desc:'Defined bridge' },
-  { key:'flat',     label:'Flat',     desc:'Wide/flat bridge' },
-  { key:'button',   label:'Button',   desc:'Small rounded' },
-  { key:'hooked',   label:'Hooked',   desc:'Prominent bridge' },
-];
-
-// ── HAIRSTYLES ──
-// Each is a generator function that takes head params and returns SVG path strings
-// Head params: cx, headY, headR (radius X), headRY (radius Y)
-// Head ellipse: center (cx, headY), top at headY-headRY, bottom at headY+headRY
-function hairTopCap(cx, hY, hR, hRY, extraUp, sideInset) {
-  // Top cap: covers scalp from forehead up to crown+extraUp
-  const top = hY - hRY - extraUp;
-  const brow = hY - hRY * 0.25;  // forehead line
-  const sideR = hR * (1 - sideInset);
-  return [
-    // Main cap
-    `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${top+10}, ${cx-sideR*0.3} ${top}, ${cx} ${top-2} C ${cx+sideR*0.3} ${top}, ${cx+sideR+4} ${top+10}, ${cx+sideR} ${brow}`,
-    // Left side down to ear area
-    `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+12}, ${cx-sideR-2} ${brow+28}, ${cx-sideR+2} ${brow+40} L ${cx-sideR+6} ${brow+36} C ${cx-sideR+4} ${brow+24}, ${cx-sideR+2} ${brow+12}, ${cx-sideR+4} ${brow} Z`,
-    // Right side down to ear area
-    `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+12}, ${cx+sideR+2} ${brow+28}, ${cx+sideR-2} ${brow+40} L ${cx+sideR-6} ${brow+36} C ${cx+sideR-4} ${brow+24}, ${cx+sideR-2} ${brow+12}, ${cx+sideR-4} ${brow} Z`,
-  ];
+  return grid;
 }
 
-function hairSidesLong(cx, hY, hR, hRY, extraDown) {
-  const brow = hY - hRY * 0.25;
-  const bottom = hY + hRY + extraDown;
-  const sideR = hR * 0.95;
-  return [
-    `M ${cx-sideR} ${brow+4} C ${cx-sideR-4} ${brow+30}, ${cx-sideR-6} ${brow+80}, ${cx-sideR-2} ${bottom-20} C ${cx-sideR} ${bottom}, ${cx-sideR+8} ${bottom+4}, ${cx-sideR+10} ${bottom-16} C ${cx-sideR+6} ${brow+80}, ${cx-sideR+4} ${brow+30}, ${cx-sideR+4} ${brow+4} Z`,
-    `M ${cx+sideR} ${brow+4} C ${cx+sideR+4} ${brow+30}, ${cx+sideR+6} ${brow+80}, ${cx+sideR+2} ${bottom-20} C ${cx+sideR} ${bottom}, ${cx+sideR-8} ${bottom+4}, ${cx+sideR-10} ${bottom-16} C ${cx+sideR-6} ${brow+80}, ${cx+sideR-4} ${brow+30}, ${cx+sideR-4} ${brow+4} Z`,
-  ];
-}
+// ── WARP ENGINE ──
 
-const HAIRSTYLE_GENERATORS = {
-  none: () => [],
+// Compute displacement for each vertex based on sliders
+function computeDisplacement(vert, fat, muscle, height, waist) {
+  const x = vert.x;
+  const y = vert.y;
+  let dx = 0, dy = 0;
 
-  short: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 4;
-    const brow = hY - hRY * 0.2;
-    const sideR = hR * 0.92;
-    const sideBot = hY + hRY * 0.35;
-    return [
-      // Top cap
-      `M ${cx-sideR} ${brow} C ${cx-sideR-6} ${top+12}, ${cx-sideR*0.3} ${top}, ${cx} ${top-3} C ${cx+sideR*0.3} ${top}, ${cx+sideR+6} ${top+12}, ${cx+sideR} ${brow}`,
-      // Left side
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${sideBot-10}, ${cx-sideR+2} ${sideBot} L ${cx-sideR+6} ${sideBot-8} C ${cx-sideR+4} ${brow+12}, ${cx-sideR+2} ${brow+8}, ${cx-sideR+4} ${brow} Z`,
-      // Right side
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${sideBot-10}, ${cx+sideR-2} ${sideBot} L ${cx+sideR-6} ${sideBot-8} C ${cx+sideR-4} ${brow+12}, ${cx+sideR-2} ${brow+8}, ${cx+sideR-4} ${brow} Z`,
-    ];
-  },
+  // Normalize sliders to -1..1 range
+  const f = (fat - 50) / 50;        // -1 (thin) to 1 (fat)
+  const m = (muscle - 50) / 50;     // -1 to 1
+  const h = (height - 50) / 50;     // -1 to 1
+  const w = (waist - 50) / 50;      // -1 (narrow) to 1 (wide)
 
-  medium: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
-    const sideR = hR * 0.95;
-    const sideBot = hY + hRY * 0.6;
-    return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${brow+14}, ${cx-sideR-5} ${sideBot-20}, ${cx-sideR} ${sideBot} C ${cx-sideR+2} ${sideBot+6}, ${cx-sideR+10} ${sideBot+4}, ${cx-sideR+8} ${sideBot-16} C ${cx-sideR+4} ${brow+14}, ${cx-sideR+3} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+4} ${brow+14}, ${cx+sideR+5} ${sideBot-20}, ${cx+sideR} ${sideBot} C ${cx+sideR-2} ${sideBot+6}, ${cx+sideR-10} ${sideBot+4}, ${cx+sideR-8} ${sideBot-16} C ${cx+sideR-4} ${brow+14}, ${cx+sideR-3} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
-      // Bottom drape left
-      `M ${cx-sideR} ${sideBot} C ${cx-sideR+4} ${sideBot+14}, ${cx-sideR+12} ${sideBot+28}, ${cx-sideR+20} ${sideBot+36} L ${cx-sideR+24} ${sideBot+32} C ${cx-sideR+16} ${sideBot+22}, ${cx-sideR+6} ${sideBot+10}, ${cx-sideR+4} ${sideBot} Z`,
-      // Bottom drape right
-      `M ${cx+sideR} ${sideBot} C ${cx+sideR-4} ${sideBot+14}, ${cx+sideR-12} ${sideBot+28}, ${cx+sideR-20} ${sideBot+36} L ${cx+sideR-24} ${sideBot+32} C ${cx+sideR-16} ${sideBot+22}, ${cx+sideR-6} ${sideBot+10}, ${cx+sideR-4} ${sideBot} Z`,
-    ];
-  },
+  // ── FAT DISPLACEMENT ──
+  // Horizontal expansion based on body region
+  // Max at waist/belly (y=0.55-0.75), moderate at chest/hips, none at head/feet
+  let fatProfile = 0;
+  if (y < 0.15) fatProfile = 0;                       // head — no fat
+  else if (y < 0.35) fatProfile = 0.3 * (y - 0.15) / 0.2;  // neck — ramp up
+  else if (y < 0.50) fatProfile = 0.5 + 0.3 * (y - 0.35) / 0.15; // chest — moderate
+  else if (y < 0.60) fatProfile = 0.8 + 0.2 * (y - 0.50) / 0.10; // upper belly
+  else if (y < 0.72) fatProfile = 1.0;                 // belly — max
+  else if (y < 0.82) fatProfile = 1.0 - 0.3 * (y - 0.72) / 0.10; // lower belly decline
+  else if (y < 0.92) fatProfile = 0.7 - 0.4 * (y - 0.82) / 0.10; // thighs decline
+  else fatProfile = 0.3 * (1 - (y - 0.92) / 0.08);    // calves — minimal
 
-  long: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 8;
-    const brow = hY - hRY * 0.2;
-    const sideR = hR * 0.95;
-    const sideBot = hY + hRY * 1.3;
-    return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-10} ${top+16}, ${cx-sideR*0.3} ${top}, ${cx} ${top-5} C ${cx+sideR*0.3} ${top}, ${cx+sideR+10} ${top+16}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-5} ${brow+18}, ${cx-sideR-6} ${brow+60}, ${cx-sideR-4} ${sideBot-30} C ${cx-sideR-2} ${sideBot-10}, ${cx-sideR} ${sideBot+4}, ${cx-sideR+6} ${sideBot+2} C ${cx-sideR+8} ${sideBot-20}, ${cx-sideR+6} ${brow+60}, ${cx-sideR+5} ${brow+18} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+5} ${brow+18}, ${cx+sideR+6} ${brow+60}, ${cx+sideR+4} ${sideBot-30} C ${cx+sideR+2} ${sideBot-10}, ${cx+sideR} ${sideBot+4}, ${cx+sideR-6} ${sideBot+2} C ${cx+sideR-8} ${sideBot-20}, ${cx+sideR-6} ${brow+60}, ${cx+sideR-5} ${brow+18} Z`,
-      // Bottom tips
-      `M ${cx-sideR+6} ${sideBot+2} C ${cx-sideR+10} ${sideBot+12}, ${cx-sideR+18} ${sideBot+20}, ${cx-sideR+24} ${sideBot+22} L ${cx-sideR+22} ${sideBot+18} C ${cx-sideR+14} ${sideBot+10}, ${cx-sideR+8} ${sideBot+4}, ${cx-sideR+4} ${sideBot} Z`,
-      `M ${cx+sideR-6} ${sideBot+2} C ${cx+sideR-10} ${sideBot+12}, ${cx+sideR-18} ${sideBot+20}, ${cx+sideR-24} ${sideBot+22} L ${cx+sideR-22} ${sideBot+18} C ${cx+sideR-14} ${sideBot+10}, ${cx+sideR-8} ${sideBot+4}, ${cx+sideR-4} ${sideBot} Z`,
-    ];
-  },
-
-  ponytail: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
-    const sideR = hR * 0.95;
-    const tailTop = hY - hRY - 2;
-    const tailBot = hY + hRY * 1.15;
-    return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      // Short sides
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+24}, ${cx-sideR+2} ${brow+34} L ${cx-sideR+6} ${brow+30} C ${cx-sideR+4} ${brow+20}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+24}, ${cx+sideR-2} ${brow+34} L ${cx+sideR-6} ${brow+30} C ${cx+sideR-4} ${brow+20}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
-      // Ponytail bump
-      `M ${cx-8} ${tailTop} C ${cx-4} ${tailTop-6}, ${cx+4} ${tailTop-6}, ${cx+8} ${tailTop}`,
-      // Ponytail
-      `M ${cx-6} ${tailTop} C ${cx-8} ${tailTop+20}, ${cx-10} ${tailBot-20}, ${cx-6} ${tailBot} C ${cx-2} ${tailBot+6}, ${cx+2} ${tailBot+6}, ${cx+6} ${tailBot} C ${cx+10} ${tailBot-20}, ${cx+8} ${tailTop+20}, ${cx+6} ${tailTop} Z`,
-    ];
-  },
-
-  pigtails: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
-    const sideR = hR * 0.95;
-    const tieY = hY + hRY * 0.35;
-    const tailBot = hY + hRY * 1.2;
-    return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+12}, ${cx-sideR-2} ${brow+28}, ${cx-sideR+2} ${brow+38} L ${cx-sideR+6} ${brow+34} C ${cx-sideR+4} ${brow+24}, ${cx-sideR+2} ${brow+12}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+12}, ${cx+sideR+2} ${brow+28}, ${cx+sideR-2} ${brow+38} L ${cx+sideR-6} ${brow+34} C ${cx+sideR-4} ${brow+24}, ${cx+sideR-2} ${brow+12}, ${cx+sideR-4} ${brow} Z`,
-      // Left pigtail
-      `M ${cx-sideR-2} ${tieY} C ${cx-sideR-10} ${tieY+8}, ${cx-sideR-18} ${tieY+30}, ${cx-sideR-20} ${tailBot} C ${cx-sideR-18} ${tailBot+6}, ${cx-sideR-10} ${tailBot+4}, ${cx-sideR-8} ${tailBot-2} C ${cx-sideR-10} ${tieY+28}, ${cx-sideR-6} ${tieY+6}, ${cx-sideR+2} ${tieY} Z`,
-      // Right pigtail
-      `M ${cx+sideR+2} ${tieY} C ${cx+sideR+10} ${tieY+8}, ${cx+sideR+18} ${tieY+30}, ${cx+sideR+20} ${tailBot} C ${cx+sideR+18} ${tailBot+6}, ${cx+sideR+10} ${tailBot+4}, ${cx+sideR+8} ${tailBot-2} C ${cx+sideR+10} ${tieY+28}, ${cx+sideR+6} ${tieY+6}, ${cx+sideR-2} ${tieY} Z`,
-    ];
-  },
-
-  bun: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
-    const sideR = hR * 0.95;
-    const bunY = hY - hRY - 4;
-    const bunR = hR * 0.45;
-    return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+24}, ${cx-sideR+2} ${brow+34} L ${cx-sideR+6} ${brow+30} C ${cx-sideR+4} ${brow+20}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+24}, ${cx+sideR-2} ${brow+34} L ${cx+sideR-6} ${brow+30} C ${cx+sideR-4} ${brow+20}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
-      // Bun
-      `M ${cx-bunR} ${bunY} C ${cx-bunR} ${bunY-bunR*1.3}, ${cx+bunR} ${bunY-bunR*1.3}, ${cx+bunR} ${bunY} C ${cx+bunR*1.1} ${bunY+bunR*0.6}, ${cx-bunR*1.1} ${bunY+bunR*0.6}, ${cx-bunR} ${bunY} Z`,
-    ];
-  },
-
-  afro: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 16;
-    const brow = hY - hRY * 0.15;
-    const sideR = hR * 1.08;
-    const bot = hY + hRY * 1.25;
-    return [
-      // Large round top
-      `M ${cx-sideR} ${brow} C ${cx-sideR-4} ${top+20}, ${cx-sideR*0.5} ${top}, ${cx} ${top-6} C ${cx+sideR*0.5} ${top}, ${cx+sideR+4} ${top+20}, ${cx+sideR} ${brow}`,
-      // Expand outward left
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${brow+20}, ${cx-sideR-12} ${brow+60}, ${cx-sideR-8} ${bot-20} C ${cx-sideR-4} ${bot+10}, ${cx+sideR*0.3} ${bot+14}, ${cx+sideR*0.5} ${bot-10} C ${cx+sideR*0.2} ${bot-30}, ${cx-sideR*0.3} ${brow+40}, ${cx-sideR+4} ${brow} Z`,
-      // Expand outward right (mirror)
-      `M ${cx+sideR} ${brow} C ${cx+sideR+8} ${brow+20}, ${cx+sideR+12} ${brow+60}, ${cx+sideR+8} ${bot-20} C ${cx+sideR+4} ${bot+10}, ${cx-sideR*0.3} ${bot+14}, ${cx-sideR*0.5} ${bot-10} C ${cx-sideR*0.2} ${bot-30}, ${cx+sideR*0.3} ${brow+40}, ${cx+sideR-4} ${brow} Z`,
-      // Bottom curve
-      `M ${cx-sideR*0.5} ${bot-10} C ${cx-sideR*0.3} ${bot+10}, ${cx+sideR*0.3} ${bot+10}, ${cx+sideR*0.5} ${bot-10}`,
-    ];
-  },
-
-  braids: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
-    const sideR = hR * 0.95;
-    const braidBot = hY + hRY * 1.15;
-    return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-8} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+8} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-3} ${brow+10}, ${cx-sideR-2} ${brow+22}, ${cx-sideR+2} ${brow+30} L ${cx-sideR+6} ${brow+26} C ${cx-sideR+4} ${brow+18}, ${cx-sideR+2} ${brow+10}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+3} ${brow+10}, ${cx+sideR+2} ${brow+22}, ${cx+sideR-2} ${brow+30} L ${cx+sideR-6} ${brow+26} C ${cx+sideR-4} ${brow+18}, ${cx+sideR-2} ${brow+10}, ${cx+sideR-4} ${brow} Z`,
-      // Left braid
-      `M ${cx-sideR} ${brow+28} C ${cx-sideR-4} ${brow+40}, ${cx-sideR-6} ${braidBot-20}, ${cx-sideR-2} ${braidBot} C ${cx-sideR} ${braidBot+4}, ${cx-sideR+4} ${braidBot+2}, ${cx-sideR+4} ${braidBot-16} C ${cx-sideR+2} ${brow+40}, ${cx-sideR+2} ${brow+32}, ${cx-sideR+4} ${brow+28} Z`,
-      // Right braid
-      `M ${cx+sideR} ${brow+28} C ${cx+sideR+4} ${brow+40}, ${cx+sideR+6} ${braidBot-20}, ${cx+sideR+2} ${braidBot} C ${cx+sideR} ${braidBot+4}, ${cx+sideR-4} ${braidBot+2}, ${cx+sideR-4} ${braidBot-16} C ${cx+sideR-2} ${brow+40}, ${cx+sideR-2} ${brow+32}, ${cx+sideR-4} ${brow+28} Z`,
-    ];
-  },
-
-  mohawk: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 10;
-    const brow = hY - hRY * 0.15;
-    const stripW = hR * 0.28;
-    return [
-      // Shaved sides (very thin)
-      `M ${cx-hR*0.95} ${brow} C ${cx-hR*0.96} ${brow+4}, ${cx-hR*0.97} ${brow+8}, ${cx-hR*0.95} ${brow+12} L ${cx-hR*0.92} ${brow+10} C ${cx-hR*0.93} ${brow+6}, ${cx-hR*0.92} ${brow+2}, ${cx-hR*0.9} ${brow} Z`,
-      `M ${cx+hR*0.95} ${brow} C ${cx+hR*0.96} ${brow+4}, ${cx+hR*0.97} ${brow+8}, ${cx+hR*0.95} ${brow+12} L ${cx+hR*0.92} ${brow+10} C ${cx+hR*0.93} ${brow+6}, ${cx+hR*0.92} ${brow+2}, ${cx+hR*0.9} ${brow} Z`,
-      // Mohawk strip
-      `M ${cx-stripW} ${brow} C ${cx-stripW-2} ${top+10}, ${cx-stripW*0.3} ${top}, ${cx} ${top-4} C ${cx+stripW*0.3} ${top}, ${cx+stripW+2} ${top+10}, ${cx+stripW} ${brow}`,
-      // Volume
-      `M ${cx-stripW-2} ${brow} C ${cx-stripW-4} ${brow-8}, ${cx-stripW-3} ${brow-14}, ${cx} ${brow-16} C ${cx+stripW+3} ${brow-14}, ${cx+stripW+4} ${brow-8}, ${cx+stripW+2} ${brow}`,
-      // Tip
-      `M ${cx-stripW-3} ${brow-14} C ${cx-stripW-2} ${brow-20}, ${cx+stripW*0.5} ${brow-22}, ${cx+stripW+2} ${brow-18} C ${cx+stripW+3} ${brow-14}, ${cx+stripW+2} ${brow-10}, ${cx} ${brow-8} C ${cx-stripW*0.5} ${brow-10}, ${cx-stripW-2} ${brow-12}, ${cx-stripW-3} ${brow-14} Z`,
-    ];
-  },
-
-  bob: (cx, hY, hR, hRY) => {
-    const top = hY - hRY - 6;
-    const brow = hY - hRY * 0.2;
-    const sideR = hR * 0.95;
-    const sideBot = hY + hRY * 0.55;
-    return [
-      `M ${cx-sideR} ${brow} C ${cx-sideR-10} ${top+14}, ${cx-sideR*0.3} ${top}, ${cx} ${top-4} C ${cx+sideR*0.3} ${top}, ${cx+sideR+10} ${top+14}, ${cx+sideR} ${brow}`,
-      `M ${cx-sideR} ${brow} C ${cx-sideR-5} ${brow+14}, ${cx-sideR-6} ${sideBot-20}, ${cx-sideR-2} ${sideBot} C ${cx-sideR} ${sideBot+8}, ${cx-sideR+8} ${sideBot+10}, ${cx-sideR+10} ${sideBot-8} C ${cx-sideR+6} ${sideBot-20}, ${cx-sideR+4} ${brow+14}, ${cx-sideR+4} ${brow} Z`,
-      `M ${cx+sideR} ${brow} C ${cx+sideR+5} ${brow+14}, ${cx+sideR+6} ${sideBot-20}, ${cx+sideR+2} ${sideBot} C ${cx+sideR} ${sideBot+8}, ${cx+sideR-8} ${sideBot+10}, ${cx+sideR-10} ${sideBot-8} C ${cx+sideR-6} ${sideBot-20}, ${cx+sideR-4} ${brow+14}, ${cx+sideR-4} ${brow} Z`,
-      // Bottom curve left
-      `M ${cx-sideR+10} ${sideBot-8} C ${cx-sideR+14} ${sideBot+2}, ${cx-sideR+10} ${sideBot+10}, ${cx-sideR+2} ${sideBot+12} L ${cx-sideR+4} ${sideBot+8} C ${cx-sideR+10} ${sideBot+4}, ${cx-sideR+8} ${sideBot-2}, ${cx-sideR+6} ${sideBot-8} Z`,
-      // Bottom curve right
-      `M ${cx+sideR-10} ${sideBot-8} C ${cx+sideR-14} ${sideBot+2}, ${cx+sideR-10} ${sideBot+10}, ${cx+sideR-2} ${sideBot+12} L ${cx+sideR-4} ${sideBot+8} C ${cx+sideR-10} ${sideBot+4}, ${cx+sideR-8} ${sideBot-2}, ${cx+sideR-6} ${sideBot-8} Z`,
-      // Bangs
-      `M ${cx-sideR+10} ${brow-2} C ${cx-sideR+8} ${brow-8}, ${cx-sideR*0.5} ${brow-10}, ${cx-sideR*0.2} ${brow-6} L ${cx-sideR*0.3} ${brow-2} C ${cx-sideR*0.5} ${brow-6}, ${cx-sideR+6} ${brow-4}, ${cx-sideR+8} ${brow} Z`,
-      `M ${cx+sideR-10} ${brow-2} C ${cx+sideR-8} ${brow-8}, ${cx+sideR*0.5} ${brow-10}, ${cx+sideR*0.2} ${brow-6} L ${cx+sideR*0.3} ${brow-2} C ${cx+sideR*0.5} ${brow-6}, ${cx+sideR-6} ${brow-4}, ${cx+sideR-8} ${brow} Z`,
-    ];
-  },
-};
-
-const HAIRSTYLES = Object.keys(HAIRSTYLE_GENERATORS).map(key => ({
-  key,
-  label: key.charAt(0).toUpperCase() + key.slice(1),
-}));
-
-const CITIES = ['Portland','Los Angeles','Las Vegas','Dallas','Atlanta','Miami','New York'];
-const AGE_BRACKETS = [
-  {label:'Young Adult',min:18,max:22},{label:'Twentysomething',min:23,max:29},
-  {label:'Thirties',min:30,max:39},{label:'Forties',min:40,max:49},
-  {label:'Fifties',min:50,max:59},{label:'Sixties',min:60,max:69},
-];
-const MBTI = [
-  {key:'ei', left:'Outgoing[E]', right:'Reserved[I]', cL:'#F59E0B', cR:'#6366F1'},
-  {key:'sn', left:'Practical[S]', right:'Imaginative[N]', cL:'#10B981', cR:'#8B5CF6'},
-  {key:'tf', left:'Logical[T]', right:'Empathetic[F]', cL:'#0EA5E9', cR:'#F43F5E'},
-  {key:'jp', left:'Planned[J]', right:'Spontaneous[P]', cL:'#14B8A6', cR:'#F97316'},
-];
-
-// ══════════════════════════════════════════════════════════════
-// HELPERS
-// ══════════════════════════════════════════════════════════════
-function ageLabel(v){ const b=AGE_BRACKETS.find(x=>v>=x.min&&v<=x.max); return v+(b?' ('+b.label+')':''); }
-function mbtiType(){ const m=S.character.mbti; return (m.ei>=50?'E':'I')+(m.sn>=50?'S':'N')+(m.tf>=50?'T':'F')+(m.jp>=50?'P':'J'); }
-function formatHeight(inches){ return Math.floor(inches/12)+'\''+inches%12+'"'; }
-function hairColorsForEthnicity(){ const e=S.character.ethnicity; const keys=ETHNICITY_HAIR[e]||HAIR_COLORS.map(h=>h.key); return HAIR_COLORS.filter(h=>keys.includes(h.key)); }
-function skinTonesForEthnicity(){ const e=S.character.ethnicity; return ETHNICITY_SKIN[e]||Object.keys(SKIN_TONES); }
-
-function lerp(a,b,t){ return a+(b-a)*t; }
-function clamp(v,lo,hi){ return Math.max(lo,Math.min(hi,v)); }
-
-// ══════════════════════════════════════════════════════════════
-// SVG RENDERER
-// ══════════════════════════════════════════════════════════════
-const SVG = {
-  el: document.getElementById('character-preview'),
-  layers: {},
-  _init(){
-    ['back-hair','body','genitals','clothing','head','face','hair','accessories'].forEach(id=>{
-      this.layers[id] = document.getElementById('layer-'+id);
-    });
-  },
-  _g(id){ return this.layers[id]; },
-  _clear(id){ const g=this._g(id); if(g) g.innerHTML=''; },
-  _path(parent,d,fill,stroke,sw){
-    const p=document.createElementNS('http://www.w3.org/2000/svg','path');
-    p.setAttribute('d',d); p.setAttribute('fill',fill||'none');
-    if(stroke){p.setAttribute('stroke',stroke);p.setAttribute('stroke-width',sw||'1');}
-    parent.appendChild(p); return p;
-  },
-  _ellipse(parent,cx,cy,rx,ry,fill,stroke,sw){
-    const e=document.createElementNS('http://www.w3.org/2000/svg','ellipse');
-    e.setAttribute('cx',cx);e.setAttribute('cy',cy);e.setAttribute('rx',rx);e.setAttribute('ry',ry);
-    e.setAttribute('fill',fill||'none');
-    if(stroke){e.setAttribute('stroke',stroke);e.setAttribute('stroke-width',sw||'1');}
-    parent.appendChild(e); return e;
-  },
-  _circle(parent,cx,cy,r,fill){
-    const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
-    c.setAttribute('cx',cx);c.setAttribute('cy',cy);c.setAttribute('r',r);c.setAttribute('fill',fill||'none');
-    parent.appendChild(c);
-  },
-  _line(parent,x1,y1,x2,y2,stroke,sw){
-    const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-    l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);
-    l.setAttribute('stroke',stroke||'#000');l.setAttribute('stroke-width',sw||'1');
-    l.setAttribute('stroke-linecap','round');
-    parent.appendChild(l);
-  },
-
-  _updateSkinGradient(){
-    const tones = skinTonesForEthnicity();
-    const idx = clamp(Math.floor(S.character.skinToneIdx||0), 0, tones.length-1);
-    const key = tones[idx];
-    const stops = SKIN_TONES[key].stops;
-    for(let i=0;i<4;i++){
-      const el = document.getElementById('skin-stop-'+i);
-      if(el) el.setAttribute('stop-color', stops[i]);
-    }
-  },
-
-  _updateHairGradient(){
-    const colors = hairColorsForEthnicity();
-    const idx = clamp(S.character.hairColor, 0, colors.length-1);
-    const stops = colors[idx].stops;
-    for(let i=0;i<3;i++){
-      const el = document.getElementById('hair-stop-'+i);
-      if(el) el.setAttribute('stop-color', stops[i]);
-    }
-  },
-
-  render(){
-    const c = S.character;
-    const isF = c.sex === 'female';
-    const isI = c.sex === 'intersex';
-    const hasBreasts = isF || isI;
-
-    // ── Normalize sliders to 0-1 ──
-    const t = {
-      chest:   c.chest/100,
-      waist:   c.waist/100,
-      hips:    c.hips/100,
-      height:  c.height/100,
-      weight:  c.weight/100,
-      muscle:  c.muscle/100,
-      organ:   c.organSize/100,
-      hWidth:  c.headWidth/100,
-      hLength: c.headLength/100,
-    };
-
-    // ── Core proportions ──
-    const cx = 100;
-    const headR = lerp(40, 54, t.hWidth);     // head radius X
-    const headRY = lerp(46, 58, t.hLength);    // head radius Y
-    const headY = 72;                           // head center Y
-    const neckW = lerp(8, 16, t.weight);
-    const neckH = lerp(10, 18, t.muscle);
-    const shoulderY = headY + headRY + neckH;
-    const shW = lerp(isF?22:28, isF?34:44, t.weight) + lerp(0, 8, t.muscle) + lerp(0, 6, t.chest);
-    const waistW = lerp(isF?10:14, isF?22:26, t.weight) - lerp(0, 6, t.muscle) + lerp(0, -4, t.waist);
-    const hipW = lerp(isF?14:10, isF?28:18, t.hips) + lerp(0, 8, t.weight);
-    const torsoH = lerp(140, 200, t.height);
-    const waistY = shoulderY + torsoH * 0.42;
-    const hipY = shoulderY + torsoH * 0.72;
-    const legH = lerp(120, 170, t.height);
-    const footY = hipY + legH;
-    const legW = lerp(5, 10, t.weight) + lerp(0, 5, t.muscle);
-    const legGap = 2 + legW * 0.3;
-    const breastSize = hasBreasts ? lerp(2, 16, t.chest) * lerp(1, 0.6, t.muscle) : 0;
-
-    // Update gradients
-    this._updateSkinGradient();
-    this._updateHairGradient();
-
-    const skinFill = 'url(#skinGrad)';
-    const hairFill = 'url(#hairGrad)';
-    const outline = '#3a2a1a';
-    const outlineW = 2;
-
-    // Clear all layers
-    ['back-hair','body','genitals','clothing','head','face','hair','accessories'].forEach(id=>this._clear(id));
-
-    // ═══ BODY LAYER ═══
-    const bodyG = this._g('body');
-
-    // Torso
-    const torso = `
-      M ${cx-shW} ${shoulderY}
-      C ${cx-shW-4} ${shoulderY+20}, ${cx-waistW-2} ${waistY-10}, ${cx-waistW} ${waistY}
-      C ${cx-waistW-2} ${waistY+20}, ${cx-hipW-2} ${hipY-10}, ${cx-hipW} ${hipY}
-      L ${cx+hipW} ${hipY}
-      C ${cx+hipW+2} ${hipY-10}, ${cx+waistW+2} ${waistY+20}, ${cx+waistW} ${waistY}
-      C ${cx+waistW+2} ${waistY-10}, ${cx+shW+4} ${shoulderY+20}, ${cx+shW} ${shoulderY}
-      C ${cx+shW-4} ${shoulderY-4}, ${cx-shW+4} ${shoulderY-4}, ${cx-shW} ${shoulderY} Z`;
-    this._path(bodyG, torso, skinFill, outline, outlineW);
-
-    // Shoulders (caps)
-    this._path(bodyG, `M ${cx-shW} ${shoulderY} C ${cx-shW-10} ${shoulderY-2}, ${cx-shW-18} ${shoulderY+4}, ${cx-shW-16} ${shoulderY+10} C ${cx-shW-12} ${shoulderY+14}, ${cx-shW-4} ${shoulderY+10}, ${cx-shW+4} ${shoulderY+4} Z`, skinFill, outline, outlineW);
-    this._path(bodyG, `M ${cx+shW} ${shoulderY} C ${cx+shW+10} ${shoulderY-2}, ${cx+shW+18} ${shoulderY+4}, ${cx+shW+16} ${shoulderY+10} C ${cx+shW+12} ${shoulderY+14}, ${cx+shW+4} ${shoulderY+10}, ${cx+shW-4} ${shoulderY+4} Z`, skinFill, outline, outlineW);
-
-    // Neck
-    this._path(bodyG, `M ${cx-neckW} ${headY+headRY-4} L ${cx-neckW} ${shoulderY} C ${cx-neckW} ${shoulderY+4}, ${cx+neckW} ${shoulderY+4}, ${cx+neckW} ${shoulderY} L ${cx+neckW} ${headY+headRY-4} Z`, skinFill, outline, outlineW);
-
-    // Arms
-    const armLen = lerp(100, 140, t.height);
-    const armW = lerp(6, 12, t.weight) + lerp(0, 4, t.muscle);
-    // Left arm
-    this._path(bodyG, `M ${cx-shW-8} ${shoulderY+8} C ${cx-shW-12} ${shoulderY+armLen*0.3}, ${cx-shW-14} ${shoulderY+armLen*0.6}, ${cx-shW-10} ${shoulderY+armLen} C ${cx-shW-6} ${shoulderY+armLen+8}, ${cx-shW+4} ${shoulderY+armLen+6}, ${cx-shW+2} ${shoulderY+armLen} C ${cx-shW+6} ${shoulderY+armLen*0.6}, ${cx-shW+4} ${shoulderY+armLen*0.3}, ${cx-shW} ${shoulderY+12} Z`, skinFill, outline, outlineW);
-    // Right arm
-    this._path(bodyG, `M ${cx+shW+8} ${shoulderY+8} C ${cx+shW+12} ${shoulderY+armLen*0.3}, ${cx+shW+14} ${shoulderY+armLen*0.6}, ${cx+shW+10} ${shoulderY+armLen} C ${cx+shW+6} ${shoulderY+armLen+8}, ${cx+shW-4} ${shoulderY+armLen+6}, ${cx+shW-2} ${shoulderY+armLen} C ${cx+shW-6} ${shoulderY+armLen*0.6}, ${cx+shW-4} ${shoulderY+armLen*0.3}, ${cx+shW} ${shoulderY+12} Z`, skinFill, outline, outlineW);
-
-    // Legs
-    const legSpread = hipW * 0.25;
-    // Left leg
-    this._path(bodyG, `M ${cx-legSpread-legW} ${hipY} C ${cx-legSpread-legW-2} ${hipY+legH*0.3}, ${cx-legSpread-legW-1} ${hipY+legH*0.7}, ${cx-legSpread-legW} ${footY-4} C ${cx-legSpread-legW-1} ${footY}, ${cx-legSpread} ${footY+4}, ${cx-legSpread+legW*0.6} ${footY+2} C ${cx-legSpread+legW} ${footY-2}, ${cx-legSpread+legW+2} ${hipY+legH*0.7}, ${cx-legSpread+legW+1} ${hipY+legH*0.3} Z`, skinFill, outline, outlineW);
-    // Right leg
-    this._path(bodyG, `M ${cx+legSpread+legW} ${hipY} C ${cx+legSpread+legW+2} ${hipY+legH*0.3}, ${cx+legSpread+legW+1} ${hipY+legH*0.7}, ${cx+legSpread+legW} ${footY-4} C ${cx+legSpread+legW+1} ${footY}, ${cx+legSpread} ${footY+4}, ${cx+legSpread-legW*0.6} ${footY+2} C ${cx+legSpread-legW} ${footY-2}, ${cx+legSpread-legW-2} ${hipY+legH*0.7}, ${cx+legSpread-legW-1} ${hipY+legH*0.3} Z`, skinFill, outline, outlineW);
-
-    // Breast outlines (paper-doll style: circles on torso)
-    if(breastSize > 0.5){
-      const bX = lerp(5, 10, t.chest);
-      const bY = shoulderY + lerp(18, 28, t.chest);
-      this._ellipse(bodyG, cx-bX, bY, breastSize, breastSize*0.85, 'none', outline, 1.5);
-      this._ellipse(bodyG, cx+bX, bY, breastSize, breastSize*0.85, 'none', outline, 1.5);
-      // Nipple dots
-      this._circle(bodyG, cx-bX, bY, lerp(1.5, 3, t.chest), outline);
-      this._circle(bodyG, cx+bX, bY, lerp(1.5, 3, t.chest), outline);
-    }
-
-    // ═══ HEAD LAYER ═══
-    const headG = this._g('head');
-    // Head shape: ellipse with width/length control
-    this._ellipse(headG, cx, headY, headR, headRY, skinFill, outline, outlineW);
-    // Ears
-    this._path(headG, `M ${cx-headR+2} ${headY-4} C ${cx-headR-6} ${headY-10}, ${cx-headR-8} ${headY+2}, ${cx-headR-4} ${headY+8} C ${cx-headR} ${headY+10}, ${cx-headR+4} ${headY+6}, ${cx-headR+2} ${headY} Z`, skinFill, outline, 1.5);
-    this._path(headG, `M ${cx+headR-2} ${headY-4} C ${cx+headR+6} ${headY-10}, ${cx+headR+8} ${headY+2}, ${cx+headR+4} ${headY+8} C ${cx+headR} ${headY+10}, ${cx+headR-4} ${headY+6}, ${cx+headR-2} ${headY} Z`, skinFill, outline, 1.5);
-
-    // ═══ FACE LAYER ═══
-    const faceG = this._g('face');
-    const eyeY = headY + lerp(-2, 4, t.hLength);
-    const eyeSp = lerp(16, 24, t.hWidth);
-    const eyeType = EYE_TYPES[c.eyeType] || EYE_TYPES[0];
-    const noseType = NOSE_TYPES[c.noseType] || NOSE_TYPES[0];
-
-    // ── Eyes based on type ──
-    const eyeW = eyeType.key==='round'?14 : eyeType.key==='narrow'?10 : eyeType.key==='wide'?16 : 13;
-    const eyeH = eyeType.key==='round'?12 : eyeType.key==='narrow'?6 : eyeType.key==='wide'?10 : 9;
-    const irisR = eyeType.key==='round'?7 : eyeType.key==='narrow'?4 : 6;
-    const lidWeight = eyeType.key==='hooded'?3.5 : 2.5;
-
-    for(const side of [-1, 1]){
-      const ex = cx + side * eyeSp;
-      // Sclera
-      this._ellipse(faceG, ex, eyeY, eyeW, eyeH, 'white', outline, 1);
-      // Iris
-      this._circle(faceG, ex, eyeY+1, irisR, '#4a3080');
-      // Pupil
-      this._circle(faceG, ex, eyeY+1, irisR*0.5, '#1a0830');
-      // Upper lid
-      this._path(faceG, `M ${ex-eyeW} ${eyeY-eyeH*0.3} C ${ex-eyeW*0.5} ${eyeY-eyeH-4}, ${ex+eyeW*0.5} ${eyeY-eyeH-4}, ${ex+eyeW} ${eyeY-eyeH*0.3}`, 'none', '#2a1a10', lidWeight);
-      // Lower lid hint
-      this._path(faceG, `M ${ex-eyeW+2} ${eyeY+eyeH*0.5} C ${ex} ${eyeY+eyeH+2}, ${ex+eyeW-2} ${eyeY+eyeH+2}`, 'none', outline, 0.8);
-      // Highlights
-      this._circle(faceG, ex+irisR*0.3, eyeY-irisR*0.3, irisR*0.4, 'white');
-      this._circle(faceG, ex-irisR*0.2, eyeY+irisR*0.3, irisR*0.2, 'white');
-    }
-
-    // Eyebrows
-    const browY = eyeY - eyeH - 8;
-    this._path(faceG, `M ${cx-eyeSp-eyeW} ${browY} C ${cx-eyeSp-eyeW*0.3} ${browY-4}, ${cx-eyeSp+eyeW*0.3} ${browY-4}, ${cx-eyeSp+eyeW} ${browY+2}`, 'none', outline, 1.8);
-    this._path(faceG, `M ${cx+eyeSp+eyeW} ${browY} C ${cx+eyeSp+eyeW*0.3} ${browY-4}, ${cx+eyeSp-eyeW*0.3} ${browY-4}, ${cx+eyeSp-eyeW} ${browY+2}`, 'none', outline, 1.8);
-
-    // ── Nose based on type ──
-    const noseY = headY + lerp(8, 14, t.hLength);
-    if(noseType.key==='small'){
-      this._path(faceG, `M ${cx-2} ${noseY} L ${cx} ${noseY+6} L ${cx+2} ${noseY}`, 'none', '#a08070', 1.2);
-    } else if(noseType.key==='medium'){
-      this._path(faceG, `M ${cx-4} ${noseY-2} L ${cx-2} ${noseY+8} C ${cx} ${noseY+10}, ${cx+2} ${noseY+8}, ${cx+4} ${noseY-2}`, 'none', '#a08070', 1.2);
-    } else if(noseType.key==='pointed'){
-      this._path(faceG, `M ${cx-3} ${noseY-4} L ${cx} ${noseY+10} L ${cx+3} ${noseY-4}`, 'none', '#907060', 1.3);
-    } else if(noseType.key==='flat'){
-      this._path(faceG, `M ${cx-6} ${noseY+2} C ${cx-4} ${noseY+8}, ${cx+4} ${noseY+8}, ${cx+6} ${noseY+2}`, 'none', '#a08070', 1.2);
-      this._path(faceG, `M ${cx-4} ${noseY+4} C ${cx-2} ${noseY+8}, ${cx+2} ${noseY+8}, ${cx+4} ${noseY+4}`, 'none', '#b09080', 0.8);
-    } else if(noseType.key==='button'){
-      this._path(faceG, `M ${cx-3} ${noseY} C ${cx-4} ${noseY+6}, ${cx} ${noseY+8}, ${cx+4} ${noseY+6} C ${cx+3} ${noseY+4}, ${cx+2} ${noseY}, ${cx-2} ${noseY} Z`, 'none', '#a08070', 1.2);
-    } else { // hooked
-      this._path(faceG, `M ${cx-2} ${noseY-6} C ${cx+2} ${noseY-2}, ${cx+4} ${noseY+4}, ${cx+2} ${noseY+10} C ${cx} ${noseY+12}, ${cx-2} ${noseY+10}, ${cx-4} ${noseY+4}`, 'none', '#907060', 1.3);
-    }
-
-    // Mouth
-    const mouthY = headY + lerp(22, 32, t.hLength);
-    this._path(faceG, `M ${cx-14} ${mouthY} C ${cx-6} ${mouthY+6}, ${cx+6} ${mouthY+6}, ${cx+14} ${mouthY}`, 'url(#lipGrad)', '#a06060', 1);
-    this._path(faceG, `M ${cx-12} ${mouthY+1} C ${cx-4} ${mouthY+4}, ${cx+4} ${mouthY+4}, ${cx+12} ${mouthY+1}`, 'none', '#c07070', 0.5);
-
-    // ═══ HAIR LAYER ═══
-    const hairG = this._g('hair');
-    const hairIdx = clamp(c.hairstyle, 0, HAIRSTYLES.length-1);
-    const hairKey = HAIRSTYLES[hairIdx]?.key || 'none';
-    const genFn = HAIRSTYLE_GENERATORS[hairKey];
-    if (genFn) {
-      const paths = genFn(cx, headY, headR, headRY);
-      paths.forEach(d => this._path(hairG, d, hairFill, '#2a1508', 1.5));
-    }
-
-    // ═══ GENITALS LAYER ═══
-    const genG = this._g('genitals');
-    const genY = hipY + 4;
-    const organT = t.organ;
-
-    if(c.sex === 'male'){
-      // Penis
-      const pLen = lerp(8, 22, organT);
-      const pW = lerp(3, 7, organT);
-      this._path(genG, `M ${cx-pW} ${genY} C ${cx-pW-1} ${genY+pLen*0.5}, ${cx-pW} ${genY+pLen}, ${cx} ${genY+pLen+2} C ${cx+pW} ${genY+pLen}, ${cx+pW+1} ${genY+pLen*0.5}, ${cx+pW} ${genY} Z`, skinFill, outline, 1.5);
-      // Balls
-      const ballR = lerp(3, 7, organT);
-      this._ellipse(genG, cx-ballR, genY+2, ballR, ballR*0.8, skinFill, outline, 1.2);
-      this._ellipse(genG, cx+ballR, genY+2, ballR, ballR*0.8, skinFill, outline, 1.2);
-    } else if(c.sex === 'female'){
-      // Vulva
-      const vW = lerp(4, 10, organT);
-      const vH = lerp(3, 7, organT);
-      // Mons
-      this._ellipse(genG, cx, genY-2, vW+2, vH+2, skinFill, outline, 1.5);
-      // Labia
-      this._path(genG, `M ${cx-vW} ${genY} C ${cx-vW+1} ${genY+vH}, ${cx-1} ${genY+vH+2}, ${cx} ${genY+vH} C ${cx+1} ${genY+vH+2}, ${cx+vW-1} ${genY+vH}, ${cx+vW} ${genY}`, 'none', '#804040', 1.2);
-      // Clitoris
-      this._circle(genG, cx, genY-1, lerp(1, 2.5, organT), '#a06060');
-    } else { // intersex
-      const pLen = lerp(4, 12, organT);
-      const pW = lerp(2, 5, organT);
-      this._path(genG, `M ${cx-pW} ${genY} C ${cx-pW-1} ${genY+pLen*0.5}, ${cx-pW} ${genY+pLen}, ${cx} ${genY+pLen+1} C ${cx+pW} ${genY+pLen}, ${cx+pW+1} ${genY+pLen*0.5}, ${cx+pW} ${genY} Z`, skinFill, outline, 1.5);
-      const vW = lerp(3, 7, organT);
-      this._path(genG, `M ${cx-vW} ${genY+2} C ${cx-vW+1} ${genY+6}, ${cx} ${genY+8}, ${cx+vW-1} ${genY+6} C ${cx+vW} ${genY+4}, ${cx+vW} ${genY+2}, ${cx} ${genY+1}`, 'none', '#804040', 1);
-    }
+  // Fat also expands vertically (belly sag)
+  let fatDY = 0;
+  if (f > 0 && y > 0.55 && y < 0.78) {
+    fatDY = f * 0.06 * Math.sin((y - 0.55) / 0.23 * Math.PI);
   }
-};
 
-// ══════════════════════════════════════════════════════════════
-// STEP BUILDERS
-// ══════════════════════════════════════════════════════════════
-function mkSlider(label, key, lo, hi, fmt){
-  const id = 'slider-'+key;
-  return `
-    <div class="slider-row">
-      <div><span class="slider-label">${label}</span><span class="slider-value" id="${id}-val"></span></div>
-      <input type="range" id="${id}" min="0" max="100" value="50">
-      <div class="range-hints"><span>${lo}</span><span>${hi}</span></div>
-    </div>`;
+  // Apply fat — center-based horizontal displacement
+  const centerX = 0.5;
+  const dir = x > centerX ? 1 : -1;
+  const distFromCenter = Math.abs(x - centerX) / 0.5;
+  // Outer edges move more, center stays
+  const edgeFactor = Math.pow(distFromCenter, 1.5);
+
+  dx += f * fatProfile * 0.12 * edgeFactor * dir;
+  dy += fatDY;
+
+  // ── MUSCLE DISPLACEMENT ──
+  // Localized bulges at: shoulders, biceps, chest, thighs
+  let muscleProfile = 0;
+  let muscleDir = 0;
+
+  // Shoulders (y=0.32-0.42)
+  if (y >= 0.32 && y < 0.42) {
+    const t = (y - 0.32) / 0.10;
+    const bulge = Math.sin(t * Math.PI);
+    muscleProfile = 0.12 * bulge;
+    muscleDir = dir;  // outward from center
+  }
+  // Biceps (y=0.46-0.56)
+  else if (y >= 0.46 && y < 0.56) {
+    const t = (y - 0.46) / 0.10;
+    const bulge = Math.sin(t * Math.PI);
+    muscleProfile = 0.10 * bulge;
+    muscleDir = dir;
+  }
+  // Chest define (y=0.38-0.50)
+  else if (y >= 0.38 && y < 0.50) {
+    const t = (y - 0.38) / 0.12;
+    const bulge = Math.sin(t * Math.PI);
+    // Chest: also bulges at ~0.3 from center (pecs)
+    const chestLateral = 1 - Math.abs(x - 0.35) / 0.15;
+    const lateralFactor = Math.max(0, Math.min(1, chestLateral));
+    muscleProfile = 0.14 * bulge * lateralFactor;
+    muscleDir = 1;
+    // Pecs push outward from sternum
+    if (x > 0.45) muscleDir = 1;
+    else if (x < 0.55) muscleDir = -1;
+    else muscleDir = 0;
+  }
+  // Thighs (y=0.78-0.90)
+  else if (y >= 0.78 && y < 0.90) {
+    const t = (y - 0.78) / 0.12;
+    const bulge = Math.sin(t * Math.PI);
+    muscleProfile = 0.10 * bulge;
+    muscleDir = dir;
+  }
+
+  dx += m * muscleProfile * edgeFactor * muscleDir;
+
+  // ── HEIGHT DISPLACEMENT ──
+  // Vertical stretch/compress from top
+  if (y > 0.15) {
+    const heightAmount = h * 0.15;
+    // Scale factor increases toward bottom
+    const heightProfile = (y - 0.15) / 0.85;
+    dy += heightAmount * heightProfile;
+  }
+
+  // ── WAIST DISPLACEMENT ──
+  // Independent waist narrow/wide at y=0.55-0.75
+  if (y >= 0.50 && y < 0.78) {
+    const waistArea = Math.sin((y - 0.50) / 0.28 * Math.PI);
+    const waistPull = w * 0.08 * waistArea;
+    // At center, no change; at edges, pull in/out
+    const lateralDist = Math.abs(x - centerX) / 0.5;
+    const lateralFactor = Math.pow(lateralDist, 1.2);
+    dx += waistPull * lateralFactor * dir;
+  }
+
+  return { dx, dy };
 }
 
-function mkGridButtons(items, key, cls){
-  return `<div class="${cls||'grid-3'}" id="grid-${key}">` +
-    items.map((item,i) => `<button class="grid-btn" data-key="${key}" data-idx="${i}">${item.label}</button>`).join('') +
-    '</div>';
+// Draw triangle with affine transform
+function drawTri(dst, img, 
+  x0,y0, x1,y1, x2,y2,   // destination coords  
+  u0,v0, u1,v1, u2,v2    // source coords
+) {
+  const a0 = x1 - x0, b0 = y1 - y0;
+  const a1 = x2 - x0, b1 = y2 - y0;
+  const c0 = u1 - u0, d0 = v1 - v0;
+  const c1 = u2 - u0, d1 = v2 - v0;
+
+  const det = c0 * d1 - c1 * d0;
+  if (Math.abs(det) < 0.0001) return;
+
+  const A = (a0 * d1 - a1 * d0) / det;
+  const B = (a1 * c0 - a0 * c1) / det;
+  const C = (b0 * d1 - b1 * d0) / det;
+  const D = (b1 * c0 - b0 * c1) / det;
+  const E = x0 - A * u0 - B * v0;
+  const F = y0 - C * u0 - D * v0;
+
+  dst.save();
+  dst.beginPath();
+  dst.moveTo(x0, y0);
+  dst.lineTo(x1, y1);
+  dst.lineTo(x2, y2);
+  dst.closePath();
+  dst.clip();
+  dst.transform(A, C, B, D, E, F);
+  dst.drawImage(img, 0, 0);
+  dst.restore();
 }
 
-function mkSliderWithGradient(label, key, lo, hi, cL, cR){
-  const id = 'slider-'+key;
-  return `
-    <div class="slider-row">
-      <div><span class="slider-label">${label}</span><span class="slider-value" id="${id}-val"></span></div>
-      <input type="range" class="grad" id="${id}" min="0" max="100" value="50" style="--g-l:${cL};--g-r:${cR};">
-      <div class="range-hints"><span>${lo}</span><span>${hi}</span></div>
-    </div>`;
-}
+// Render the body with current warp
+function renderBody() {
+  if (!imgLoaded) return;
 
-const stepBuilders = [];
+  const cw = canvas.width;
+  const ch = canvas.height;
 
-// ── STEP 0: Name ──
-stepBuilders.push(() => `
-  <div class="preview-full">
-    <div class="step-title">What is your name?</div>
-    <div class="name-input-wrap">
-      <input type="text" id="name-input" placeholder="Enter a name..." maxlength="30">
-    </div>
-    <div class="step-subtitle">or just press Continue to use "Alex"</div>
-  </div>`);
+  ctx.clearRect(0, 0, cw, ch);
 
-// ── STEP 1: Background (Sex, Age, Ethnicity) ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 2: Background</div>
-  <div class="step-subtitle">Sex, age & ethnicity</div>
-  <div class="slider-row">
-    <div><span class="slider-label">Sex</span><span class="slider-value" id="val-sex"></span></div>
-    <div class="grid-3" id="grid-sex">
-      ${SEX_TYPES.map((s,i) => `<button class="grid-btn" data-key="sex" data-val="${s}">${s.charAt(0).toUpperCase()+s.slice(1)}</button>`).join('')}
-    </div>
-  </div>
-  ${mkSlider('Age','age','18','69')}
-  ${mkSlider('Ethnicity','ethnicity','A','K')}
-`);
+  // Build warped grid
+  const restGrid = buildRestGrid();
+  const warpGrid = [];
 
-// ── STEP 2: Body ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 3: Body</div>
-  <div class="step-subtitle">Size, shape & sex organs</div>
-  ${mkSlider('Chest / Bust','chest','Flat','Large')}
-  ${mkSlider('Waist','waist','Narrow','Wide')}
-  ${mkSlider('Hips','hips','Narrow','Wide')}
-  ${mkSlider('Height','height','Short','Tall')}
-  ${mkSlider('Weight','weight','Light','Heavy')}
-  ${mkSlider('Muscle','muscle','Soft','Ripped')}
-  ${mkSlider('Organ Size','organSize','Small','Large')}
-  <div class="slider-row">
-    <div><span class="slider-label">Skin Tone</span><span class="slider-value" id="val-skinTone"></span></div>
-    <input type="range" id="slider-skinTone" min="0" max="100" value="0">
-  </div>
-`);
+  for (let row = 0; row <= ROWS; row++) {
+    const rowVerts = [];
+    for (let col = 0; col <= COLS; col++) {
+      const rest = restGrid[row][col];
+      const disp = computeDisplacement(rest, fat, muscle, height, waist);
 
-// ── STEP 3: Head ──
-stepBuilders.push(() => {
-  const hairColors = hairColorsForEthnicity();
-  return `
-  <div class="step-title">Step 4: Head & Face</div>
-  <div class="step-subtitle">Hair, eyes, nose & head shape</div>
-  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Hairstyle</div>
-  ${mkGridButtons(HAIRSTYLES.map(h=>({label:h.label,key:h.key})), 'hairstyle', 'grid-3')}
-  <div class="slider-row">
-    <div><span class="slider-label">Hair Color</span><span class="slider-value" id="val-hairColor"></span></div>
-    <input type="range" id="slider-hairColor" min="0" max="${Math.max(0,hairColors.length-1)}" value="0">
-  </div>
-  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Eye Type</div>
-  ${mkGridButtons(EYE_TYPES, 'eyeType', 'grid-3')}
-  <div class="step-subtitle" style="color:#FFD700;padding:2px 4px;">Nose Type</div>
-  ${mkGridButtons(NOSE_TYPES, 'noseType', 'grid-3')}
-  ${mkSlider('Head Width','headWidth','Narrow','Wide')}
-  ${mkSlider('Head Length','headLength','Short','Long')}
-`;
-});
+      // Scale displacement to canvas size
+      const sx = disp.dx * imgW;
+      const sy = disp.dy * imgH;
 
-// ── STEP 4: Sexuality & Gender ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 5: Sexuality & Gender</div>
-  <div class="step-subtitle">Gender is separate from birth sex</div>
-  ${mkSliderWithGradient('Gender','gender','Masc','Fem','#4A90D9','#E94560')}
-  ${mkSlider('Romantic','romantic','Aromantic','Romantic')}
-  ${mkSlider('Attraction','homo','Hetero','Homo')}
-  ${mkSlider('Libido','sexual','Low','High')}
-`);
+      // Also allow the image to be drawn at its natural aspect ratio within canvas
+      const scale = Math.min(cw / imgW, ch / imgH) * 0.85;
+      const ox = (cw - imgW * scale) / 2;
+      const oy = (ch - imgH * scale) / 2;
+      
+      // Scale and offset
+      const px = rest.x * imgW * scale + ox + sx * scale;
+      const py = rest.y * imgH * scale + oy + sy * scale;
 
-// ── STEP 5: Personality ──
-stepBuilders.push(() => {
-  const mbtiRows = MBTI.map(m => mkSliderWithGradient(
-    `${m.left} ↔ ${m.right}`, 'mbti-'+m.key, m.left.split('[')[0], m.right.split('[')[0], m.cL, m.cR
-  )).join('');
-  return `<div class="step-title">Step 6: Personality</div>
-    <div class="step-subtitle">How do you tend to be?</div>
-    ${mbtiRows}`;
-});
+      rowVerts.push({ x: px, y: py });
+    }
+    warpGrid.push(rowVerts);
+  }
 
-// ── STEP 6: Socio-Economics ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 7: Background</div>
-  <div class="step-subtitle">Finances, connections & neighborhood</div>
-  ${mkSlider('Family Finances','finances','Poor','Wealthy')}
-  ${mkSlider('Social Capital','socialCapital','Unknown','Well-connected')}
-  ${mkSlider('Neighborhood','neighborhood','Rough','Upscale')}
-  <div class="socio-preview" id="socio-preview"></div>
-`);
+  // Draw triangles
+  for (let row = 0; row < ROWS; row++) {
+    for (let col = 0; col < COLS; col++) {
+      // Quad: (row,col), (row,col+1), (row+1,col), (row+1,col+1)
+      const a = warpGrid[row][col];
+      const b = warpGrid[row][col+1];
+      const c = warpGrid[row+1][col];
+      const d = warpGrid[row+1][col+1];
 
-// ── STEP 7: City ──
-stepBuilders.push(() => `
-  <div class="step-title">Step 8: Starting City</div>
-  <div class="step-subtitle">Where will you begin?</div>
-  <div class="grid-2" id="grid-city">
-    ${CITIES.map(city => `<button class="grid-btn" data-key="city" data-val="${city}">${city}</button>`).join('')}
-  </div>
-`);
+      // Source coords (rest grid in image pixel space)
+      const sa_x = restGrid[row][col].x * imgW;
+      const sa_y = restGrid[row][col].y * imgH;
+      const sb_x = restGrid[row][col+1].x * imgW;
+      const sb_y = restGrid[row][col+1].y * imgH;
+      const sc_x = restGrid[row+1][col].x * imgW;
+      const sc_y = restGrid[row+1][col].y * imgH;
+      const sd_x = restGrid[row+1][col+1].x * imgW;
+      const sd_y = restGrid[row+1][col+1].y * imgH;
 
-// ══════════════════════════════════════════════════════════════
-// UI CONTROLLER
-// ══════════════════════════════════════════════════════════════
-function renderStep(){
-  const zone = document.getElementById('sliders-zone');
-  const stepDivs = zone.querySelectorAll('.step');
-  stepDivs.forEach(d => d.remove());
-
-  const stepEl = document.createElement('div');
-  stepEl.className = 'step';
-  stepEl.id = 'step-'+S.step;
-  stepEl.innerHTML = stepBuilders[S.step]();
-  zone.appendChild(stepEl);
-
-  // Wire up all inputs for this step
-  wireStep();
-  updateUI();
-}
-
-function wireStep(){
-  const stepEl = document.getElementById('step-'+S.step);
-  if(!stepEl) return;
-
-  // Range sliders
-  stepEl.querySelectorAll('input[type="range"]').forEach(input=>{
-    input.addEventListener('input', ()=>{
-      const key = input.id.replace('slider-','');
-      if(key.startsWith('mbti-')){
-        const mbtiKey = key.replace('mbti-','');
-        S.character.mbti[mbtiKey] = parseInt(input.value);
-      } else if(key === 'skinTone'){
-        S.character.skinToneIdx = parseInt(input.value);
-      } else if(key === 'hairColor'){
-        S.character.hairColor = parseInt(input.value);
-      } else if(key === 'ethnicity'){
-        const ethIdx = Math.round(parseInt(input.value) / (100/(ETHNICITIES.length-1)));
-        S.character.ethnicity = ETHNICITIES[clamp(ethIdx,0,ETHNICITIES.length-1)];
-      } else if(key === 'age'){
-        S.character.age = 18 + Math.round(parseInt(input.value) * 51 / 100);
-      } else {
-        S.character[key] = parseInt(input.value);
-      }
-      updateUI();
-    });
-  });
-
-  // Grid buttons
-  stepEl.querySelectorAll('.grid-btn').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const key = btn.dataset.key;
-      const idx = parseInt(btn.dataset.idx);
-      const val = btn.dataset.val;
-      if(val !== undefined){
-        S.character[key] = val;
-      } else {
-        S.character[key] = idx;
-      }
-      // Update selected state
-      stepEl.querySelectorAll(`.grid-btn[data-key="${key}"]`).forEach(b=>b.classList.remove('selected'));
-      btn.classList.add('selected');
-      updateUI();
-    });
-  });
-
-  // Name input
-  const nameInput = stepEl.querySelector('#name-input');
-  if(nameInput){
-    nameInput.addEventListener('input', ()=>{
-      S.character.name = nameInput.value || 'Alex';
-    });
+      // Tri 1: a-b-c
+      drawTri(ctx, srcCanvas,
+        a.x, a.y, b.x, b.y, c.x, c.y,
+        sa_x, sa_y, sb_x, sb_y, sc_x, sc_y
+      );
+      // Tri 2: b-d-c
+      drawTri(ctx, srcCanvas,
+        b.x, b.y, d.x, d.y, c.x, c.y,
+        sb_x, sb_y, sd_x, sd_y, sc_x, sc_y
+      );
+    }
   }
 }
 
-function updateUI(){
-  const c = S.character;
-  const stepEl = document.getElementById('step-'+S.step);
-  if(!stepEl) return;
+// ── RESIZE ──
 
-  // Update slider values
-  stepEl.querySelectorAll('input[type="range"]').forEach(input=>{
-    const key = input.id.replace('slider-','');
-    const valEl = document.getElementById(input.id+'-val');
-    if(!valEl) return;
-
-    if(key === 'age'){
-      input.value = Math.round((c.age - 18) * 100 / 51);
-      valEl.textContent = ageLabel(c.age);
-    } else if(key === 'ethnicity'){
-      const ethIdx = ETHNICITIES.indexOf(c.ethnicity);
-      input.value = Math.round(ethIdx * (100/(ETHNICITIES.length-1)));
-      valEl.textContent = c.ethnicity;
-    } else if(key === 'skinTone'){
-      const tones = skinTonesForEthnicity();
-      input.max = Math.max(0, tones.length-1);
-      input.value = clamp(c.skinToneIdx||0, 0, tones.length-1);
-      valEl.textContent = tones[clamp(c.skinToneIdx||0,0,tones.length-1)]||'';
-    } else if(key === 'hairColor'){
-      const colors = hairColorsForEthnicity();
-      input.max = Math.max(0, colors.length-1);
-      input.value = clamp(c.hairColor, 0, colors.length-1);
-      valEl.textContent = colors[clamp(c.hairColor,0,colors.length-1)]?.label||'';
-    } else if(key.startsWith('mbti-')){
-      const mbtiKey = key.replace('mbti-','');
-      input.value = c.mbti[mbtiKey];
-      valEl.textContent = c.mbti[mbtiKey]+'%';
-    } else {
-      input.value = c[key] ?? 50;
-      valEl.textContent = (c[key]??50)+'%';
-    }
-  });
-
-  // Update grid button selection
-  stepEl.querySelectorAll('.grid-btn').forEach(btn=>{
-    const key = btn.dataset.key;
-    const idx = parseInt(btn.dataset.idx);
-    const val = btn.dataset.val;
-    if(val !== undefined){
-      btn.classList.toggle('selected', c[key] === val);
-    } else {
-      btn.classList.toggle('selected', c[key] === idx);
-    }
-  });
-
-  // Socio preview
-  const socioEl = document.getElementById('socio-preview');
-  if(socioEl){
-    const cash = Math.round(Math.pow(c.finances/100, 2.5) * 50000);
-    socioEl.innerHTML = `
-      <span class="cash">Starting Cash: $${cash.toLocaleString()}</span>
-      <span class="detail">Family: ${c.finances<30?'Working class':c.finances<60?'Middle class':'Upper class'}</span>
-      <span class="detail">Connections: ${c.socialCapital<30?'None':c.socialCapital<60?'Some':'Well-connected'}</span>
-      <span class="detail">Neighborhood: ${c.neighborhood<30?'Rough':c.neighborhood<60?'Average':'Upscale'}</span>
-    `;
-  }
-
-  // Re-render character
-  SVG.render();
+function resize() {
+  const rect = canvas.parentElement.getBoundingClientRect();
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = rect.width + 'px';
+  canvas.style.height = rect.height + 'px';
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (imgLoaded) renderBody();
 }
 
-function updateNav(){
-  document.getElementById('step-indicator').textContent = (S.step+1)+' / '+S.totalSteps;
-  document.getElementById('progress-fill').style.width = ((S.step+1)/S.totalSteps*100)+'%';
-  document.getElementById('btn-back').style.visibility = S.step===0?'hidden':'visible';
+// ── IMAGE LOADING ──
+
+bodyImg.onload = () => {
+  imgW = bodyImg.width;
+  imgH = bodyImg.height;
+  imgLoaded = true;
+
+  // Create source buffer
+  srcCanvas = document.createElement('canvas');
+  srcCanvas.width = imgW;
+  srcCanvas.height = imgH;
+  srcCtx = srcCanvas.getContext('2d');
+  srcCtx.drawImage(bodyImg, 0, 0);
+
+  resize();
+};
+
+bodyImg.onerror = () => {
+  // Fallback: try body2.png
+  bodyImg.src = 'body2.png';
+  bodyImg.onerror = () => {
+    document.querySelector('.preview-zone').innerHTML = 
+      '<div style="color:#e94560;padding:20px;text-align:center;">Failed to load body PNG</div>';
+  };
+};
+
+// ── SLIDER BINDING ──
+
+function bindSlider(id, stateKey, displayId) {
+  const slider = document.getElementById(id);
+  const display = document.getElementById(displayId);
+  slider.addEventListener('input', () => {
+    const val = parseInt(slider.value);
+    window[stateKey] = val;
+    display.textContent = val;
+    if (imgLoaded) renderBody();
+  });
 }
 
-// ══════════════════════════════════════════════════════════════
-// NAV
-// ══════════════════════════════════════════════════════════════
-document.getElementById('btn-back').addEventListener('click', ()=>{
-  if(S.step>0){ S.step--; renderStep(); updateNav(); }
-});
-document.getElementById('btn-continue').addEventListener('click', ()=>{
-  if(S.step<S.totalSteps-1){ S.step++; renderStep(); updateNav(); }
+bindSlider('fat-slider', 'fat', 'fat-val');
+bindSlider('muscle-slider', 'muscle', 'muscle-val');
+bindSlider('height-slider', 'height', 'height-val');
+bindSlider('waist-slider', 'waist', 'waist-val');
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  ['fat','muscle','height','waist'].forEach(k => {
+    window[k] = 50;
+    document.getElementById(k + '-slider').value = 50;
+    document.getElementById(k + '-val').textContent = '50';
+  });
+  if (imgLoaded) renderBody();
 });
 
-// ══════════════════════════════════════════════════════════════
-// INIT
-// ══════════════════════════════════════════════════════════════
-SVG._init();
-renderStep();
-updateNav();
+document.getElementById('btn-screenshot').addEventListener('click', () => {
+  const link = document.createElement('a');
+  link.download = 'character_' + Date.now() + '.png';
+  link.href = canvas.toDataURL('image/png');
+  link.click();
+});
+
+// ── INIT ──
+
+window.addEventListener('resize', resize);
+resize();
+
 </script>
 </body>
 </html>
